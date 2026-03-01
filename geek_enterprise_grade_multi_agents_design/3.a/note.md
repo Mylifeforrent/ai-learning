@@ -18,3 +18,6 @@ task这块基本就是定义user级别提示词
 这个crewAI的设计思路是不是可以自己使用langchain+langgraph来实现，同样可以自己编排他的提示词之类的。让ai帮我解释，以及大概的设计思路，最好有代码示例，给我我一个sample类型的代码
 
 ![alt text](image-9.png)
+学会使用混合架构，workflow也可以搭配agent一起构造一个系统。
+![alt text](image-10.png)
+![alt text](image-11.png)
