@@ -1,8 +1,8 @@
-# AI Agent 框架提示词工程技巧与底层原理全景对比分析
+# AI Agent 框架提示词工程技巧与底层原理全景对比分析 (含实战代码范例)
 
 在当今的大模型（LLM）驱动的 Agent 开发中，不同的框架为了让大模型更好地遵循指令、完成指定的任务流、以及精准地调用外部工具，演化出了多种不同的提示词（Prompt）工程流派和技巧。
 
-本文将为您详细展开讲解 CrewAI 中的 `Thought:`、`stop: [Observation]`，AutoGPT 和 OpenAI 的 JSON 格式约束，并扩展介绍如 Anthropic Claude 推荐的 XML 标签等其他优秀框架的提示词技巧，帮助您全面了解其背后的技术原理。
+本文将为您详细展开讲解 CrewAI 中的 `Thought:`、`stop: [Observation]`，AutoGPT 和 OpenAI 的 JSON 格式约束，并扩展介绍如 Anthropic Claude 推荐的 XML 标签等其他优秀框架的提示词技巧，帮助您全面了解其背后的技术原理及**实际代码应用**。
 
 ---
 
@@ -10,97 +10,263 @@
 
 CrewAI 等强调过程推理的框架，很大程度上受 ReAct (Reason + Act) 论文的启发。大模型被要求在执行任何外部操作之前，先“大声思考”。
 
-### 1.1 `Thought:` 前缀的原理
-**现象**：如果你查看 CrewAI 的底层发给大模型的提示词模板，总是能在末尾或者每个步骤的开头看到它强制要求或者强提示大模型输出 `Thought: `（思考：）。
+### 1.1 原理解析
+*   **引导思维链 (Chain-of-Thought, CoT)**：大模型本质上是“概率性的文本接龙”。如果直接让大模型给出“行动（Action）”，它往往会跳过中间推理过程，导致它选错工具或传错参数。通过在提示词模板中预置 `Thought:`，强制大模型必须先生成一段自我推理的文字。
+*   **`stop: [Observation]` 防幻觉机制**：大模型的本能是续写文本。当它输出行动指令后，如果不加阻止，它会自己编造一个结果接着往下写。通过设置 stop 词为 `Observation`，API 生成会立即终止。本地框架接管控制权，真实调用工具后，将结果拼接成 `Observation: [真实结果]` 再次发给大模型。
 
-**原理解析**：
-*   **引导思维链 (Chain-of-Thought, CoT)**：大模型本质上是“概率性的文本接龙”。如果直接让大模型给出“行动（Action）”，它往往会跳过中间推理过程，导致它选错工具或传错参数。通过在提示词模板中预置 `Thought:`，强制大模型必须先生成一段自我推理的文字（例如：“用户让我查天气，我需要先调用 `get_weather` 工具，参数应该是 `Beijing`”）。
-*   **格式对齐**：在 ReAct 循环中，解析器极度依赖固定的文本格式来提取信息。常见的格式约定为：
-    *   `Thought:` (思考过程)
-    *   `Action:` (调用的工具名称)
-    *   `Action Input:` (给工具的参数格式)
-    强制大模型生成 `Thought:` 是整个状态机顺利流转的锚点。
+### 1.2 实际案例演示
 
-### 1.2 `stop: [Observation]` 的防幻觉机制
-**现象**：在向 OpenAI / 本地大模型发起 API 请求时，传入的参数中往往会设置 `stop=["Observation"]`（或 `Observation:`）。
+**📝 框架预置的系统提示词 (System Prompt) 长什么样？**
+```text
+你在解决问题时，必须严格遵循以下格式：
+Question: 需要你回答的问题或完成的任务
+Thought: 思考你应该怎么做
+Action: 选择使用下面工具中的一个：[get_weather, calculator]
+Action Input: 传入工具的参数
+Observation: 工具执行返回的内容
+... (Thought/Action/Action Input/Observation 可以重复多次)
+Thought: 我现在知道了最终答案
+Final Answer: 最终回复给用户的完整内容
+```
 
-**原理解析**：
-*   **强制让出控制权**：大模型的本能是**续写文本**。当它输出了 `Action:` 和 `Action Input:` 告诉系统它想用什么工具后，如果不加以阻止，它会根据常识“自己编造”一个结果接着往下写。例如它查天气，会自己接着写 `Observation: 今天天气晴朗`。
-*   **截断与接管**：通过设置 stop 词，大模型在生成到 `Observation` 这个词的一瞬间，API 生成就会立即终止停止计费。本地框架（如 CrewAI 的解析器）接管程序控制权，从生成的文本中提取出 `Action`，在本地运行 Python 代码（如实际发起 HTTP 天气请求），得到真实结果后，**由 Python 代码将结果拼接在 `Observation: [真实降雨15度]` 后面**，再把整段对话历史重新发给大模型。
-*   **这就是 Agent “循环执行”的实质**。
+**🤖 大模型输出的结果长什么样？（中间挂起状态）**
+```text
+Thought: 用户问我今天北京的天气，我需要调用天气查询工具。
+Action: get_weather
+Action Input: {"city": "Beijing"}
+```
+*(注意：到这里因为触发了 stop_word: "Observation"，大模型停止输出。Python 代码拿到上述文本，解析出 `get_weather` 并实际运行，得到结果 "多云，20度" 后，将 `Observation: 多云，20度\n` 附在后面再发回给大模型进行下一轮推断)*
+
+**💻 CrewAI 框架使用代码示例**
+```python
+from crewai import Agent, Task, Crew
+from langchain.tools import tool
+
+@tool("get_weather")
+def get_weather(city: str) -> str:
+    """查询指定城市的天气"""
+    return "多云，20度" # 模拟外部 API 返回
+
+# 创建基于 ReAct 模式的 Agent
+researcher = Agent(
+    role='天气预报员',
+    goal='准确地查出当地天气',
+    backstory='你是一个严谨的气象专家。',
+    verbose=True, # 开启后终端会打印 Thought/Action/Observation 的过程
+    allow_delegation=False,
+    tools=[get_weather] # CrewAI 底层会将这个工具的描述转化为 Prompt 注入给模型
+)
+
+task = Task(description='查一下今天北京的天气', expected_output='简短的天气报告', agent=researcher)
+crew = Crew(agents=[researcher], tasks=[task])
+result = crew.kickoff()
+print(result)
+```
 
 ---
 
 ## 2. OpenAI Function Calling 与 AutoGPT 的 JSON 规范流派
 
-早期的 ReAct 模式（像 LangChain 早期的 zero-shot-react-description 和 CrewAI 的默认模式）需要大模型输出特定的文本格式，然后用正则表达式去匹配提取动作。这种方式极其脆弱，大模型稍微多输出一个空格或换行，正则匹配就会失败导致 Agent 崩溃。
+早期的 ReAct 模式因为用正则表达式去匹配提取纯文本的动作，在生产环境中极其脆弱。为了解决这个问题，以 AutoGPT 为代表掀起了 **JSON 化** 的浪潮，而后 OpenAI 官方通过 API 层面对其进行了原生支持。
 
-为了解决这个问题，以 AutoGPT 和后来的 OpenAI 官方 API 为代表，掀起了 **JSON 化** 的浪潮。
+### 2.1 AutoGPT 纯 JSON 约束案例
 
-### 2.1 AutoGPT 定义 JSON 格式的原理
-**原理**：在 OpenAI 官方推出 Function Calling 前，AutoGPT 就在提示词中硬性规定大模型**必须且只能**输出高强度的结构化 JSON 对象。
-
-**内部提示词结构**：AutoGPT 给大模型的 System Prompt 中包含了类似以下的 Schema 要求：
-```json
+**📝 提示词长什么样？(由于没有 API 原生层面的支持，只能硬写在 Prompt 里)**
+```text
+你是一个全自动 AI 助手。你必须并且只能用以下 JSON 格式进行回复，绝对不能输出任何其他非 JSON 文本：
 {
   "thoughts": {
-    "text": "我对当前任务的理解...",
-    "reasoning": "为什么我要这么做...",
-    "plan": "- 第一步\n- 第二步",
-    "criticism": "我这样做的缺点是...",
-    "speak": "给用户展示的一段语音/文本"
+    "text": "你对当前状况的思考",
+    "reasoning": "为什么你要选这个动作",
+    "plan": "- 你的短期排期计划\n- 下一步操作",
+    "criticism": "对你刚才行为的自省，指出可能的缺点"
   },
   "command": {
-    "name": "search_internet",
-    "args": { "query": "极客时间 深度学习" }
+    "name": "命令名称，必须从 [search_internet, read_file] 中选择",
+    "args": { "参数键": "参数值" }
   }
 }
 ```
-**为什么这样做更加规范？**
-*   **规避正则解析难题**：Python 的 `json.loads()` 远比复杂的正则表达式稳健。
-*   **强制结构化反思**：通过把 `reasoning`、`plan`、`criticism` 固定在 JSON Schema 里，AutoGPT 强制大模型在每一步必须进行深度反思（类似强制写八股文）。
 
-### 2.2 OpenAI 原生 Function Calling 原理
-**原理**：OpenAI 后期在 API 甚至模型底层训练层面（微调），直接原生支持了 JSON 格式的工具调用。这被称为 Function Calling (现在的 Tool Calling)。
+**🤖 大模型输出的结果长什么样？**
+```json
+{
+  "thoughts": {
+    "text": "用户想了解极客时间的课程，我需要先搜索一下相关信息。",
+    "reasoning": "由于我没有实时的极客时间课程数据，使用互联网搜索是最快的方法。",
+    "plan": "- 搜索最新热门课程\n- 提取有用信息\n- 总结返回给用户",
+    "criticism": "我需要确保搜索关键词精确，避免搜出无关广告信息。"
+  },
+  "command": {
+    "name": "search_internet",
+    "args": {
+      "query": "极客时间 最新热门课程清单"
+    }
+  }
+}
+```
+*(Python 代码层面直接 `parsed_data = json.loads(response)` 即可，稳健性比正则高了数百倍)*
 
-*   **Schema 注入**：你在 API 请求的 `tools` 参数里，按 JSON Schema 格式传入你有哪些 Python 函数，以及它们的参数名为啥、类型是啥。
-*   **底层指令隔离**：与以前把工具列表生硬拼接到 System Prompt 末尾不同，Tool Calling 在模型底层对工具的抽象进行了专门处理。大模型能够更精准地理解“这是一个工具箱，我不在日常聊天中，我要输出一个 JSON 格式的工具请求”。
-*   **无需 `stop` 词的巧技**：在开启了 Tool Calling 后，模型返回的 `finish_reason` 不再是常规的 `stop`，而是特殊的 `tool_calls`。此时框架就知道大模型在请求挂起，等待你返回工具结果给她。这就优雅地替代了 `stop: [Observation]` 的“Hack”技巧。
+### 2.2 OpenAI 原生 Function Call (Tool Calling) 案例
+
+**原理**：OpenAI 在模型底层直接支持了结构化的工具分发。底层训练教会了模型区分“普通对话”和“工具调用”。开发者不再需要把复杂的 JSON 样例塞进系统提示词，而是在请求参数的 `tools` 字段中传入 JSON Schema。大模型会自动识别，而在它判断需要调用工具时，会返回一个要求工具调用的独特状态。
+
+**💻 OpenAI API 代码示例与抓包结果**
+```python
+import json
+from openai import OpenAI
+
+client = OpenAI(api_key="YOUR_API_KEY")
+
+# 1. 告诉大模型你有什么工具 (按照格式定义 JSON Schema)
+tools = [
+  {
+    "type": "function",
+    "function": {
+      "name": "get_weather",
+      "description": "查询给定地点的天气",
+      "parameters": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string",
+            "description": "城市名称，例如北京、上海"
+          }
+        },
+        "required": ["location"]
+      }
+    }
+  }
+]
+
+# 2. 发起请求
+response = client.chat.completions.create(
+  model="gpt-4o",
+  messages=[{"role": "user", "content": "北京天气如何？"}],
+  tools=tools,
+  tool_choice="auto" 
+)
+
+# 3. 查看大模型输出: 它没有返回常规对话文本，而是返回了特殊挂起状态 tool_calls！
+message = response.choices[0].message
+print(message.tool_calls)
+# 输出结构类似: 
+# [ToolCall(id='call_xyz123', function=Function(arguments='{"location":"Beijing"}', name='get_weather'), type='function')]
+
+# 框架层接下来会自动提取 json.loads(message.tool_calls[0].function.arguments) 来运行本地代码
+```
 
 ---
 
-## 3. 其他优秀框架及生态的提示词技巧
+## 3. Anthropic Claude 的 XML Tags 流派
 
-在整个生态中，为了更好地调度大模型，还衍生出了诸多其他流派的技巧。
+Anthropic (Claude 的开发商) 明确推荐使用 XML 标签来包裹提示词和工具调用，这得益于其预训练数据集对 XML 的高敏锐度。这在 LangChain 的 XML Agent 中也有大量应用。
 
-### 3.1 Anthropic Claude 的 XML Tags 技巧 
-**背景与原理**：如果你使用 Claude 作为 Agent 的底层驱动器（比如使用 LangGraph 中的 XML Agent），你会发现它的提示词里充满了 `<thought>`、`<tool_use>`、`<result>` 等 XML 标签。
+### 3.1 实际案例演示
 
-**为何推荐 XML？**
-*   **Claude 数据集的偏好**：Anthropic 官方极度推荐使用 XML 格式，因为 Claude 系列在预训练时接触了大量 XML 和 HTML 数据，它对闭合标签 (`<tag>内容</tag>`) 的结构理解远胜于 Markdown 或 JSON。
-*   **容错率更高**：JSON 漏一个引号或者右括号整个解析就会崩溃；而 XML 即便有些细微缺陷，使用流式正则获取 `xml` 标签内的内容也非常稳定。
-*   **Prompt 隔离**：利用 `<context>`、`<instructions>` 标签，可以清晰地为大模型划分哪些是背景，哪些是核心指令，减少指令污染。
+**📝 提示词长什么样 (XML System Prompt)？**
+```xml
+<system_instructions>
+你是一个智能助手。你有以下工具可用：
+<tools>
+<tool_description>
+<tool_name>calculator</tool_name>
+<description>执行数学计算</description>
+<parameters>
+  <parameter><name>expression</name><type>string</type></parameter>
+</parameters>
+</tool_description>
+</tools>
 
-### 3.2 BabyAGI 的任务驱动拆解 (Task-Driven) 技巧
-**原理**：BabyAGI 框架弱化了单一 Agent 的复杂内部反思，而是通过专门的 Prompt 聚焦于“任务列表的维护”。
+当你需要调用工具时，请使用严格的 XML 格式响应：
+<tool_use>
+  <tool_name>工具名称</tool_name>
+  <tool_input>
+    <参数名>参数值</参数名>
+  </tool_input>
+</tool_use>
+</system_instructions>
 
-**它其实有三个不同的 Agent（实则为三个不同提示词驱动的调用）：**
-1.  **Execution Agent**：拿到当前的第一优先级任务，执行它。
-2.  **Task Creation Agent**：带着刚才执行的结果，和总体目标，生成接下来还能做哪些新任务。
-3.  **Prioritization Agent**：对任务列表重新排序去重。
+<user_input>
+234 乘以 564 等于多少？
+</user_input>
+```
 
-**启示**：把一个需要写 1000 字超大 Prompt 的全能大 Agent，拆成了 3 个各只有 100 字 Prompt 的专职 Agent。通过外部向量数据库或者内存数组进行联动，极大降低了对单次大模型上下文理解的压力。
+**🤖 大模型输出的结果长什么样？**
+```xml
+<thought>用户要求计算 234 * 564 的结果，这是一个纯数学表达式，我应该调用 calculator 工具来得到准确的机器计算结果。</thought>
+<tool_use>
+  <tool_name>calculator</tool_name>
+  <tool_input>
+    <expression>234 * 564</expression>
+  </tool_input>
+</tool_use>
+```
+*(这种结构对流式解析极为友好：一旦 Python 代码在使用流式(Stream)监听回答时匹配到了 `</tool_use>` 的闭合标签，即可立即拦截流并执行工具)*
 
 ---
 
-## 4. 总结对比
+## 4. BabyAGI 的任务驱动编排 (Task-Driven)
 
-| 框架/技术流派 | 核心提示词技术 | 优点 | 缺点 |
-| :--- | :--- | :--- | :--- |
-| **CrewAI / 裸 ReAct** | `Thought:` 强制发散思维<br>`stop:[Observation]` 截断 | 兼容性最佳，即便是开源小模型也能通过文本跟读的方式运行。 | 解析脆弱，容易被特殊符号打乱正则提取。容易触发“幻觉”无视 stop 词。 |
-| **AutoGPT** | 完全基于 JSON Schema 约定结构和 Command 输出 | 极度严谨，内部状态高度透明化（可见 Plan, Criticism）。 | 严重消耗 Token；较差/较小的模型极易输出格式错误的 JSON（如引号未转义）。 |
-| **OpenAI Tool Call** | API 底层 JSON 协议支持，`finish_reason=tool_calls` | 最具现代感，无需手写复杂的提取逻辑，调用成功率极最高。 | 必须依赖支持 Tool Calling 功能的前沿大模型（如 GPT-4 / Claude 3）。 |
-| **Anthropic Claude** | 使用 `<XML>` 标签包裹指令及规划 | 对于指令分治和防御提示词注入极强，流式提取友好。 | 具有平台特异性（主要适用于 Claude，GPT 并不绝对偏好此格式）。 |
-| **BabyAGI** | 目标与任务拆分的动态 Prompt 队列 | 降低了单次 Prompt 的压力，可跑无限时任务。 | 流程固定，不适合需要快速单次强推理的动作。 |
+相比于让一个庞大的 Agent 用复杂的 Prompt（如包含了 Thought, Plan, Action, JSON 等）去独挑大梁，BabyAGI 选择弱化单一大模型的压力。它通过**动态分离提示词**，用 3 个不同的 Agent (执行者、任务创造者、排序优化者) 短小精悍的 Prompt 相互配合达成总目标。
 
-无论是利用 `stop` 截断、JSON 约束 还是 XML 封装，其**底层哲学都是一致的**：**在自然语言的模糊性中，建立一套可以被传统编程语言（Python/Java）解析和操控的“确定性契约”。**企业级多智能体设计应当根据底层大模型的能力组合使用这些技术。
+### 4.1 实际案例演示
+
+**📝 提示词：生成新任务的 Agent (Task Creation Agent)**
+```text
+你是一个任务创造AI。你的最高指挥目标是: 搭建一个极客时间的学习助手。
+上一次完成的任务是: 搜索所有的最新课程列表，完成的结果是: [课程A, 课程B]
+当前未完成的剩余任务清单有: [建立本地数据库, 开发交互前端]
+
+请仔细阅读上述结果，并基于总指挥目标，判断是否需要创建新的后续衍生任务。
+你需要以 JSON 数组返回。切记！绝对不要生成与现有清单重复的任务。
+```
+
+**🤖 大模型输出的结果长什么样？**
+```json
+[
+  "分析上一次搜索返回的极客时间网页DOM结构，找出翻页规则",
+  "编写Python Scrapy爬虫脚本批量提取最新课程标题与价格信息"
+]
+```
+
+**💻 BabyAGI 的核心 Python 操作循环**
+```python
+# 核心业务逻辑架构，展现了分布式拆分 Prompt 在代码层面的威力
+objective = "写出一份完整的 AI 前沿课程调研报告"
+task_list = ["任务1: 搜索AI课程", "任务2: 查阅官方文档汇总之"]
+
+while task_list:
+    # 1. 拿出第一个任务执行
+    current_task = task_list.pop(0)
+
+    # 【这里内部是一个专门做事的提示词，不关心排期】
+    result = execute_agent(objective, current_task)  
+    
+    # 2. 存入内存或向量数据库 (长期记忆)
+    vector_db.store(result)
+    
+    # 3. 创造新任务
+    # 【这里的提示词如上面例子所示，专门反向发散思维】
+    new_tasks = task_creation_agent(objective, result, task_list) 
+    
+    # 4. 追加到队尾
+    task_list.extend(new_tasks)
+    
+    # 5. 重新排优先级并去重
+    # 【这里的提示词专门做统筹与裁切工作】
+    task_list = prioritization_agent(objective, task_list) 
+```
+*(通过这三个角色的环环相扣，虽然放弃了类似于 ChatGPT 对话框那样的连贯上下文，却极大降低了单次调用的 Token 消耗，使系统有能力处理极其复杂、需耗时数周才能完成的长周期战略目标。)*
+
+---
+
+## 5. 总结对比全景图
+
+| 框架/流派 | 核心通信格式 | 代表技术/标记 | 对系统代码的要求 | 适用场景 |
+| :--- | :--- | :--- | :--- | :--- |
+| **CrewAI/裸ReAct** | 结构化文本 | `Thought:`<br>`stop=["Observation"]` | 需编写庞大复杂的正则表达式提取器，易碎。 | 兼容各种无法输出标准 JSON 的开源小模型。 |
+| **AutoGPT** | 深层 JSON 对象 | 强约束格式 (`thoughts`, `command` 字段) | `json.loads()`，偶尔需要单独处理转义字符导致的系统崩溃。 | 需要模型强反思 (`criticism`/`plan`) 的全自动脱机操作。 |
+| **OpenAI 工具调用** | 原生 API 对象 | `finish_reason="tool_calls"` | 无需解析原始文本，SDK 方法直接返回 Python dict/object 对象。 | 现代化商业应用首选套件，最为稳定且成功率极高。 |
+| **Anthropic Claude** | XML 变体 | `<tool_use>`, `<thought>` 等闭合标签 | 需要利用 XML Parser 或正则寻找结束符拦截流式响应。 | Claude 平台上的应用，以及防御“提示词注入攻击”要求极高的安全场景。 |
+| **BabyAGI** | 分布式微提示词队列 | 多阶段 Agent (执行->生成任务->排序打分) | 放弃上下文，强依赖外部持久内存组件（如 Pinecone 向量数据库）。 | 适合不需要随时跟人工交流对话、能够独立静默执行数天的目标导向型系统。 |
