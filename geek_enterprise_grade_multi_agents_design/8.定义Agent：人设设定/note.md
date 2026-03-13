@@ -1,30 +1,41 @@
-从零启动你的 MVP（最小可行性产品）团队，核心就是三个关键步骤：定人 -> 定事 -> 定流程。
-![alt text](image.png)
+# 8. 定义 Agent：人设设定 (RGB 模型)
+
+从零启动你的 MVP（最小可行性产品）团队，核心就是三个关键步骤：**定人 -> 定事 -> 定流程**。
+
+![alt text](./images/image.png)
+
 本节课，我们首先聚焦第一步：定人（定义 Agent）。我们将探讨如何从传统的“提示词工程”进阶到“人设工程”。
-一、 招聘启事：属于 Agent 独有的色彩（RGB 模型）
-定义一个 Agent，本质上就像是为你的数字员工撰写一份精准的“招聘启事”。在主流的多智能体框架中，构建一个标准化 Agent 的核心属性可以高度概括为 RGB 模型：Role（角色）、Goal（目标）和 Backstory（背景故事）。
-![alt text](image-1.png)
-1. Role（角色）：模型知识领域的激活
-![alt text](image-2.png)
-核心价值：大模型拥有海量的通用知识，而设定 Role 的本质是唤醒并锁定其在特定垂直领域的专业认知。
 
-作用机制：当你赋予 Agent 一个极其明确的角色定位（例如“小红书爆款笔记内容策略专家”）时，模型在后续推理和生成内容时，会自发地调取与该角色匹配的专业词汇、分析框架和行业黑话。
-2. Goal（目标）：Agent 的决策偏好
-![alt text](image-3.png)
-核心价值：Goal 决定了 Agent 在面临选择时的价值导向。
+## 一、 招聘启事：属于 Agent 独有的色彩（RGB 模型）
 
-作用机制：它不同于具体的待办事项，而是一种宏观的偏好设定。它告诉 Agent：“在执行任何任务时，你应该以什么标准来衡量好坏？”这是指导 Agent 行动的罗盘。
-3.Backstory（背景故事）：Agent 的行为与边界
-![alt text](image-4.png)
-核心价值：设定 Agent 的处事风格、工作流心法以及能力边界。
+定义一个 Agent，本质上就像是为你的数字员工撰写一份精准的“招聘启事”。在主流的多智能体框架中，构建一个标准化 Agent 的核心属性可以高度概括为 RGB 模型：**R**ole（角色）、**G**oal（目标）和 **B**ackstory（背景故事）。
 
-作用机制：在 Backstory 中，我们不写具体的执行步骤，而是告诉 Agent 面对不同情况时应该采取的思考模式和原则（即“心法”）。这能有效划定 Agent 的权责边界，防止它在协作时“越俎代庖”。
+![alt text](./images/image-1.png)
 
-二、代码实战，定义一个标准的 Agent
+### 1. Role（角色）：模型知识领域的激活
+![alt text](./images/image-2.png)
+- **核心价值**：大模型拥有海量的通用知识，而设定 Role 的本质是唤醒并锁定其在特定垂直领域的专业认知。
+- **作用机制**：当你赋予 Agent 一个极其明确的角色定位（例如“小红书爆款笔记内容策略专家”）时，模型在后续推理和生成内容时，会自发地调取与该角色匹配的专业词汇、分析框架和行业黑话。
+
+### 2. Goal（目标）：Agent 的决策偏好
+![alt text](./images/image-3.png)
+- **核心价值**：Goal 决定了 Agent 在面临选择时的价值导向。
+- **作用机制**：它不同于具体的待办事项，而是一种宏观的偏好设定。它告诉 Agent：“在执行任何任务时，你应该以什么标准来衡量好坏？”这是指导 Agent 行动的罗盘。
+
+### 3. Backstory（背景故事）：Agent 的行为与边界
+![alt text](./images/image-4.png)
+- **核心价值**：设定 Agent 的处事风格、工作流心法以及能力边界。
+- **作用机制**：在 Backstory 中，我们不写具体的执行步骤，而是告诉 Agent 面对不同情况时应该采取的思考模式和原则（即“心法”）。这能有效划定 Agent 的权责边界，防止它在协作时“越俎代庖”。
+
+## 二、代码实战：定义一个标准的 Agent
+
 ```python
 # ==============================================================================
 # Agent 定义
 # ==============================================================================
+import os
+from crewai import Agent
+from langchain_community.llms import AliyunLLM
 
 content_strategist = Agent(
     role='资深小红书增长策略专家',
@@ -74,70 +85,89 @@ result = content_strategist.kickoff(messages)
 
 # 打印结果
 print(result)
-
-
 ```
-可以看到，结构化的定义 agent 的 RGB，能够很好的让 Agent 完成任务
 
-三、 深入框架：一切的底层还是提示词 Prompt
+可以看到，结构化的定义 agent 的 RGB，能够很好的让 Agent 完成任务。
+
+## 三、 深入框架：一切的底层还是提示词 Prompt
+
 虽然我们在工程代码层面抽象出了 Role、Goal 和 Backstory 这些优雅的属性，但穿透框架的表层，底层的通信语言依然是提示词（Prompt）。
-```python
+
+```text
 You are {role}. {backstory}
 Your personal goal is: {goal}
 ```
+
 在实际编写代码时，例如我们定义一个“资深小红书增长策略专家”，我们会通过框架提供的类和属性进行配置。框架在运行时，会在底层将这些属性巧妙地拼接、组合成一段结构化的 System Prompt 发送给大模型。理解这一点，有助于我们在后续排查 Agent “不听话”或发生幻觉时，能够精准定位是哪个设定的提示词权重引发了冲突。
-四、 避坑指南：最佳实践与反模式
+
+## 四、 避坑指南：最佳实践与反模式
+
 在实际落地中，错误的人设工程会导致 Agent 协作混乱甚至死循环。以下是经过实战检验的反模式和最佳实践总结：
 
-🚫 严防死守的“反模式”
-Role 太宽泛
+### 🚫 严防死守的“反模式”
 
-问题所在：设定类似“你是一个乐于助人的 AI 助手”这样宽泛的角色，无法有效激活模型深度的专业领域知识。同时，在 Multi-Agent 协作中，其他 Agent 将无法准确判断该把什么专业任务委托给它，严重破坏协同效率。
+1. **Role 太宽泛**
+   - **问题所在**：设定类似“你是一个乐于助人的 AI 助手”这样宽泛的角色，无法有效激活模型深度的专业领域知识。同时，在 Multi-Agent 协作中，其他 Agent 将无法准确判断该把什么专业任务委托给它，严重破坏协同效率。
 
-Goal 的目标与 Task 冲突
+2. **Goal 的目标与 Task 冲突**
+   - **问题所在**：记住，Goal 是罗盘，Task 才是终点。如果把具体的格式要求（如“生成 Markdown 格式的具体文案”）写在 Goal 里，而 Task 又是让它“生成一个大纲”，大模型极其讨厌这种冲突。这会导致 Agent 在任务还没开始深度思考时，就急于去拼凑格式，从而使产出内容的深度和专业度大幅度下降。**Goal 中应该写的是“做什么事能得到奖励的决策偏好”。**
 
-问题所在：记住，Goal 是罗盘，Task 才是终点。如果把具体的格式要求（如“生成 Markdown 格式的具体文案”）写在 Goal 里，而 Task 又是让它“生成一个大纲”，大模型极其讨厌这种冲突。这会导致 Agent 在任务还没开始深度思考时，就急于去拼凑格式，从而使产出内容的深度和专业度大幅度下降。Goal 中应该写的是“做什么事能得到奖励的决策偏好”。
+3. **Backstory 写死流程**
+   - **问题所在**：如果在 Backstory 里写死了类似“第一步干嘛、第二步干嘛”的具体流程，这会与 Task 中的要求产生严重冲突。这会导致你的 Agent 变成一个强耦合的一次性脚本，完全丧失了对不同任务的通用性和适应能力。
+   - **核心原则**：**Backstory 只存心法，不存招式。** 心法是指“当我遇到某种情况时，我的思考模式是怎样的”，而非机械的步骤。
 
-Backstory 写死流程
+### 💡 提升效率的“最佳实践”
 
-问题所在：如果在 Backstory 里写死了类似“第一步干嘛、第二步干嘛”的具体流程，这会与 Task 中的要求产生严重冲突。这会导致你的 Agent 变成一个强耦合的一次性脚本，完全丧失了对不同任务的通用性和适应能力。
+**运用“元提示词”技巧**
+- **方法论**：不要纯靠人工去绞尽脑汁地编写大段的人设描述。你可以让大模型来帮你生成和优化 Prompt Engineering（PE）。
+- **落地思路**：你可以提供一些基础的业务材料或简单的诉求，让模型帮你总结并输出一套符合 RGB 规范的高质量元提示词，以此作为你定义 Agent 的起点，这将大幅提高开发效率。
 
-核心原则：Backstory 只存心法，不存招式。心法是指“当我遇到某种情况时，我的思考模式是怎样的”，而非机械的步骤。
+![alt text](./images/image-5.png)
 
-💡 提升效率的“最佳实践”
-运用“元提示词”技巧
+---
 
-方法论：不要纯靠人工去绞尽脑汁地编写大段的人设描述。你可以让大模型来帮你生成和优化 Prompt Engineering（PE）。
+## 五、 进阶探讨：利用 Intermediate Tool 引导模式思考 (ReAct 模式)
 
-落地思路：你可以提供一些基础的业务材料或简单的诉求，让模型帮你总结并输出一套符合 RGB 规范的高质量元提示词，以此作为你定义 Agent 的起点，这将大幅提高开发效率。
+在实战代码中，作者引入了一个特殊的 `IntermediateTool`（中间结果保存工具）。
+**读者提问**：没搞懂这个工具的作用，是为了保存思考，把思考结果传到下一次 LLM 迭代里吗（更好的提示效果）？我理解一个比较强的模型或 Thinking 模型就可以解决这个问题？
 
-![alt text](image-5.png)
-作者是用了一个小技巧，那就是即使没有工具需要使用，依然给了一个空壳子，让基于react模式的agent更加产出好的效果。
-问题：没搞懂这个工具的作用，是为了保存思考，把思考结果传到下一次 llm（迭代）里吗（更好的提示效果）。我理解一个比较强的模型或 thinking 模型就可以解决这个问题。
-作者回复: 不是的，这个主要是你要理解react，每一次loop都是一个工具调用，但是plan这类步骤，没用对应工具，就不会触发agnet去产出这些中间产物，agent的thinking就会完全在模型内部完成。更强的模型也许能做对，但是好记性不如烂笔头，这里的工具就是把之前模型plan的内容写在上下文这个草稿纸上，后续就更能做对
+**作者回复**：
+> 不是的，这个主要是你要理解 ReAct 模式。每一次 loop（循环）都是一个工具调用，但是 Plan（计划）这类步骤，没有对应工具，就不会触发 Agent 去产出这些中间产物，Agent 的 Thinking 就会完全在模型内部完成。更强的模型也许能做对，但是“好记性不如烂笔头”，这里的工具就是把之前模型 Plan 的内容写在上下文这个草稿纸上，后续就更能做对。
 
-tool对应的python代码
+### 分析与解读：作者的观点非常正确
+
+作者想表达的核心思想是：**在 ReAct (Reasoning and Acting) 架构下，通过显式的工具调用（Action），将大模型隐藏在内部的“隐式思考（Thought）”硬性转化为记录在上下文中的“显式记忆（Observation）”，从而极大提升长任务和复杂逻辑的成功率。**
+
+#### 为什么这是对的？
+1. **打破 ReAct 循环中的工具空缺**：在典型的 ReAct 循环（思想 Thought -> 动作 Action -> 观察 Observation）中，如果没有工具可以调用，大模型可能会尝试一口气输出所有结果，或者干脆跳过思考直接抢答。赋予其一个可以“保存草稿”的工具，让 Agent 的大段规划和逻辑分析有了合法的输出途径。
+2. **上下文窗口与注意力机制的特性**：即使是最强的模型，在单次上万字的超长输出中，也极大概率会遗忘初始设定的目标。把中间步骤的结论通过工具“打印”到对话中，相当于给模型提供了坚固的“锚点”。随后在处理下一步骤时，模型只需查阅历史记录即可接续任务，有效降低了认知负荷（所谓“好记性不如烂笔头”）。
+3. **驱动 System 2 (系统二) 慢思考**：强迫 Agent 慢下来，把“先想后做”拆解成了物理上独立的几步。有了这一“草稿本”，大模型在处理诸如撰写长文、执行繁杂数据处理等任务时，就不会偏航。
+
+#### 辅助说明案例：筹办一场复杂的千人发布会
+
+- **无 Intermediate Tool**（容易翻车）：
+  Agent 接到任务后，内部迅速展开隐式思考：*我需要先理清场地，然后是人员，预算表...*。
+  由于没有“草稿”工具，它可能在一长串回复中连续产出各种乱七八糟的方案，写到尾声时早已忽略了起初“预算不能超过 10 万”的核心设定，导致方案不可用。
+  
+- **有 Intermediate Tool**（稳扎稳打）：
+  Agent 接到任务，启动 ReAct 循环。
+  - **Thought 1**: 第一步我应当先把最高维度的预算分配框架制定出来。
+  - **Action 1**: 调用 `Save_Intermediate_Product_Tool`。
+  - **Action Input 1**: `{"intermediate_product": "初步预算安排：场地 4 万，宣发 3 万，人员 3 万。"}`
+  - **Observation 1**: `{系统回复: "中间结果已保存，可以进行下一步 Thought"}`
+  - **Thought 2**: 很好，预算的红线已明晰并且记录在案！接下来我可以放心地深究场地选择的细节，我必须确保场地部分控制在 4 万元以内...
+  - **Action 2**: 进入实质性具体的撰写。
+
+在这个案例中，`IntermediateTool` 完美充当了一张**看得见的白板**。大模型把复杂的宏观策略写在白板上后，就能将显存“清空”，全力处理当下的微观细节而不必担心跑题。
+
+### Tool 参考代码案例
+
 ```python
 """
 课程：07｜定义Agent：从"提示词工程"到"人设工程" 辅助工具
 Intermediate Tool - 中间结果保存工具
 
 用于在 Agent 执行过程中保存中间的思考产物，支持 Agent 的"慢思考"模式。
-
-功能特点：
-- 支持任意类型的输入（字符串、列表、字典等）
-- 自动类型转换：将各种类型转换为字符串格式
-- 简单易用：Agent 可以直接调用，无需关心类型转换
-
-使用场景：
-- Agent 需要分步骤思考时，保存中间结果
-- Agent 需要记录思考过程时，保存思考产物
-- Agent 需要传递复杂数据结构时，保存结构化数据
-
-学习要点：
-- 工具设计：如何设计简单易用的辅助工具
-- 类型转换：如何处理不同类型的输入
-- Agent 辅助：如何通过工具增强 Agent 的能力
 """
 import json
 from typing import Any, Union
@@ -145,10 +175,8 @@ from typing import Any, Union
 from crewai.tools import BaseTool
 from pydantic import BaseModel, Field, field_validator
 
-
 class IntermediateToolSchema(BaseModel):
     """Input for IntermediateTool."""
-
     intermediate_product: Any = Field(
         ..., 
         description=(
@@ -161,31 +189,18 @@ class IntermediateToolSchema(BaseModel):
     @field_validator('intermediate_product', mode='before')
     @classmethod
     def convert_to_string(cls, v: Any) -> str:
-        """
-        将任意类型的输入转换为字符串
-        
-        转换规则：
-        - 字符串：直接返回
-        - 列表：使用换行符连接
-        - 字典：转换为 JSON 字符串
-        - 其他类型：使用 str() 转换
-        """
+        """将任意类型的输入转化为字符串格式"""
         if isinstance(v, str):
             return v
         elif isinstance(v, list):
-            # 列表：使用换行符连接每个元素
             return "\n".join(str(item) for item in v)
         elif isinstance(v, dict):
-            # 字典：转换为 JSON 字符串（保持可读性）
             try:
                 return json.dumps(v, ensure_ascii=False, indent=2)
             except (TypeError, ValueError):
-                # 如果无法序列化为 JSON，使用 str()
                 return str(v)
         else:
-            # 其他类型：直接转换为字符串
             return str(v)
-
 
 class IntermediateTool(BaseTool):
     """
@@ -193,40 +208,16 @@ class IntermediateTool(BaseTool):
     
     用于在 agent 执行过程中保存中间的思考产物，
     以便后续步骤可以继续使用。
-    
-    支持任意类型的输入（字符串、列表、字典等），
-    会自动转换为字符串格式，无需手动转换。
     """
     name: str = "Save_Intermediate_Product_Tool"
     description: str = (
         "A tool that can be used to save intermediate thinking products "
-        "during agent execution. "
-        "\n\n"
-        "✅ Supports any input type (string, list, dict, etc.) and automatically converts to string format. "
-        "You can pass lists, dictionaries, or any other type directly - no need to convert manually. "
-        "\n\n"
-        "Examples: "
-        "- String: 'my text' → saved as 'my text'"
-        "- List: ['item1', 'item2'] → saved as 'item1\\nitem2'"
-        "- Dict: {'key': 'value'} → saved as JSON string"
+        "during agent execution. \n\n"
+        "✅ Supports any input type (string, list, dict, etc.) and automatically converts to string format."
     )
     args_schema: type[BaseModel] = IntermediateToolSchema
 
-    def _run(
-        self,
-        intermediate_product: str,
-        **kwargs: Any,
-    ) -> str:
-        """
-        保存中间思考产物
-        
-        Args:
-            intermediate_product: 需要保存的中间思考产物（已自动转换为字符串）
-            
-        Returns:
-            固定的返回字符串
-        """
-        # 只返回固定字符串
-        # 注意：intermediate_product 已经在 validator 中转换为字符串
+    def _run(self, intermediate_product: str, **kwargs: Any) -> str:
+        # 强制返回固定字符串，给模型明确的反馈
         return "中间结果已保存， 可以进行下一步Thought"
 ```
