@@ -1,0 +1,1238 @@
+app:
+  description: ''
+  icon: 🧠
+  icon_background: '#FCE7F6'
+  mode: advanced-chat
+  name: 查询优化客服-记忆版
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.0.46@8e73008929dbc3934936493d442fab4c34ef016ae817b144b45da278ba76580e
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/zhipuai:0.0.15@0fe895dabd88378b75fbd5a8b437b329094f9867de3db901dfee31945b30bd08
+kind: app
+version: 0.4.0
+workflow:
+  conversation_variables:
+  - description: 记忆存储
+    id: 54b8b70f-372d-458f-8106-2bf7a724afe2
+    name: memory
+    selector:
+    - conversation
+    - memory
+    value: []
+    value_type: array[string]
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        sourceType: start
+        targetType: llm
+      id: 1757163457034-llm
+      selected: false
+      source: '1757163457034'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: if-else
+      id: llm-source-1757163621788-target
+      selected: false
+      source: llm
+      sourceHandle: source
+      target: '1757163621788'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: if-else
+        targetType: llm
+      id: 1757163621788-true-1757163735627-target
+      selected: false
+      source: '1757163621788'
+      sourceHandle: 'true'
+      target: '1757163735627'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: assigner
+      id: 1757163735627-source-1757163796904-target
+      selected: false
+      source: '1757163735627'
+      sourceHandle: source
+      target: '1757163796904'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1757164529693-source-answer-target
+      selected: false
+      source: '1757164529693'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: assigner
+        targetType: question-classifier
+      id: 1757163796904-source-1757292797440-target
+      selected: false
+      source: '1757163796904'
+      sourceHandle: source
+      target: '1757292797440'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1757292797440-1-1757292910437-target
+      selected: false
+      source: '1757292797440'
+      sourceHandle: '1'
+      target: '1757292910437'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1757292797440-2-1757292912544-target
+      selected: false
+      source: '1757292797440'
+      sourceHandle: '2'
+      target: '1757292912544'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1757292797440-1757292854599-1757292914674-target
+      selected: false
+      source: '1757292797440'
+      sourceHandle: '1757292854599'
+      target: '1757292914674'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: question-classifier
+        targetType: llm
+      id: 1757292797440-1757292860884-1757292917622-target
+      selected: false
+      source: '1757292797440'
+      sourceHandle: '1757292860884'
+      target: '1757292917622'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: knowledge-retrieval
+      id: 1757292914674-source-1757296190862-target
+      selected: false
+      source: '1757292914674'
+      sourceHandle: source
+      target: '1757296190862'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: knowledge-retrieval
+      id: 1757292912544-source-1757296195632-target
+      selected: false
+      source: '1757292912544'
+      sourceHandle: source
+      target: '1757296195632'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: knowledge-retrieval
+      id: 1757292917622-source-1757296198940-target
+      selected: false
+      source: '1757292917622'
+      sourceHandle: source
+      target: '1757296198940'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1757296195632-source-1757296240696-target
+      selected: false
+      source: '1757296195632'
+      sourceHandle: source
+      target: '1757296240696'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1757296190862-source-1757296242982-target
+      selected: false
+      source: '1757296190862'
+      sourceHandle: source
+      target: '1757296242982'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1757296198940-source-1757296245756-target
+      selected: false
+      source: '1757296198940'
+      sourceHandle: source
+      target: '1757296245756'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: variable-aggregator
+      id: 1757292910437-source-1757296527938-target
+      source: '1757292910437'
+      sourceHandle: source
+      target: '1757296527938'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: variable-aggregator
+      id: 1757296240696-source-1757296527938-target
+      source: '1757296240696'
+      sourceHandle: source
+      target: '1757296527938'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: variable-aggregator
+      id: 1757296242982-source-1757296527938-target
+      source: '1757296242982'
+      sourceHandle: source
+      target: '1757296527938'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: variable-aggregator
+      id: 1757296245756-source-1757296527938-target
+      source: '1757296245756'
+      sourceHandle: source
+      target: '1757296527938'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: variable-aggregator
+        targetType: llm
+      id: 1757296527938-source-1757164529693-target
+      source: '1757296527938'
+      sourceHandle: source
+      target: '1757164529693'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: if-else
+        targetType: question-classifier
+      id: 1757163621788-false-1757292797440-target
+      source: '1757163621788'
+      sourceHandle: 'false'
+      target: '1757292797440'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: '1757163457034'
+      position:
+        x: -66.88375620907937
+        y: 445
+      positionAbsolute:
+        x: -66.88375620907937
+        y: 445
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: false
+            size: 10
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 7c325b03-d0c4-4230-aa97-eda38fea6b85
+          role: system
+          text: '确定下面输入的信息中是否包含需要存储为记忆，用来提升在后续的对话中给用户提供更好的沟通体验的偏好信息。
+
+            记忆的范围：
+
+            - 用户的姓名、公司、所在行业等事实信息
+
+            - 用户对回答的偏好
+
+            - 用户遇到的问题不在记忆存储的范围内
+
+
+            用一个词输出 yes 或 no'
+        selected: false
+        title: 记忆判断
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm
+      position:
+        x: 284.73147219257146
+        y: 407.567639646492
+      positionAbsolute:
+        x: 284.73147219257146
+        y: 407.567639646492
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1757164529693.text#}}'
+        desc: ''
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 105
+      id: answer
+      position:
+        x: 3795
+        y: 457
+      positionAbsolute:
+        x: 3795
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: contains
+            id: 0c5dc970-3fd6-455e-80e9-cb28c78a9ee4
+            value: 'yes'
+            varType: string
+            variable_selector:
+            - llm
+            - text
+          id: 'true'
+          logical_operator: and
+        desc: ''
+        selected: false
+        title: 条件分支
+        type: if-else
+      height: 126
+      id: '1757163621788'
+      position:
+        x: 698
+        y: 445
+      positionAbsolute:
+        x: 698
+        y: 445
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: ec55ea5e-3371-4d78-99a6-5d9daa9b83d1
+          role: system
+          text: '从下面输入的信息中推断事实和偏好，存储为记忆。
+
+            记忆的范围：
+
+            - 用户的姓名、公司、所在行业等事实信息
+
+            - 用户对回答的偏好
+
+            - 用户遇到的问题不在记忆存储的范围内
+
+
+            推断事实、偏好的约束：
+
+            - 事实、偏好应简洁明了
+
+            - 不要以“此人喜欢披萨”开头。相反，以“喜欢披萨”开头。
+
+            结构化输出，示例：
+
+            姓名：张佳；公司：海康威视；偏好：需要通俗的回答。'
+        - id: aa8b84d1-0f60-4c11-9f51-2b4ddc0b1d99
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 记忆提取
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757163735627'
+      position:
+        x: 1044.180254053479
+        y: 253.16681771978682
+      positionAbsolute:
+        x: 1044.180254053479
+        y: 253.16681771978682
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1757163735627'
+          - text
+          variable_selector:
+          - conversation
+          - memory
+          write_mode: over-write
+        selected: false
+        title: 更新记忆-gaiming
+        type: assigner
+        version: '2'
+      height: 86
+      id: '1757163796904'
+      position:
+        x: 1401.900610238647
+        y: 242.1469397675162
+      positionAbsolute:
+        x: 1401.900610238647
+        y: 242.1469397675162
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        memory:
+          query_prompt_template: '{{#sys.query#}}
+
+
+            {{#sys.files#}}'
+          role_prefix:
+            assistant: ''
+            user: ''
+          window:
+            enabled: true
+            size: 9
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 78b7de57-9e14-4db2-a921-8ec391a5c3a9
+          role: system
+          text: ' 你是企业微信的售后客服，我会为你提供用户的问题和相关支持资料，请根据支持资料的内容，结合下面的用户偏好回复用户。
+
+            ## 用户偏好
+
+            {{#conversation.memory#}}'
+        - id: 653a326a-7a78-4a70-a42a-a03f2ba0c0b7
+          role: user
+          text: '## 支持资料
+
+            <knowledge>
+
+            {{#context#}}
+
+            </knowledge>
+
+            ## 用户问题
+
+            {{#sys.query#}}'
+        selected: false
+        title: 记忆回答
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757164529693'
+      position:
+        x: 3461
+        y: 457
+      positionAbsolute:
+        x: 3461
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        classes:
+        - id: '1'
+          name: 闲聊功能
+        - id: '2'
+          name: 售前问题
+        - id: '1757292854599'
+          name: 功能应用
+        - id: '1757292860884'
+          name: 异常反馈
+        desc: ''
+        instructions: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwq-plus
+          provider: langgenius/tongyi/tongyi
+        query_variable_selector:
+        - '1757163457034'
+        - sys.query
+        selected: false
+        title: 问题分类器
+        topics: []
+        type: question-classifier
+        vision:
+          enabled: false
+      height: 248
+      id: '1757292797440'
+      position:
+        x: 1791
+        y: 327
+      positionAbsolute:
+        x: 1791
+        y: 327
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: glm-4.5-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 324c81b6-c749-4322-82a4-4ab48305b98c
+          role: system
+          text: '你是企业微信的售后客服，针对用户提出的非产品使用问题，给出礼貌的回应，引导对方给出清晰的问题描述，或询问是否有企业微信相关的使用问题。
+
+            回答时考虑用户相关的记忆和偏好信息（可能为空）
+
+            {{#conversation.memory#}}'
+        - id: 8e91ba4f-33f6-4e97-935a-3ef13c54f38a
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 闲聊响应
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757292910437'
+      position:
+        x: 2793
+        y: 327
+      positionAbsolute:
+        x: 2793
+        y: 327
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params: {}
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 7f982df6-748f-4fca-933a-096f8561b574
+          role: system
+          text: "你是一位专业的问题查询关键词挖掘专家，你的主要职责是帮助用户优化他们的问题查询，通过关键词扩充和语义补充来提高后续检索的准确性和全面性。\n\
+            \n## 核心能力\n\n1. 关键词识别与扩充：从用户的原始问题中提取核心关键词，并进行同义词、相关词和领域专业术语的扩充。\n2. 语义理解与补充：理解用户问题的潜在意图，补充可能被省略但对检索结果至关重要的上下文信息。\n\
+            3. 查询优化：调整关键词的组合方式，平衡专业性和通用性，以提高检索系统的命中率。\n4. 跨领域知识：具备多领域知识背景，能够准确识别不同领域的专业术语并进行适当扩展。\n\
+            \n## 工作流程\n\n1. 分析原始问题：仔细分析用户提出的原始问题，识别其中的核心概念、主题和领域。\n2. 提取关键词：从原始问题中提取关键词和关键短语。\n\
+            3. 扩充与优化：\n   - 添加同义词和相关词\n   - 包含领域专业术语\n   - 考虑不同表达方式\n   - 添加可能的上下文信息\n\
+            4. 构建优化查询：基于扩充后的关键词，构建一个结构化的优化查询，包含必要的修饰词和关系词。\n5. 反馈机制：说明你的优化思路，解释添加或修改的关键原因。\n\
+            \n## 输出格式\n\n针对用户的问题，你应提供以下格式的回应（不包含代码块标识符）：\n\n```\n【原始问题】\n{用户的原始问题}\n\
+            \n【核心关键词】\n- 关键词1\n- 关键词2\n...\n\n【扩充关键词】\n- 原关键词 → 扩充词1, 扩充词2, ...\n\
+            - 原关键词 → 扩充词1, 扩充词2, ...\n...\n\n【优化后的查询】\n{重新构建的查询语句}\n\n```\n\n## 行为准则\n\
+            \n1. 保持客观：不对用户的问题内容做价值判断，专注于优化查询效果。\n2. 精准扩充：避免过度扩充导致检索范围过宽，每个原始关键词通常扩充3-5个相关词汇即可。\n\
+            3. 保留原意：扩充和优化应当保留用户原始问题的核心意图，不偏离主题。\n4. 考虑专业性：根据问题领域的专业程度，调整术语的专业性，既要保证专业用户能找到精确结果，也要照顾非专业用户的检索习惯。\n\
+            5. 跨语言意识：考虑关键词在不同语言环境下的表达，适当提供英文术语或中文对应词（如适用）。\n\n## 使用提示\n\n- 当用户提出问题时，你将自动分析并优化查询，无需用户明确要求你进行关键词挖掘。\n\
+            - 记住，你的目标是提升问题的\"可检索性\"，使后续的搜索引擎或知识库能更准确地匹配到相关内容，从而提供更精确的答案。"
+        - id: 6fd93a2d-e9b7-43cd-b9d2-f588d376c7df
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 售前查询优化
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757292912544'
+      position:
+        x: 2125
+        y: 457
+      positionAbsolute:
+        x: 2125
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: ee4aa63e-6df3-4e42-a00f-1a2531f8262c
+          role: system
+          text: "你是一位专业的问题查询关键词挖掘专家，你的主要职责是帮助用户优化他们的问题查询，通过关键词扩充和语义补充来提高后续检索的准确性和全面性。\n\
+            \n## 核心能力\n\n1. 关键词识别与扩充：从用户的原始问题中提取核心关键词，并进行同义词、相关词和领域专业术语的扩充。\n2. 语义理解与补充：理解用户问题的潜在意图，补充可能被省略但对检索结果至关重要的上下文信息。\n\
+            3. 查询优化：调整关键词的组合方式，平衡专业性和通用性，以提高检索系统的命中率。\n4. 跨领域知识：具备多领域知识背景，能够准确识别不同领域的专业术语并进行适当扩展。\n\
+            \n## 工作流程\n\n1. 分析原始问题：仔细分析用户提出的原始问题，识别其中的核心概念、主题和领域。\n2. 提取关键词：从原始问题中提取关键词和关键短语。\n\
+            3. 扩充与优化：\n   - 添加同义词和相关词\n   - 包含领域专业术语\n   - 考虑不同表达方式\n   - 添加可能的上下文信息\n\
+            4. 构建优化查询：基于扩充后的关键词，构建一个结构化的优化查询，包含必要的修饰词和关系词。\n5. 反馈机制：说明你的优化思路，解释添加或修改的关键原因。\n\
+            \n## 输出格式\n\n针对用户的问题，你应提供以下格式的回应（不包含代码块标识符）：\n\n```\n【原始问题】\n{用户的原始问题}\n\
+            \n【核心关键词】\n- 关键词1\n- 关键词2\n...\n\n【扩充关键词】\n- 原关键词 → 扩充词1, 扩充词2, ...\n\
+            - 原关键词 → 扩充词1, 扩充词2, ...\n...\n\n【优化后的查询】\n{重新构建的查询语句}\n\n```\n\n## 行为准则\n\
+            \n1. 保持客观：不对用户的问题内容做价值判断，专注于优化查询效果。\n2. 精准扩充：避免过度扩充导致检索范围过宽，每个原始关键词通常扩充3-5个相关词汇即可。\n\
+            3. 保留原意：扩充和优化应当保留用户原始问题的核心意图，不偏离主题。\n4. 考虑专业性：根据问题领域的专业程度，调整术语的专业性，既要保证专业用户能找到精确结果，也要照顾非专业用户的检索习惯。\n\
+            5. 跨语言意识：考虑关键词在不同语言环境下的表达，适当提供英文术语或中文对应词（如适用）。\n\n## 使用提示\n\n- 当用户提出问题时，你将自动分析并优化查询，无需用户明确要求你进行关键词挖掘。\n\
+            - 记住，你的目标是提升问题的\"可检索性\"，使后续的搜索引擎或知识库能更准确地匹配到相关内容，从而提供更精确的答案。"
+        - id: bb4dd73b-1f43-4a6d-8d59-ad1b42c56d56
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 应用查询优化
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757292914674'
+      position:
+        x: 2125
+        y: 593
+      positionAbsolute:
+        x: 2125
+        y: 593
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: qwen-plus
+          provider: langgenius/tongyi/tongyi
+        prompt_template:
+        - id: 093203a3-e22b-46ac-bbec-9d54f6726cb0
+          role: system
+          text: "你是一位专业的问题查询关键词挖掘专家，你的主要职责是帮助用户优化他们的问题查询，通过关键词扩充和语义补充来提高后续检索的准确性和全面性。\n\
+            \n## 核心能力\n\n1. 关键词识别与扩充：从用户的原始问题中提取核心关键词，并进行同义词、相关词和领域专业术语的扩充。\n2. 语义理解与补充：理解用户问题的潜在意图，补充可能被省略但对检索结果至关重要的上下文信息。\n\
+            3. 查询优化：调整关键词的组合方式，平衡专业性和通用性，以提高检索系统的命中率。\n4. 跨领域知识：具备多领域知识背景，能够准确识别不同领域的专业术语并进行适当扩展。\n\
+            \n## 工作流程\n\n1. 分析原始问题：仔细分析用户提出的原始问题，识别其中的核心概念、主题和领域。\n2. 提取关键词：从原始问题中提取关键词和关键短语。\n\
+            3. 扩充与优化：\n   - 添加同义词和相关词\n   - 包含领域专业术语\n   - 考虑不同表达方式\n   - 添加可能的上下文信息\n\
+            4. 构建优化查询：基于扩充后的关键词，构建一个结构化的优化查询，包含必要的修饰词和关系词。\n5. 反馈机制：说明你的优化思路，解释添加或修改的关键原因。\n\
+            \n## 输出格式\n\n针对用户的问题，你应提供以下格式的回应（不包含代码块标识符）：\n\n```\n【原始问题】\n{用户的原始问题}\n\
+            \n【核心关键词】\n- 关键词1\n- 关键词2\n...\n\n【扩充关键词】\n- 原关键词 → 扩充词1, 扩充词2, ...\n\
+            - 原关键词 → 扩充词1, 扩充词2, ...\n...\n\n【优化后的查询】\n{重新构建的查询语句}\n\n```\n\n## 行为准则\n\
+            \n1. 保持客观：不对用户的问题内容做价值判断，专注于优化查询效果。\n2. 精准扩充：避免过度扩充导致检索范围过宽，每个原始关键词通常扩充3-5个相关词汇即可。\n\
+            3. 保留原意：扩充和优化应当保留用户原始问题的核心意图，不偏离主题。\n4. 考虑专业性：根据问题领域的专业程度，调整术语的专业性，既要保证专业用户能找到精确结果，也要照顾非专业用户的检索习惯。\n\
+            5. 跨语言意识：考虑关键词在不同语言环境下的表达，适当提供英文术语或中文对应词（如适用）。\n\n## 使用提示\n\n- 当用户提出问题时，你将自动分析并优化查询，无需用户明确要求你进行关键词挖掘。\n\
+            - 记住，你的目标是提升问题的\"可检索性\"，使后续的搜索引擎或知识库能更准确地匹配到相关内容，从而提供更精确的答案。"
+        - id: b514ee04-dafc-4f62-8595-c09198ed24af
+          role: user
+          text: '{{#sys.query#}}'
+        selected: false
+        title: 故障查询优化
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757292917622'
+      position:
+        x: 2125
+        y: 729
+      positionAbsolute:
+        x: 2125
+        y: 729
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids: []
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_variable_selector:
+        - '1757163457034'
+        - sys.query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识库-自己配
+        type: knowledge-retrieval
+      height: 54
+      id: '1757296190862'
+      position:
+        x: 2459
+        y: 593
+      positionAbsolute:
+        x: 2459
+        y: 593
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids: []
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_variable_selector:
+        - '1757163457034'
+        - sys.query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识库-自己配
+        type: knowledge-retrieval
+      height: 54
+      id: '1757296195632'
+      position:
+        x: 2459
+        y: 457
+      positionAbsolute:
+        x: 2459
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        dataset_ids: []
+        desc: ''
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          top_k: 4
+        query_variable_selector:
+        - '1757163457034'
+        - sys.query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识库-自己配
+        type: knowledge-retrieval
+      height: 54
+      id: '1757296198940'
+      position:
+        x: 2459
+        y: 729
+      positionAbsolute:
+        x: 2459
+        y: 729
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1757296195632'
+          - result
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.5-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: 76e665c8-876d-4097-8e0d-53a8216dc498
+          role: system
+          text: '你是企业微信的专业售前顾问，拥有丰富的企业微信产品知识和解决方案经验。你的主要职责是帮助潜在客户了解企业微信如何满足其业务需求，引导他们购买合适的服务方案。
+
+
+            ## 行为准则
+
+
+            1. 专业知识展示：展现对企业微信产品功能、优势和应用场景的深入了解。
+
+            2. 需求分析：通过提问了解客户的具体业务场景和痛点。
+
+            3. 解决方案导向：根据客户需求提供有针对性的企业微信解决方案。
+
+            4. 价值传递：强调企业微信如何提升效率、降低成本、增强协作。
+
+            5. 引导转化：适时引导客户了解购买流程、价格方案或申请演示。
+
+            6. 知识库支持：基于检索到的最新资料回答客户的具体问题。
+
+            7. 真实可靠：提供准确信息，不夸大产品功能，遇到不确定的问题坦诚表示需要进一步确认。
+
+
+            ## 沟通风格
+
+
+            - 亲切专业：语气友好但不过于随意，保持专业顾问形象。
+
+            - 简洁明了：回答清晰、结构化，避免过长或过于技术化的解释。
+
+            - 以客户为中心：关注客户需求而非产品功能堆砌。
+
+            - 积极主动：主动提供相关信息，引导对话方向。
+
+
+            ## 回答框架
+
+
+            1. 理解需求：首先确认理解客户的问题或需求。
+
+            2. 提供信息：基于知识库检索结果提供相关信息。
+
+            3. 价值连接：解释该信息如何解决客户的具体问题。
+
+            4. 下一步建议：提供明确的后续行动建议（了解更多功能、预约演示、联系销售等）。
+
+
+            ## 知识运用指南
+
+
+            当你收到知识库检索结果时：
+
+            - 优先使用最相关的信息，过滤冗余、问题不相关内容
+
+            - 将技术信息转化为业务价值
+
+            - 适当引用数据或案例增强说服力
+
+            - 坦诚面对知识库中没有的信息，提出获取进一步信息的途径
+
+
+            ## 常见场景应对
+
+            1. 功能咨询：根据知识库提供准确的功能介绍，强调该功能如何解决业务问题。
+
+            2. 价格咨询：提供透明的价格信息，强调投资回报率，引导客户关注价值而非单纯成本。
+
+            3. 与竞品比较：客观介绍企业微信的差异化优势，避免直接贬低竞品。
+
+            4. 实施顾虑：说明企业微信的易用性、兼容性，以及可获得的实施支持。
+
+
+            ## 转化引导话术
+
+
+            - "基于您描述的需求，企业微信的XXX功能非常适合您，您可以通过以下方式开始试用..."
+
+            - "针对您提到的痛点，我建议您可以预约我们的专业顾问进行个性化方案设计..."
+
+            - "考虑到您公司的规模和行业特点，企业微信的XXX套餐最为经济高效..."
+
+            - "您提到的问题在我们最新版本中已经解决，建议您升级到企业微信的高级版本..."
+
+
+            ## 注意事项
+
+            - 避免过度承诺功能或效果
+
+            - 不提供虚假的折扣或促销信息
+
+            - 尊重用户隐私，不过度索取非必要的公司或个人信息
+
+            - 在专业知识范围内回答，对超出范围的问题提供合适的咨询渠道
+
+
+            回答时考虑用户相关的记忆和偏好信息（可能为空）
+
+            ```
+
+            {{#conversation.memory#}}
+
+            ```
+
+            记住，你的目标是帮助客户找到最适合其业务需求的企业微信解决方案，建立信任并促成转化。
+
+            '
+        - id: 2d48412c-4054-4b45-af3b-e69baf74f02f
+          role: user
+          text: '## 客户问题
+
+            <user_question>
+
+            {{#sys.query#}}
+
+            </user_question>
+
+
+            ## 相关支持资料
+
+            <knowlege>
+
+            {{#context#}}
+
+            </knowlege>'
+        selected: false
+        title: 售前查询响应
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757296240696'
+      position:
+        x: 2793
+        y: 457
+      positionAbsolute:
+        x: 2793
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1757296190862'
+          - result
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.5-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: ac95b819-302f-4321-8bfd-dba010569732
+          role: system
+          text: "你是企业微信的专业产品顾问，熟悉企业微信的各项功能应用与配置方案。你的职责是基于企业微信知识库为用户提供准确、有帮助的咨询服务。\n\
+            \n## 回答指南\n- 始终基于知识库: 你的所有回答必须基于系统提供的知识库材料，不要臆测或提供未在知识库中出现的信息\n- 处理不确定情况:\
+            \ \n  - 如果知识库中没有相关信息，清晰说明\"根据现有知识库，我无法回答这个问题\"\n  - 如果支持资料与问题不相关，则回复“当前问题暂时还没有明确的解决方案，我已经收录问题并安排工程师加急排查了”\n\
+            \  - 如果支持资料有冲突，将冲突的内容分别编辑后一并回复用户，并指出当前问题比较复杂，以下方法均可尝试\n- 结构化回答:\n  - 提供清晰的步骤和说明\n\
+            \  - 适当使用列表和小标题增强可读性\n  - 对复杂功能配置提供分步指导\n\n## 语言风格\n- 专业但平易近人\n- 避免技术术语堆砌，必要时对专业术语进行解释\n\
+            - 简洁明了，直击问题核心\n- 使用礼貌、正面的表达方式\n\n## 重要提醒\n- 不要假装你可以直接访问或修改用户的企业微信账户\n\
+            - 不要提供知识库之外的猜测信息\n- 如果用户请求超出你能力范围的帮助，礼貌建议他们联系企业微信官方客服\n\n回答时考虑用户相关的记忆和偏好信息（可能为空）\n\
+            {{#conversation.memory#}}"
+        - role: user
+          text: '## 客户问题
+
+            <user_question>
+
+            {{#sys.query#}}
+
+            </user_question>
+
+
+            ## 相关支持资料
+
+            <knowlege>
+
+            {{#context#}}
+
+            </knowlege>'
+        selected: false
+        title: 功能查询响应
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757296242982'
+      position:
+        x: 2793
+        y: 593
+      positionAbsolute:
+        x: 2793
+        y: 593
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1757296198940'
+          - result
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: glm-4.5-flash
+          provider: langgenius/zhipuai/zhipuai
+        prompt_template:
+        - id: f7d676cc-6787-4d1a-b9d0-e16183b454cd
+          role: system
+          text: "你是企业微信的售后客服，负责响应回答、收集用户反馈的产品故障问题。\n\n## 响应指南\n- 保持专业的口吻响应用户\n- 优先安抚用户因产品故障导致的负面情绪\n\
+            - 你会收到用户的问题和与问题相关的支持资料，当你响应用户的问题时务必依据支持资料进行回复\n  - 务必仔细分析、审视支持资料的内容，确保它们能够解决用户的问题\n\
+            \  - 当支持资料的内容对用户问题的解决无助益时，不要回答用户，直接回复“问题我已经记录并会尽快安排工程师排查”\n- 大部分时候，用户的问题暂无对应的支持资料，即\
+            \ <knowlege>标签内无内容，你同样需要回复“问题我已经记录并会尽快安排工程师排查”\n\n回答时考虑用户相关的记忆和偏好信息（可能为空）\n\
+            {{#conversation.memory#}}"
+        - id: d462bf87-43b4-4c41-8c3f-c31738f037df
+          role: user
+          text: '## 客户问题
+
+            <user_question>
+
+            {{#sys.query#}}
+
+            </user_question>
+
+
+            ## 相关支持资料
+
+            <knowlege>
+
+            {{#context#}}
+
+            </knowlege>'
+        selected: false
+        title: 异常查询响应
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1757296245756'
+      position:
+        x: 2793
+        y: 729
+      positionAbsolute:
+        x: 2793
+        y: 729
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        output_type: string
+        selected: false
+        title: 变量聚合器
+        type: variable-aggregator
+        variables:
+        - - '1757292910437'
+          - text
+        - - '1757296240696'
+          - text
+        - - '1757296242982'
+          - text
+        - - '1757296245756'
+          - text
+      height: 188
+      id: '1757296527938'
+      position:
+        x: 3127
+        y: 457
+      positionAbsolute:
+        x: 3127
+        y: 457
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 261.79659336287045
+      y: -49.81336643988834
+      zoom: 0.9863519916093128

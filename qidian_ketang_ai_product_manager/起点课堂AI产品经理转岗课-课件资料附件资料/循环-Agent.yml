@@ -1,0 +1,2120 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 循环-Agent
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.6@dd589dc093c8084925858034ab5ec1fdf0d33819f43226c2f8c4a749a9acbbb2
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: seekerliu/bocha:0.0.1@7d2dbad3f9d2652300d73bb8d91337e925f3c0daf9e0a9e285e060fb9dd7aadb
+    version: null
+kind: app
+version: 0.4.0
+workflow:
+  conversation_variables:
+  - description: ''
+    id: fe8828e6-0edf-434f-ba8c-8b4c6fb4eaee
+    name: run_times
+    selector:
+    - conversation
+    - run_times
+    value: 0
+    value_type: integer
+  - description: ''
+    id: 61bfe96d-60a1-41c8-8a80-9554f3bcef5a
+    name: message_history
+    selector:
+    - conversation
+    - message_history
+    value: []
+    value_type: array[string]
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      allowed_file_upload_methods:
+      - local_file
+      - remote_url
+      enabled: false
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: llm
+      id: 1763130749148-7ee662e0-38f9-4a0b-ad73-d2a9cfec9a87-1763130878704-target
+      selected: false
+      source: '1763130749148'
+      sourceHandle: 7ee662e0-38f9-4a0b-ad73-d2a9cfec9a87
+      target: '1763130878704'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: llm
+      id: 1763130749148-false-1763130914341-target
+      selected: false
+      source: '1763130749148'
+      sourceHandle: 'false'
+      target: '1763130914341'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: answer
+      id: 1763131028246-23dac85c-554a-4e10-bd81-c8f0b1289d37-1763131125118-target
+      selected: false
+      source: '1763131028246'
+      sourceHandle: 23dac85c-554a-4e10-bd81-c8f0b1289d37
+      target: '1763131125118'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: if-else
+      id: 1763134523854-false-1763131028246-target
+      selected: false
+      source: '1763134523854'
+      sourceHandle: 'false'
+      target: '1763131028246'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: answer
+      id: 1763134523854-true-1763134607808-target
+      selected: false
+      source: '1763134523854'
+      sourceHandle: 'true'
+      target: '1763134607808'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: answer
+      id: 1763131028246-false-1763134363234-target
+      selected: false
+      source: '1763131028246'
+      sourceHandle: 'false'
+      target: '1763134363234'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: answer
+      id: 1763137065291-source-1763135013841-target
+      selected: false
+      source: '1763137065291'
+      sourceHandle: source
+      target: '1763135013841'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: assigner
+        targetType: answer
+      id: 1763135292126-source-1763137386037-target
+      selected: false
+      source: '1763135292126'
+      sourceHandle: source
+      target: '1763137386037'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: tool
+      id: 1763130749148-true-1763127617105-target
+      selected: false
+      source: '1763130749148'
+      sourceHandle: 'true'
+      target: '1763127617105'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: answer
+      id: 1763131028246-true-1763137465988-target
+      selected: false
+      source: '1763131028246'
+      sourceHandle: 'true'
+      target: '1763137465988'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: answer
+        targetType: if-else
+      id: 1763137465988-source-1763130749148-target
+      selected: false
+      source: '1763137465988'
+      sourceHandle: source
+      target: '1763130749148'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: answer
+        targetType: loop-end
+      id: 1763134607808-source-1763212116368-target
+      selected: false
+      source: '1763134607808'
+      sourceHandle: source
+      target: '1763212116368'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: assigner
+        targetType: loop
+      id: 1763212645142-source-1759129862000-target
+      selected: false
+      source: '1763212645142'
+      sourceHandle: source
+      target: '1759129862000'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: llm
+        targetType: code
+      id: 1759129870910-source-1763212916119-target
+      selected: false
+      source: '1759129870910'
+      sourceHandle: source
+      target: '1763212916119'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: assigner
+      id: 1763212916119-source-1763212693280-target
+      selected: false
+      source: '1763212916119'
+      sourceHandle: source
+      target: '1763212693280'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: llm
+        targetType: code
+      id: 1759129870910-source-1763137065291-target
+      selected: false
+      source: '1759129870910'
+      sourceHandle: source
+      target: '1763137065291'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: code
+      id: 1759129768343-source-1763213817953-target
+      selected: false
+      source: '1759129768343'
+      sourceHandle: source
+      target: '1763213817953'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: assigner
+      id: 1763213817953-source-1763212645142-target
+      selected: false
+      source: '1763213817953'
+      sourceHandle: source
+      target: '1763212645142'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: assigner
+      id: 1763214295004-source-1763135292126-target
+      selected: false
+      source: '1763214295004'
+      sourceHandle: source
+      target: '1763135292126'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: if-else
+        targetType: tool
+      id: 1763130749148-21b736d0-6bc4-4823-b432-9bb42f17d3ab-1763216003616-target
+      selected: false
+      source: '1763130749148'
+      sourceHandle: 21b736d0-6bc4-4823-b432-9bb42f17d3ab
+      target: '1763216003616'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: tool
+        targetType: code
+      id: 1763216003616-source-1763216926717-target
+      selected: false
+      source: '1763216003616'
+      sourceHandle: source
+      target: '1763216926717'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: tool
+        targetType: code
+      id: 1763127617105-source-1763214295004-target
+      source: '1763127617105'
+      sourceHandle: source
+      target: '1763214295004'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: llm
+        targetType: code
+      id: 1763130878704-source-1763218922030-target
+      source: '1763130878704'
+      sourceHandle: source
+      target: '1763218922030'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: llm
+        targetType: code
+      id: 1763130914341-source-1763218768625-target
+      source: '1763130914341'
+      sourceHandle: source
+      target: '1763218768625'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: assigner
+      id: 1763218922030-source-1763219227112-target
+      source: '1763218922030'
+      sourceHandle: source
+      target: '1763219227112'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: assigner
+      id: 1763216926717-source-1763219275504-target
+      source: '1763216926717'
+      sourceHandle: source
+      target: '1763219275504'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: assigner
+        targetType: answer
+      id: 1763219275504-source-1763219303374-target
+      source: '1763219275504'
+      sourceHandle: source
+      target: '1763219303374'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: assigner
+        targetType: answer
+      id: 1763219227112-source-1763219329099-target
+      source: '1763219227112'
+      sourceHandle: source
+      target: '1763219329099'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: code
+        targetType: assigner
+      id: 1763218768625-source-1763219419642-target
+      source: '1763218768625'
+      sourceHandle: source
+      target: '1763219419642'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: assigner
+        targetType: answer
+      id: 1763219419642-source-1763219447630-target
+      source: '1763219419642'
+      sourceHandle: source
+      target: '1763219447630'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: answer
+        targetType: loop-end
+      id: 1763131125118-source-1763134118054-target
+      source: '1763131125118'
+      sourceHandle: source
+      target: '1763134118054'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: answer
+        targetType: loop-end
+      id: 1763134363234-source-1763134489578-target
+      source: '1763134363234'
+      sourceHandle: source
+      target: '1763134489578'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: answer
+        targetType: if-else
+      id: 1763135013841-source-1763134523854-target
+      source: '1763135013841'
+      sourceHandle: source
+      target: '1763134523854'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: loop-start
+        targetType: assigner
+      id: 1759129862000start-source-1763265222795-target
+      source: 1759129862000start
+      sourceHandle: source
+      target: '1763265222795'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        sourceType: assigner
+        targetType: llm
+      id: 1763265222795-source-1759129870910-target
+      source: '1763265222795'
+      sourceHandle: source
+      target: '1759129870910'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    nodes:
+    - data:
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 52
+      id: '1759129768343'
+      position:
+        x: 30
+        y: 772.5
+      positionAbsolute:
+        x: 30
+        y: 772.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        break_conditions: []
+        error_handle_mode: terminated
+        height: 1145
+        logical_operator: and
+        loop_count: 10
+        loop_variables: []
+        selected: false
+        start_node_id: 1759129862000start
+        title: Agents循环
+        type: loop
+        width: 3832
+      height: 1145
+      id: '1759129862000'
+      position:
+        x: 936
+        y: 772.5
+      positionAbsolute:
+        x: 936
+        y: 772.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 3832
+      zIndex: 1
+    - data:
+        desc: ''
+        isInLoop: true
+        selected: false
+        title: ''
+        type: loop-start
+      draggable: false
+      height: 48
+      id: 1759129862000start
+      parentId: '1759129862000'
+      position:
+        x: 60
+        y: 150
+      positionAbsolute:
+        x: 996
+        y: 922.5
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-loop-start
+      width: 44
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 9ad6b5b7-cfc7-4f3e-95d8-8e208b93d362
+          role: system
+          text: "你是一个具备自主决策能力的写作 Agent，能够借助工具完成从资料收集、大纲生成到反复验证的完整写作任务。\n\n## 你的目标\n\
+            * 接收用户的自然语言写作需求\n* 将需求拆解为可执行的子任务（todo 列表）\n* 通过循环：计划 → 选择工具 → 执行 → 评估\
+            \ → 决策下一步\n* 在重要中间产出阶段向用户汇报、征求反馈，并把用户反馈纳入后续循环\n* 直到任务达到用户接受标准，再结束循环\n\n\
+            ## 可用工具\n* `search_web`：进行网络搜索，获取资料、事实、案例等，接收一个字符串参数输入。\n* `fetch`：提取\
+            \ URL 中的内容，接收字符串 URL 链接。\n* `gen_outline`：生成文章大纲，接收字符串类型的需求文本。\n* `gen_article`：根据大纲生成文章，接收字符串类型文章大纲输入。\n\
+            \n## 输出总原则\n* 所有对“控制循环”和“调用工具”的决策，必须用结构化 JSON 表达，便于宿主程序识别和执行。\n* 文本内容（给用户看的说明、草稿等）可用自然语言表达，但要和结构化控制信息分开。\n\
+            * 每一轮回答中最多只执行一个“主动作”（例如：计划 / 搜索 / 生成 / 编辑），不要在一轮之内做太多事情。\n\n## 控制结构规范\n\
+            在每一轮，你必须输出一个顶层 JSON 对象，字段包括：\n1. `thinking`：你对本轮任务的思考过程，面向开发者与自己，不必非常详细，但要能解释你的决策。\n\
+            2. `plan`：当前剩余任务 / todo 的简短列表，以及你打算的下一步。\n3. `tool_call`：如果需要调用工具，必须写成结构化对象；如果本轮不调用工具则为\
+            \ `null`。\n4. `ask_user`：在需要用户反馈时提出的具体问题；如果本轮不需要用户反馈，则为 `null`。\n5. `deliverable`：要交付给用户的可读内容（例如：大纲、草稿片段、修改建议等），不需要时时都有。\n\
+            \n字段格式示例：\n{\n    \"thinking\": \"当前我已理解用户想写一篇面向产品经理的长文，先澄清篇幅和语气。\",\n\
+            \    \"plan\": {\n        \"overall_goal\": \"完成一篇 3000 字左右的长文草稿并获得用户确认\"\
+            ,\n        \"todos\": [\n            \"[x]澄清目标读者、篇幅和语气\",\n          \
+            \  \"[ ]根据需求确定文档结构大纲\",\n            \"[ ]必要时进行网络搜索补充案例和数据\",\n      \
+            \      \"[ ]生成首版完整草稿\",\n            \"[ ]根据用户反馈多轮编辑润色\"\n        ],\n\
+            \        \"next_step\": \"向用户提几个澄清问题\"\n    },\n    \"tool_call\": null,\n\
+            \    \"ask_user\": \"这篇文章预期读者是谁？\\n你期望的篇幅大约是多少字？\\n语气更偏向科普、教程、还是个人经验分享？\\\
+            n……\",\n    \"deliverable\": null\n}\n\n如果需要调用工具，`tool_call`的输出结构示例：\n\
+            \"tool_call\": {\n\"tool_name\":\"search_web|fetch|gen_outline|gen_article\"\
+            ,\n\"parameter\":\"调用工具所需参数的值\"\n}\n\n## 循环决策规则\n* 每一轮先检查：当前信息是否足以完成下一步？不足就要么向用户提问，要么调用工具。\n\
+            * 工具调用后，必须在下一轮重新评估工具结果，再决定下一步。\n* 每当达到阶段性里程碑（例如：大纲完成、首版草稿完成、重大结构调整），都要用\
+            \ `ask_user` 征求明确反馈。\n* 只有当用户明确表示「可以」或你判断任务已充分完成时，才宣布任务结束，并在 `plan.next_step`\
+            \ 中标记为 `\"finish\"`。\n\n## 结束条件\n当你认为任务目标已经达成，并且用户已经确认或明确表示可以结束时，在最终一轮中：\n\
+            \n* `plan.next_step` 必须写 `\"finish\"`\n* `tool_call` 必须为 `null`\n* `ask_user`\
+            \ 必须为 `null`\n* `deliverable` 中提供最终稿和简短总结说明。\n"
+        - id: 5bcd81ec-d8c6-4b0e-838d-002618e2c939
+          role: user
+          text: '历史消息列表(用户也可以看到，你无需再次重复生成)：
+
+            <message_history>
+
+            {{#conversation.message_history#}}
+
+            </message_history>'
+        selected: false
+        structured_output:
+          schema:
+            additionalProperties: false
+            properties:
+              ask_user:
+                additionalProperties: false
+                description: 如无需向用户提问，则输出 null
+                type: string
+              deliverable:
+                description: 如果不需要向用户交付产出物，则输出 null
+                type: string
+              plan:
+                additionalProperties: false
+                properties:
+                  next_step:
+                    type: string
+                  overall_goal:
+                    type: string
+                  todos:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - overall_goal
+                - todos
+                - next_step
+                type: object
+              thinking:
+                type: string
+              tool_call:
+                additionalProperties: false
+                description: 如无需使用工具，则输出 null
+                properties:
+                  parameter:
+                    description: 调用工具所需参数的值，或 null
+                    type: string
+                  tool_name:
+                    description: search_web，fetch，gen_outline，gen_article 或 null
+                    type: string
+                required: []
+                type: object
+            required:
+            - thinking
+            - plan
+            - tool_call
+            - ask_user
+            - deliverable
+            type: object
+        structured_output_enabled: true
+        title: ' 任务规划师'
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1759129870910'
+      parentId: '1759129862000'
+      position:
+        x: 506
+        y: 130
+      positionAbsolute:
+        x: 1442
+        y: 902.5
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        is_team_authorization: true
+        loop_id: '1759129862000'
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: used for linking to webpages
+            ja_JP: used for linking to webpages
+            pt_BR: used for linking to webpages
+            zh_Hans: 用于链接到网页
+          label:
+            en_US: URL
+            ja_JP: URL
+            pt_BR: URL
+            zh_Hans: 网页链接
+          llm_description: url for scraping
+          max: null
+          min: null
+          name: url
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+            like Gecko) Chrome/100.0.1000.0 Safari/537.36
+          form: form
+          human_description:
+            en_US: used for identifying the browser.
+            ja_JP: used for identifying the browser.
+            pt_BR: used for identifying the browser.
+            zh_Hans: 用于识别浏览器。
+          label:
+            en_US: User Agent
+            ja_JP: User Agent
+            pt_BR: User Agent
+            zh_Hans: User Agent
+          llm_description: null
+          max: null
+          min: null
+          name: user_agent
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 'false'
+          form: form
+          human_description:
+            en_US: If true, the crawler will only return the page summary content.
+            ja_JP: If true, the crawler will only return the page summary content.
+            pt_BR: If true, the crawler will only return the page summary content.
+            zh_Hans: 如果启用，爬虫将仅返回页面摘要内容。
+          label:
+            en_US: Whether to generate summary
+            ja_JP: Whether to generate summary
+            pt_BR: Whether to generate summary
+            zh_Hans: 是否生成摘要
+          llm_description: null
+          max: null
+          min: null
+          name: generate_summary
+          options:
+          - icon: null
+            label:
+              en_US: 'Yes'
+              ja_JP: 'Yes'
+              pt_BR: 'Yes'
+              zh_Hans: 是
+            value: 'true'
+          - icon: null
+            label:
+              en_US: 'No'
+              ja_JP: 'No'
+              pt_BR: 'No'
+              zh_Hans: 否
+            value: 'false'
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: boolean
+        params:
+          generate_summary: ''
+          url: ''
+          user_agent: ''
+        provider_id: webscraper
+        provider_name: webscraper
+        provider_type: builtin
+        selected: false
+        title: 网页爬虫
+        tool_configurations:
+          generate_summary:
+            type: constant
+            value: 'false'
+          user_agent:
+            type: mixed
+            value: Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML,
+              like Gecko) Chrome/100.0.1000.0 Safari/537.36
+        tool_description: 一个用于爬取网页的工具。
+        tool_label: 网页爬虫
+        tool_name: webscraper
+        tool_node_version: '2'
+        tool_parameters:
+          url:
+            type: mixed
+            value: '{{#1759129870910.structured_output.tool_call.parameter#}}'
+        type: tool
+      height: 114
+      id: '1763127617105'
+      parentId: '1759129862000'
+      position:
+        x: 2624
+        y: 473
+      positionAbsolute:
+        x: 3560
+        y: 1245.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: deecefbc-0e68-40c5-9efd-d3da2cf46dab
+            value: fetch
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - tool_call
+            - tool_name
+          id: 'true'
+          logical_operator: and
+        - case_id: 21b736d0-6bc4-4823-b432-9bb42f17d3ab
+          conditions:
+          - comparison_operator: is
+            id: 91ef472a-0092-44c7-be02-8de71336b962
+            value: search_web
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - tool_call
+            - tool_name
+          id: 21b736d0-6bc4-4823-b432-9bb42f17d3ab
+          logical_operator: and
+        - case_id: 7ee662e0-38f9-4a0b-ad73-d2a9cfec9a87
+          conditions:
+          - comparison_operator: is
+            id: e1349f6f-e2f4-4cce-9155-802c66df2b0b
+            value: gen_outline
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - tool_call
+            - tool_name
+          id: 7ee662e0-38f9-4a0b-ad73-d2a9cfec9a87
+          logical_operator: and
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 选择工具
+        type: if-else
+      height: 220
+      id: '1763130749148'
+      parentId: '1759129862000'
+      position:
+        x: 2321
+        y: 64
+      positionAbsolute:
+        x: 3257
+        y: 836.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 169dd4a0-c7da-458e-a8f2-7e7218c958ee
+          role: system
+          text: 基于背景信息，完成任务要求。
+        - id: 2b1082b3-4f1c-4915-bae4-90a289bd081c
+          role: user
+          text: '<context>
+
+            {{#conversation.message_history#}}
+
+            </context>
+
+            <requirements>
+
+            {{#1759129870910.structured_output.tool_call.parameter#}}
+
+            </requirements>'
+        selected: false
+        title: 创建大纲
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1763130878704'
+      parentId: '1759129862000'
+      position:
+        x: 2624
+        y: 130
+      positionAbsolute:
+        x: 3560
+        y: 902.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 6208ab69-9b44-42e9-ba2c-30eab60f9d06
+          role: system
+          text: 基于背景信息，完成任务要求。
+        - id: 65c8eb65-ecd2-474f-aa38-bd6a0a87fe83
+          role: user
+          text: '<requirements>
+
+            {{#1759129870910.structured_output.tool_call.parameter#}}
+
+            </requirements>
+
+            <context>
+
+            {{#conversation.message_history#}}
+
+            </context>'
+        selected: false
+        title: 撰写文章
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1763130914341'
+      parentId: '1759129862000'
+      position:
+        x: 2624
+        y: 308
+      positionAbsolute:
+        x: 3560
+        y: 1080.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: not empty
+            id: 46c0c9f5-db07-4316-8f62-67aa06f0a958
+            value: ''
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - tool_call
+          id: 'true'
+          logical_operator: and
+        - case_id: 23dac85c-554a-4e10-bd81-c8f0b1289d37
+          conditions:
+          - comparison_operator: not empty
+            id: 06e24c5e-4e62-49ba-9646-9e68eb5ead93
+            value: ''
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - ask_user
+          - comparison_operator: empty
+            id: ff21e9dd-d212-4e34-98e8-aaf73484dd68
+            value: ''
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - deliverable
+          id: 23dac85c-554a-4e10-bd81-c8f0b1289d37
+          logical_operator: and
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 干啥判断
+        type: if-else
+      height: 198
+      id: '1763131028246'
+      parentId: '1759129862000'
+      position:
+        x: 1714
+        y: 75
+      positionAbsolute:
+        x: 2650
+        y: 847.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '
+
+          {{#1759129870910.structured_output.ask_user#}}
+
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 输出澄清问题
+        type: answer
+        variables: []
+      height: 103
+      id: '1763131125118'
+      parentId: '1759129862000'
+      position:
+        x: 2017
+        y: 299.5
+      positionAbsolute:
+        x: 2953
+        y: 1072
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 退出循环
+        type: loop-end
+      height: 54
+      id: '1763134118054'
+      parentId: '1759129862000'
+      position:
+        x: 2320
+        y: 324
+      positionAbsolute:
+        x: 3256
+        y: 1096.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-simple
+      width: 244
+      zIndex: 1002
+    - data:
+        answer: '
+
+          {{#1759129870910.structured_output.deliverable#}}
+
+
+          ---
+
+
+          {{#1759129870910.structured_output.ask_user#}}
+
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 输出过程产出
+        type: answer
+        variables: []
+      height: 122
+      id: '1763134363234'
+      parentId: '1759129862000'
+      position:
+        x: 2017
+        y: 442.5
+      positionAbsolute:
+        x: 2953
+        y: 1215
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 退出循环 2
+        type: loop-end
+      height: 54
+      id: '1763134489578'
+      parentId: '1759129862000'
+      position:
+        x: 2320
+        y: 476.5
+      positionAbsolute:
+        x: 3256
+        y: 1249
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-simple
+      width: 244
+      zIndex: 1002
+    - data:
+        cases:
+        - case_id: 'true'
+          conditions:
+          - comparison_operator: is
+            id: a09de80f-6941-4822-bb1d-f3b36f9059da
+            value: finish
+            varType: object
+            variable_selector:
+            - '1759129870910'
+            - structured_output
+            - plan
+            - next_step
+          id: 'true'
+          logical_operator: and
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 是否继续
+        type: if-else
+      height: 124
+      id: '1763134523854'
+      parentId: '1759129862000'
+      position:
+        x: 1412
+        y: 112
+      positionAbsolute:
+        x: 2348
+        y: 884.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '{{#1759129870910.structured_output.deliverable#}}'
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 任务完成
+        type: answer
+        variables: []
+      height: 103
+      id: '1763134607808'
+      parentId: '1759129862000'
+      position:
+        x: 1714
+        y: 580
+      positionAbsolute:
+        x: 2650
+        y: 1352.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '第{{#conversation.run_times#}}次循环
+
+
+          ```
+
+
+          Thinking：{{#1759129870910.structured_output.thinking#}}
+
+
+          ---
+
+          任务目标：
+
+          {{#1759129870910.structured_output.plan.overall_goal#}}
+
+
+          任务计划：
+
+          {{#1763137065291.result#}}
+
+
+          ---
+
+
+          接下来执行：
+
+          {{#1759129870910.structured_output.plan.next_step#}}
+
+
+          ```
+
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 给人看
+        type: answer
+        variables: []
+      height: 228
+      id: '1763135013841'
+      parentId: '1759129862000'
+      position:
+        x: 1110
+        y: 60
+      positionAbsolute:
+        x: 2046
+        y: 832.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763214295004'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: 爬虫结果追加消息历史
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763135292126'
+      parentId: '1759129862000'
+      position:
+        x: 3228
+        y: 488
+      positionAbsolute:
+        x: 4164
+        y: 1260.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "def main(arg: list) -> dict:\n    result = '\\n'.join(map(str, arg))\n\
+          \    return {'result': result}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: todos拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1759129870910'
+          - structured_output
+          - plan
+          - todos
+          value_type: object
+          variable: arg
+      height: 52
+      id: '1763137065291'
+      parentId: '1759129862000'
+      position:
+        x: 808
+        y: 148
+      positionAbsolute:
+        x: 1744
+        y: 920.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '```
+
+
+          {{#1759129870910.structured_output.tool_call.tool_name#}} 输出结果：
+
+          {{#1763127617105.text#}}
+
+
+          ```
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 爬虫工具产出
+        type: answer
+        variables: []
+      height: 138
+      id: '1763137386037'
+      parentId: '1759129862000'
+      position:
+        x: 3530
+        y: 461
+      positionAbsolute:
+        x: 4466
+        y: 1233.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '调用工具：{{#1759129870910.structured_output.tool_call.tool_name#}}
+
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 调用工具
+        type: answer
+        variables: []
+      height: 119
+      id: '1763137465988'
+      parentId: '1759129862000'
+      position:
+        x: 2017
+        y: 114.5
+      positionAbsolute:
+        x: 2953
+        y: 887
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 退出循环 3
+        type: loop-end
+      height: 54
+      id: '1763212116368'
+      parentId: '1759129862000'
+      position:
+        x: 2016
+        y: 604.5
+      positionAbsolute:
+        x: 2952
+        y: 1377
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-simple
+      width: 244
+      zIndex: 1002
+    - data:
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763213817953'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        selected: false
+        title: 用户消息存储
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763212645142'
+      position:
+        x: 634
+        y: 772.5
+      positionAbsolute:
+        x: 634
+        y: 772.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763212916119'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: AI消息存储
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763212693280'
+      parentId: '1759129862000'
+      position:
+        x: 1110
+        y: 328
+      positionAbsolute:
+        x: 2046
+        y: 1100.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(arg: object) -> dict:\n    return {'result':\
+          \ f\"<assistant>{arg}</assistant>\"}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: AI消息拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1759129870910'
+          - structured_output
+          value_type: object
+          variable: arg
+      height: 52
+      id: '1763212916119'
+      parentId: '1759129862000'
+      position:
+        x: 808
+        y: 344
+      positionAbsolute:
+        x: 1744
+        y: 1116.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(arg: str) -> dict:\n    return {'result': f\"\
+          <user>{arg}</user>\"}"
+        code_language: python3
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 用户消息拼接
+        type: code
+        variables:
+        - value_selector:
+          - sys
+          - query
+          value_type: string
+          variable: arg
+      height: 52
+      id: '1763213817953'
+      position:
+        x: 332
+        y: 772.5
+      positionAbsolute:
+        x: 332
+        y: 772.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        code: "import json\n\ndef main(arg: str) -> dict:\n    return {'result': f\"\
+          <tool_fetch>{arg}</tool_fetch>\"}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 爬虫输出拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1763127617105'
+          - text
+          value_type: string
+          variable: arg
+      height: 52
+      id: '1763214295004'
+      parentId: '1759129862000'
+      position:
+        x: 2926
+        y: 504
+      positionAbsolute:
+        x: 3862
+        y: 1276.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        is_team_authorization: false
+        loop_id: '1759129862000'
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: The keywords or phrases to search
+            ja_JP: 検索キーワードまたはフレーズ
+            pt_BR: As palavras-chave ou frases para pesquisar
+            zh_Hans: 搜索关键词或语句
+          label:
+            en_US: query
+            ja_JP: query
+            pt_BR: query
+            zh_Hans: query
+          llm_description: 搜索关键词或语句
+          max: null
+          min: null
+          name: query
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: noLimit
+          form: llm
+          human_description:
+            en_US: The time range for the search results. Available options noLimit,
+              oneYear, oneMonth, oneWeek, oneDay. Default is noLimit
+            ja_JP: 検索結果の時間範囲。利用可能なオプションは noLimit, oneYear, oneMonth, oneWeek, oneDay
+              です。デフォルトは noLimit です
+            pt_BR: O intervalo de tempo para os resultados da pesquisa. Opções disponíveis
+              noLimit, oneYear, oneMonth, oneWeek, oneDay. O padrão é noLimit
+            zh_Hans: 搜索的时间范围，可选值为 noLimit, oneYear, oneMonth, oneWeek, oneDay。默认为
+              noLimit
+          label:
+            en_US: freshness
+            ja_JP: freshness
+            pt_BR: freshness
+            zh_Hans: freshness
+          llm_description: 搜索的时间范围，可选值为 noLimit, oneYear, oneMonth, oneWeek, oneDay。默认为
+            noLimit
+          max: null
+          min: null
+          name: freshness
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: 10
+          form: llm
+          human_description:
+            en_US: Number of search results to retrieve (1-10), default is 10
+            ja_JP: 検索結果の数(1-10)、デフォルトは10
+            pt_BR: Número de resultados de pesquisa para recuperar (1-10), padrão
+              é 10
+            zh_Hans: 搜索结果的数量(1-10)，默认为10
+          label:
+            en_US: count
+            ja_JP: count
+            pt_BR: count
+            zh_Hans: count
+          llm_description: 搜索结果的数量(1-10)，默认为10
+          max: 10
+          min: 1
+          name: count
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: number
+        params:
+          count: ''
+          freshness: ''
+          query: ''
+        provider_id: seekerliu/bocha/bocha
+        provider_name: seekerliu/bocha/bocha
+        provider_type: builtin
+        selected: false
+        title: Bocha Web Search
+        tool_configurations: {}
+        tool_description: 从博查搜索全网信息和网页链接，返回结果包括网页标题、网页URL、网页摘要、网站名称、网站图标、发布时间、图片链接等
+        tool_label: Bocha Web Search
+        tool_name: BochaWebSearch
+        tool_node_version: '2'
+        tool_parameters:
+          count:
+            type: constant
+            value: 5
+          freshness:
+            type: mixed
+            value: noLimit
+          query:
+            type: mixed
+            value: '{{#1759129870910.structured_output.tool_call.parameter#}}'
+        type: tool
+      height: 52
+      id: '1763216003616'
+      parentId: '1759129862000'
+      position:
+        x: 2624
+        y: 682
+      positionAbsolute:
+        x: 3560
+        y: 1454.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(arg: list) -> dict:\n    result = []\n    for\
+          \ item in arg:\n        for webpage in item.get('webpage', []):\n      \
+          \      extracted_data = {\n                'datePublished': webpage.get('datePublished',\
+          \ ''),\n                'name': webpage.get('name', ''),\n             \
+          \   'siteName': webpage.get('siteName', ''),\n                'summary':\
+          \ webpage.get('summary', '')\n            }\n            result.append(extracted_data)\n\
+          \    return {'result': f\"<tool_search_web>{result}</tool_search_web>\"}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 搜索结果字符串化
+        type: code
+        variables:
+        - value_selector:
+          - '1763216003616'
+          - json
+          value_type: array[object]
+          variable: arg
+      height: 52
+      id: '1763216926717'
+      parentId: '1759129862000'
+      position:
+        x: 2926
+        y: 682
+      positionAbsolute:
+        x: 3862
+        y: 1454.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(arg: str) -> dict:\n    return {'result': f\"\
+          <tool_gen_article>{arg}</tool_gen_article>\"}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 撰写文章拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1763130914341'
+          - text
+          value_type: string
+          variable: arg
+      height: 52
+      id: '1763218768625'
+      parentId: '1759129862000'
+      position:
+        x: 2926
+        y: 326
+      positionAbsolute:
+        x: 3862
+        y: 1098.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        code: "import json\n\ndef main(arg: str) -> dict:\n    return {'result': f\"\
+          <tool_gen_outline>{arg}</tool_gen_outline>\"}"
+        code_language: python3
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 撰写大纲拼接
+        type: code
+        variables:
+        - value_selector:
+          - '1763130878704'
+          - text
+          value_type: string
+          variable: arg
+      height: 52
+      id: '1763218922030'
+      parentId: '1759129862000'
+      position:
+        x: 2926
+        y: 148
+      positionAbsolute:
+        x: 3862
+        y: 920.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763218922030'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: 大纲追加到历史消息
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763219227112'
+      parentId: '1759129862000'
+      position:
+        x: 3228
+        y: 132
+      positionAbsolute:
+        x: 4164
+        y: 904.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763216926717'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: 搜索追加到消息历史
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763219275504'
+      parentId: '1759129862000'
+      position:
+        x: 3228
+        y: 666
+      positionAbsolute:
+        x: 4164
+        y: 1438.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '```
+
+
+          {{#1759129870910.structured_output.tool_call.tool_name#}} 输出结果：
+
+          {{#1763216926717.result#}}
+
+
+          ```
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 搜索工具产出
+        type: answer
+        variables: []
+      height: 138
+      id: '1763219303374'
+      parentId: '1759129862000'
+      position:
+        x: 3530
+        y: 639
+      positionAbsolute:
+        x: 4466
+        y: 1411.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '```
+
+
+          {{#1759129870910.structured_output.tool_call.tool_name#}} 输出结果：
+
+          {{#1763130878704.text#}}
+
+
+          ```
+
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 大纲产出
+        type: answer
+        variables: []
+      height: 138
+      id: '1763219329099'
+      parentId: '1759129862000'
+      position:
+        x: 3530
+        y: 105
+      positionAbsolute:
+        x: 4466
+        y: 877.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: variable
+          operation: append
+          value:
+          - '1763218768625'
+          - result
+          variable_selector:
+          - conversation
+          - message_history
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: 文章追加到消息历史
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763219419642'
+      parentId: '1759129862000'
+      position:
+        x: 3228
+        y: 310
+      positionAbsolute:
+        x: 4164
+        y: 1082.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        answer: '```
+
+
+          {{#1759129870910.structured_output.tool_call.tool_name#}} 输出结果：
+
+          {{#1763130914341.text#}}
+
+
+          ```
+
+          ---
+
+          '
+        isInIteration: false
+        isInLoop: true
+        loop_id: '1759129862000'
+        selected: false
+        title: 撰写文章产出
+        type: answer
+        variables: []
+      height: 138
+      id: '1763219447630'
+      parentId: '1759129862000'
+      position:
+        x: 3530
+        y: 283
+      positionAbsolute:
+        x: 4466
+        y: 1055.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    - data:
+        isInIteration: false
+        isInLoop: true
+        items:
+        - input_type: constant
+          operation: +=
+          value: 1
+          variable_selector:
+          - conversation
+          - run_times
+          write_mode: over-write
+        loop_id: '1759129862000'
+        selected: false
+        title: 循环计数
+        type: assigner
+        version: '2'
+      height: 84
+      id: '1763265222795'
+      parentId: '1759129862000'
+      position:
+        x: 204
+        y: 132
+      positionAbsolute:
+        x: 1140
+        y: 904.5
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+      zIndex: 1002
+    viewport:
+      x: -266.9847551141929
+      y: -167.37654538631017
+      zoom: 0.43365931091281
+  rag_pipeline_variables: []

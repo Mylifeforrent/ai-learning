@@ -1,0 +1,240 @@
+app:
+  description: ''
+  icon: 🤖
+  icon_background: '#FFEAD5'
+  mode: advanced-chat
+  name: 自媒体课程答疑助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.6@dd589dc093c8084925858034ab5ec1fdf0d33819f43226c2f8c4a749a9acbbb2
+    version: null
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/tongyi:0.0.48@73bce28fead40b45003cbbf8e773e3a09157f28371a6ae56e935efa34ed4ba62
+    version: null
+kind: app
+version: 0.4.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - image
+      - document
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: knowledge-retrieval
+        targetType: llm
+      id: 1759226175628-source-1759226181144-target
+      source: '1759226175628'
+      sourceHandle: source
+      target: '1759226181144'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: llm
+        targetType: answer
+      id: 1759226181144-source-answer-target
+      source: '1759226181144'
+      sourceHandle: source
+      target: answer
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInLoop: false
+        sourceType: start
+        targetType: knowledge-retrieval
+      id: 1759206067014-source-1759226175628-target
+      source: '1759206067014'
+      sourceHandle: source
+      target: '1759226175628'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 52
+      id: '1759206067014'
+      position:
+        x: 120.87100135861937
+        y: 282
+      positionAbsolute:
+        x: 120.87100135861937
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        answer: '{{#1759226181144.text#}}'
+        selected: false
+        title: 直接回复
+        type: answer
+        variables: []
+      height: 103
+      id: answer
+      position:
+        x: 1177
+        y: 282
+      positionAbsolute:
+        x: 1177
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        dataset_ids:
+        - GlCTmim+hnq0R1UaBH1NEzPWXaj2bG1Ba7dUpknypjUBPP1kiTiIU3boeeo11k/2
+        multiple_retrieval_config:
+          reranking_enable: false
+          reranking_mode: reranking_model
+          reranking_model:
+            model: gte-rerank-v2
+            provider: langgenius/tongyi/tongyi
+          score_threshold: null
+          top_k: 3
+          weights:
+            keyword_setting:
+              keyword_weight: 0
+            vector_setting:
+              embedding_model_name: text-embedding-v4
+              embedding_provider_name: langgenius/tongyi/tongyi
+              vector_weight: 1
+        query_variable_selector:
+        - sys
+        - query
+        retrieval_mode: multiple
+        selected: false
+        title: 知识检索
+        type: knowledge-retrieval
+      height: 90
+      id: '1759226175628'
+      position:
+        x: 448.65001703340783
+        y: 282
+      positionAbsolute:
+        x: 448.65001703340783
+        y: 282
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    - data:
+        context:
+          enabled: true
+          variable_selector:
+          - '1759226175628'
+          - result
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: b2d90018-fc93-40da-8108-df945a6ab06d
+          role: system
+          text: "你将扮演一位课程助教，根据学员的问题和我提供的相关资料，回答学员的问题。\n\n## 任务背景和要求\n- 我把课程的逐字稿进行分析提炼后构造了一个问答资料库\n\
+            - 当学员提出问题时，我会在资料库中进行多维度检索，将检索到的资料和学员问题发送给你\n- 你的任务时对问题和检索到的资料，进行编辑润色生成问题的答案\n\
+            - 注意：资料库并不能覆盖所有问题，所以会存在资料不相关、残缺甚至无支持资料的情况，这意味着我在课程中并没有教授相关内容，这种情况下你可以不输出答案而是引导学员咨询张佳老师\n\
+            - 你实际的职责并不是回答学员的问题，而是**根据资料告知学员课程是否教授、在哪节讲解，引导他们去学习课程**\n- 为了确保课程是否与学员的问题真正匹配，你需要根据支持资料简单介绍课程如何解决他的问题，提升他的学习兴趣\n\
+            \n## 资料样式介绍\n- 用户的问题会被放在`<question>标签内，支持资料会被放在`<knowledge>`标签内\n- 支持资料中可能包含以下几种形式的内容：\n\
+            \t- 所有包含四、五级标题的资料分段均为可能与当前问题相关的资料片段，你要仔细审视它们是否与问题匹配\n\t- 有些五级标题中包含`00:00`的时间，它代表这段内容在课程的开始时间，你可以在回答时用来提醒学员\n\
+            \    - 每个资料片段最后都标注了内容所在章节，你可以在回答时告知学员\n\t- 如果资料包含`![PPT图片](https://……)`的图片\
+            \ markdown 语法文本，请在输出答案时保留，它们是重要的参考资料。\n\n## 回答示例\n输出时不要包含代码块标识符\n```\n\
+            这个问题在第2章第3节第1小节《引流文案和承接话术生成》有讲。\n\n你可以直接跳到[03:16]左右查看\n\n简单来说，……\n- -\
+            \ -\n\U0001F64B‍♂️BOT回答可能有偏差，欢迎随时@张佳 老师勘误。\n```"
+        - id: 1de4efdc-9080-4375-a7f7-35f2b7d3f5a1
+          role: user
+          text: '<question>
+
+            {{#sys.query#}}
+
+            </question>
+
+            <knowledge>
+
+            {{#context#}}
+
+            </knowledge>'
+        selected: false
+        title: 生成答案
+        type: llm
+        vision:
+          enabled: false
+      height: 88
+      id: '1759226181144'
+      position:
+        x: 850
+        y: 282
+      positionAbsolute:
+        x: 850
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 242
+    viewport:
+      x: 408.97705808965645
+      y: 117.59673939527634
+      zoom: 0.6558569733379757
+  rag_pipeline_variables: []

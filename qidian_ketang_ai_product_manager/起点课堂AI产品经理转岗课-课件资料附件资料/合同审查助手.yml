@@ -1,0 +1,1327 @@
+app:
+  description: ''
+  icon: mag
+  icon_background: '#D5D9EB'
+  mode: advanced-chat
+  name: 合同审查助手
+  use_icon_as_answer_icon: false
+dependencies:
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/deepseek:0.0.6@dd589dc093c8084925858034ab5ec1fdf0d33819f43226c2f8c4a749a9acbbb2
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: langgenius/moonshot:0.0.8@39b2074f0d4dd3a739eae2e6b8825ee8c7bc0b4ebda817decafe1d368c84fae2
+- current_identifier: null
+  type: marketplace
+  value:
+    marketplace_plugin_unique_identifier: bowenliang123/md_exporter:2.0.0@13e1aca1995328e41c080ff9f7f6d898df60ff74a3f4d98d6de4b18ab5b92c2e
+kind: app
+version: 0.4.0
+workflow:
+  conversation_variables: []
+  environment_variables: []
+  features:
+    file_upload:
+      allowed_file_extensions:
+      - .JPG
+      - .JPEG
+      - .PNG
+      - .GIF
+      - .WEBP
+      - .SVG
+      allowed_file_types:
+      - document
+      allowed_file_upload_methods:
+      - remote_url
+      - local_file
+      enabled: true
+      fileUploadConfig:
+        audio_file_size_limit: 50
+        batch_count_limit: 5
+        file_size_limit: 15
+        image_file_size_limit: 10
+        video_file_size_limit: 100
+        workflow_file_upload_limit: 10
+      image:
+        enabled: false
+        number_limits: 3
+        transfer_methods:
+        - local_file
+        - remote_url
+      number_limits: 3
+    opening_statement: ''
+    retriever_resource:
+      enabled: true
+    sensitive_word_avoidance:
+      enabled: false
+    speech_to_text:
+      enabled: false
+    suggested_questions: []
+    suggested_questions_after_answer:
+      enabled: false
+    text_to_speech:
+      enabled: false
+      language: ''
+      voice: ''
+  graph:
+    edges:
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: start
+        targetType: document-extractor
+      id: 1753877213608-source-1753877615720-target
+      source: '1753877213608'
+      sourceHandle: source
+      target: '1753877615720'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: document-extractor
+        targetType: llm
+      id: 1753877615720-source-llm-target
+      source: '1753877615720'
+      sourceHandle: source
+      target: llm
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: llm-source-1753878806468-target
+      source: llm
+      sourceHandle: source
+      target: '1753878806468'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: answer
+      id: 1753878806468-source-1753879600511-target
+      source: '1753878806468'
+      sourceHandle: source
+      target: '1753879600511'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: llm
+        targetType: code
+      id: llm-source-1753879779210-target
+      source: llm
+      sourceHandle: source
+      target: '1753879779210'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: code
+        targetType: iteration
+      id: 1753879779210-source-1753880245913-target
+      source: '1753879779210'
+      sourceHandle: source
+      target: '1753880245913'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1753880245913start-source-1753880295305-target
+      source: 1753880245913start
+      sourceHandle: source
+      target: '1753880295305'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1753880802296start-source-1753880802296017538808022970-target
+      source: 1753880802296start
+      sourceHandle: source
+      target: '1753880802296017538808022970'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        sourceType: llm
+        targetType: answer
+      id: 1753880295305-source-1754057129635-target
+      source: '1753880295305'
+      sourceHandle: source
+      target: '1754057129635'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: iteration
+      id: 1753880245913-source-17538808022960-target
+      source: '1753880245913'
+      sourceHandle: source
+      target: '17538808022960'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17538808022960'
+        sourceType: llm
+        targetType: answer
+      id: 1753880802296017538808022970-source-1758439235944-target
+      source: '1753880802296017538808022970'
+      sourceHandle: source
+      target: '1758439235944'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1758439282124start-source-1758439282124017584392821240-target
+      source: 1758439282124start
+      sourceHandle: source
+      target: '1758439282124017584392821240'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17538808022960'
+        sourceType: llm
+        targetType: answer
+      id: 1758439282124017584392821240-source-1758439282124017584392821241-target
+      source: '1758439282124017584392821240'
+      sourceHandle: source
+      target: '1758439282124017584392821241'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: iteration
+      id: 17538808022960-source-17584392821240-target
+      source: '17538808022960'
+      sourceHandle: source
+      target: '17584392821240'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        sourceType: iteration-start
+        targetType: llm
+      id: 1758439409803start-source-1758439409803017584394098040-target
+      source: 1758439409803start
+      sourceHandle: source
+      target: '1758439409803017584394098040'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17538808022960'
+        sourceType: llm
+        targetType: answer
+      id: 1758439409803017584394098040-source-1758439409803017584394098041-target
+      source: '1758439409803017584394098040'
+      sourceHandle: source
+      target: '1758439409803017584394098041'
+      targetHandle: target
+      type: custom
+      zIndex: 1002
+    - data:
+        isInLoop: false
+        sourceType: iteration
+        targetType: iteration
+      id: 17584392821240-source-17584394098030-target
+      source: '17584392821240'
+      sourceHandle: source
+      target: '17584394098030'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: iteration
+        targetType: template-transform
+      id: 17584394098030-source-1758439534939-target
+      source: '17584394098030'
+      sourceHandle: source
+      target: '1758439534939'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: template-transform
+        targetType: tool
+      id: 1758439534939-source-1759053416154-target
+      source: '1758439534939'
+      sourceHandle: source
+      target: '1759053416154'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    - data:
+        isInIteration: false
+        isInLoop: false
+        sourceType: tool
+        targetType: answer
+      id: 1759053416154-source-1759053457780-target
+      source: '1759053416154'
+      sourceHandle: source
+      target: '1759053457780'
+      targetHandle: target
+      type: custom
+      zIndex: 0
+    nodes:
+    - data:
+        desc: ''
+        selected: false
+        title: 开始
+        type: start
+        variables: []
+      height: 54
+      id: '1753877213608'
+      position:
+        x: -116.82049954661812
+        y: 282
+      positionAbsolute:
+        x: -116.82049954661812
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: kimi-k2-turbo-preview
+          provider: langgenius/moonshot/moonshot
+        prompt_template:
+        - id: 98b0cf82-6a3b-4adc-a987-45b52e7066cd
+          role: system
+          text: '扮演一个企业的法律顾问，根据我提供的合同文本，生成一份审查清单。
+
+
+            根据合同内容，确定合作所在的领域行业，确保你生成的审查清单能够具备行业特色。
+
+
+            审查清单的要求如下：
+
+            1. 不少于 5 条基础信息审查条目，如签约主体、时间、定义等；
+
+            2. 不少于 5 条商务核心审查条目，如标的、价格、交付/履约、付款等；
+
+            3. 不少于 5 条关键法律条款审查条目，如知识产权、保密、违约责任等；
+
+            4. 不少于 5 条形式与效力审查条目，如签章、附件、生效条件等；
+
+            5. 每个审查条目给出精炼的审核要点说明。
+
+
+            清单条目关键要求：
+
+            - 结构化：清单的分类和层级清晰，已于理解和使用
+
+            - 标准化：每个审核要点都应有风险提示或审查标准，说明“为什么审”和“怎么算对”
+
+            - 可操作性：语言精炼，避免理论化，直接说明需要审查的具体事项
+
+
+            以 JSON 格式输出（**不包含代码块标识符**），结构如下
+
+            {
+
+            "basic":["不少于 5 条基础信息审查条目"],
+
+            "business":["不少于 5 条商务核心审查条目"],
+
+            "law":["不少于 5 条关键法律条款审查条目"],
+
+            "validity":["不少于 5 条形式与效力审查条目"]
+
+            }'
+        - id: 40daf815-0beb-49f4-94ce-e4721aeea30a
+          role: user
+          text: '合同内容：
+
+            <content>
+
+            {{#1753877615720.text#}}
+
+            </content>
+
+            我方身份：
+
+            {{#sys.query#}}'
+        selected: false
+        structured_output_enabled: false
+        title: 生成审查清单
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: llm
+      position:
+        x: 550.5108190698757
+        y: 282
+      positionAbsolute:
+        x: 550.5108190698757
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_array_file: true
+        selected: false
+        title: 文档提取器
+        type: document-extractor
+        variable_selector:
+        - sys
+        - files
+      height: 94
+      id: '1753877615720'
+      position:
+        x: 222.72156874481345
+        y: 282
+      positionAbsolute:
+        x: 222.72156874481345
+        y: 282
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\nimport re\n\ndef main(arg1: str) -> dict:\n    # Remove\
+          \ potential code block identifiers\n    arg1 = re.sub(r'```json', '', arg1)\n\
+          \    arg1 = re.sub(r'```', '', arg1)\n    \n    # Parse JSON string into\
+          \ a dictionary\n    data = json.loads(arg1)\n    \n    # Initialize the\
+          \ result string\n    result_str = \"生成如下审查清单：\\n\"\n    \n    # Iterate\
+          \ over the dictionary and append审查条目\n    for key, value in data.items():\n\
+          \        result_str += f\"{len(value)}条{key}审查条目：\\n\"\n        for item\
+          \ in value:\n            result_str += f\"[ ] {item}\\n\"\n        result_str\
+          \ += \"---\\n\"\n    \n    # Return the result as a dictionary\n    return\
+          \ {'result': result_str.strip()}"
+        code_language: python3
+        desc: ''
+        outputs:
+          result:
+            children: null
+            type: string
+        selected: false
+        title: 处理条款
+        type: code
+        variables:
+        - value_selector:
+          - llm
+          - text
+          value_type: string
+          variable: arg1
+      height: 54
+      id: '1753878806468'
+      position:
+        x: 880.4026237948752
+        y: 118.44524162527966
+      positionAbsolute:
+        x: 880.4026237948752
+        y: 118.44524162527966
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1753878806468.result#}}
+
+
+          ---
+
+
+          接下来开始根据审查条目审核合同，请稍等……
+
+
+          '
+        desc: ''
+        selected: false
+        title: 输出审查条款
+        type: answer
+        variables: []
+      height: 121
+      id: '1753879600511'
+      position:
+        x: 1201.9363768779895
+        y: 118.44524162527966
+      positionAbsolute:
+        x: 1201.9363768779895
+        y: 118.44524162527966
+      selected: true
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        code: "import json\nimport re\n\ndef main(arg1: str) -> dict:\n    # Remove\
+          \ potential code block identifiers\n    arg1 = re.sub(r'^```json(.*?)```$',\
+          \ r'\\1', arg1, flags=re.DOTALL)\n    try:\n        # Parse the JSON string\n\
+          \        data = json.loads(arg1)\n        # Return each value as a separate\
+          \ key in the dictionary\n        return {\n            'basic': data['basic'],\n\
+          \            'business': data['business'],\n            'law': data['law'],\n\
+          \            'validity': data['validity']\n        }\n    except json.JSONDecodeError\
+          \ as e:\n        # Handle JSON decode error (you may want to customize this\
+          \ part)\n        return {\n            'basic': [],\n            'business':\
+          \ [],\n            'law': [],\n            'validity': []\n        }"
+        code_language: python3
+        desc: ''
+        outputs:
+          basic:
+            children: null
+            type: array[string]
+          business:
+            children: null
+            type: array[string]
+          law:
+            children: null
+            type: array[string]
+          validity:
+            children: null
+            type: array[string]
+        selected: false
+        title: 结构化审查清单
+        type: code
+        variables:
+        - value_selector:
+          - llm
+          - text
+          value_type: string
+          variable: arg1
+      height: 54
+      id: '1753879779210'
+      position:
+        x: 880.4026237948752
+        y: 439.47884615321817
+      positionAbsolute:
+        x: 880.4026237948752
+        y: 439.47884615321817
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 255
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1753879779210'
+        - basic
+        output_selector:
+        - '1753880295305'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1753880245913start
+        title: 基础信息审核
+        type: iteration
+        width: 666.2452041420759
+      height: 255
+      id: '1753880245913'
+      position:
+        x: 1196.4800540267238
+        y: 439.47884615321817
+      positionAbsolute:
+        x: 1196.4800540267238
+        y: 439.47884615321817
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 666
+      zIndex: 1
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1753880245913start
+      parentId: '1753880245913'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 1220.4800540267238
+        y: 507.47884615321817
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 80ca3296-79ea-4f89-baaa-4784a4751e69
+          role: system
+          text: '根据接下来我提供的审查条目对合同内容进行审查。
+
+            输出审查结果时，使用如下结构：
+
+            {审查条款}的审核结果为：
+
+            {你审查的结果}'
+        - id: f965c270-d022-4f0c-b147-7e4ee5ffad24
+          role: user
+          text: '合同内容：
+
+            <content>
+
+            {{#1753877615720.text#}}
+
+            </content>
+
+            审查要求：
+
+            {{#1753880245913.item#}}'
+        selected: false
+        title: 按照清单审查合同
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1753880295305'
+      parentId: '1753880245913'
+      position:
+        x: 103.30139216866405
+        y: 84.43629796275826
+      positionAbsolute:
+        x: 1299.7814461953878
+        y: 523.9151441159764
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 258
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1753879779210'
+        - business
+        output_selector:
+        - '1753880802296017538808022970'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1753880802296start
+        title: 商务信息审核
+        type: iteration
+        width: 719.6337912085221
+      height: 258
+      id: '17538808022960'
+      position:
+        x: 1972.9196885976348
+        y: 446.07488549287683
+      positionAbsolute:
+        x: 1972.9196885976348
+        y: 446.07488549287683
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 720
+      zIndex: 1
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17538808022960'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 80ca3296-79ea-4f89-baaa-4784a4751e69
+          role: system
+          text: '根据接下来我提供的审查条目对合同内容进行审查。
+
+            输出审查结果时，使用如下结构：
+
+            {审查条款}的审核结果为：
+
+            {你审查的结果}'
+        - id: f965c270-d022-4f0c-b147-7e4ee5ffad24
+          role: user
+          text: '合同内容：
+
+            <content>
+
+            {{#1753877615720.text#}}
+
+            </content>
+
+            审查要求：
+
+            {{#17538808022960.item#}}'
+        selected: false
+        title: 商务条款审查
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1753880802296017538808022970'
+      parentId: '17538808022960'
+      position:
+        x: 106.90761854119
+        y: 86.42149870619784
+      positionAbsolute:
+        x: 2079.827307138825
+        y: 532.4963841990747
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1753880802296start
+      parentId: '17538808022960'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 1996.9196885976348
+        y: 514.0748854928768
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        answer: '{{#1753880295305.text#}}
+
+
+          ---
+
+
+          '
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '1753880245913'
+        selected: false
+        title: 审查结果
+        type: answer
+        variables: []
+      height: 105
+      id: '1754057129635'
+      parentId: '1753880245913'
+      position:
+        x: 391.63602502239314
+        y: 84.43629796275826
+      positionAbsolute:
+        x: 1588.116079049117
+        y: 523.9151441159764
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        answer: '{{#1753880802296017538808022970.text#}}
+
+
+          ---
+
+
+          '
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17538808022960'
+        selected: false
+        title: 输出商务条款审核结果
+        type: answer
+        variables: []
+      height: 105
+      id: '1758439235944'
+      parentId: '17538808022960'
+      position:
+        x: 420.1260836404149
+        y: 89.05534587740505
+      positionAbsolute:
+        x: 2393.0457722380497
+        y: 535.1302313702819
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 258
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1753879779210'
+        - law
+        output_selector:
+        - '1758439282124017584392821240'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1758439282124start
+        title: 法律信息审核
+        type: iteration
+        width: 719.6337912085221
+      height: 258
+      id: '17584392821240'
+      position:
+        x: 2825.7953001352653
+        y: 446.07488549287683
+      positionAbsolute:
+        x: 2825.7953001352653
+        y: 446.07488549287683
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 720
+      zIndex: 1
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17584392821240'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 80ca3296-79ea-4f89-baaa-4784a4751e69
+          role: system
+          text: '根据接下来我提供的审查条目对合同内容进行审查。
+
+            输出审查结果时，使用如下结构：
+
+            {审查条款}的审核结果为：
+
+            {你审查的结果}'
+        - id: f965c270-d022-4f0c-b147-7e4ee5ffad24
+          role: user
+          text: '合同内容：
+
+            <content>
+
+            {{#1753877615720.text#}}
+
+            </content>
+
+            审查要求：
+
+            {{#17584392821240.item#}}'
+        selected: false
+        title: 法律条款审核
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1758439282124017584392821240'
+      parentId: '17584392821240'
+      position:
+        x: 106.90761854119
+        y: 86.26023355607657
+      positionAbsolute:
+        x: 2932.7029186764553
+        y: 532.3351190489534
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        answer: '{{#1758439282124017584392821240.text#}}
+
+
+          ---
+
+
+          '
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17584392821240'
+        selected: false
+        title: 逐条输出法律审核
+        type: answer
+        variables: []
+      height: 105
+      id: '1758439282124017584392821241'
+      parentId: '17584392821240'
+      position:
+        x: 420.1260836404149
+        y: 89.05534587740505
+      positionAbsolute:
+        x: 3245.92138377568
+        y: 535.1302313702819
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1758439282124start
+      parentId: '17584392821240'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 2849.7953001352653
+        y: 514.0748854928768
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        error_handle_mode: terminated
+        height: 258
+        is_parallel: false
+        iterator_input_type: array[string]
+        iterator_selector:
+        - '1753879779210'
+        - validity
+        output_selector:
+        - '1758439409803017584394098040'
+        - text
+        output_type: array[string]
+        parallel_nums: 10
+        selected: false
+        start_node_id: 1758439409803start
+        title: 形式与效率
+        type: iteration
+        width: 719.6337912085221
+      height: 258
+      id: '17584394098030'
+      position:
+        x: 3655.4571590655196
+        y: 446.07488549287683
+      positionAbsolute:
+        x: 3655.4571590655196
+        y: 446.07488549287683
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 720
+      zIndex: 1
+    - data:
+        context:
+          enabled: false
+          variable_selector: []
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17584394098030'
+        model:
+          completion_params:
+            temperature: 0.7
+          mode: chat
+          name: deepseek-chat
+          provider: langgenius/deepseek/deepseek
+        prompt_template:
+        - id: 80ca3296-79ea-4f89-baaa-4784a4751e69
+          role: system
+          text: '根据接下来我提供的审查条目对合同内容进行审查。
+
+            输出审查结果时，使用如下结构：
+
+            {审查条款}的审核结果为：
+
+            {你审查的结果}'
+        - id: f965c270-d022-4f0c-b147-7e4ee5ffad24
+          role: user
+          text: '合同内容：
+
+            <content>
+
+            {{#1753877615720.text#}}
+
+            </content>
+
+            审查要求：
+
+            {{#17584394098030.item#}}'
+        selected: false
+        title: 形式与效率审核
+        type: llm
+        variables: []
+        vision:
+          enabled: false
+      height: 90
+      id: '1758439409803017584394098040'
+      parentId: '17584394098030'
+      position:
+        x: 105.42942980546513
+        y: 87.73842229180144
+      positionAbsolute:
+        x: 3760.8865888709847
+        y: 533.8133077846783
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        answer: '{{#1758439409803017584394098040.text#}}
+
+
+          ---
+
+
+          '
+        desc: ''
+        isInIteration: true
+        isInLoop: false
+        iteration_id: '17584394098030'
+        selected: false
+        title: 逐条输出形式与效率审核
+        type: answer
+        variables: []
+      height: 105
+      id: '1758439409803017584394098041'
+      parentId: '17584394098030'
+      position:
+        x: 420.1260836404149
+        y: 89.05534587740505
+      positionAbsolute:
+        x: 4075.5832427059345
+        y: 535.1302313702819
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+      zIndex: 1002
+    - data:
+        desc: ''
+        isInIteration: true
+        selected: false
+        title: ''
+        type: iteration-start
+      draggable: false
+      height: 48
+      id: 1758439409803start
+      parentId: '17584394098030'
+      position:
+        x: 24
+        y: 68
+      positionAbsolute:
+        x: 3679.4571590655196
+        y: 514.0748854928768
+      selectable: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom-iteration-start
+      width: 44
+      zIndex: 1002
+    - data:
+        desc: ''
+        selected: false
+        template: "{% set sections = [\n    ('基本信息审查结果', basic),\n    ('商务信息审查结果',\
+          \ business),\n    ('法律信息审查结果', law),\n    ('形式与效力审查结果', validity)\n] %}{%\
+          \ set output -%}\n{%- for title, arr in sections %}\n## {{ title }}\n{%-\
+          \ for item in arr %}\n{{ item }}\n{%- endfor %}\n---\n{%- endfor %}\n{%-\
+          \ endset %}\n{{ output }}"
+        title: 转换合并审核结果
+        type: template-transform
+        variables:
+        - value_selector:
+          - '1753880245913'
+          - output
+          value_type: array[string]
+          variable: basic
+        - value_selector:
+          - '17538808022960'
+          - output
+          value_type: array[string]
+          variable: business
+        - value_selector:
+          - '17584392821240'
+          - output
+          value_type: array[string]
+          variable: law
+        - value_selector:
+          - '17584394098030'
+          - output
+          value_type: array[string]
+          variable: validity
+      height: 54
+      id: '1758439534939'
+      position:
+        x: 4436.801860912873
+        y: 439.47884615321817
+      positionAbsolute:
+        x: 4436.801860912873
+        y: 439.47884615321817
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        desc: ''
+        is_team_authorization: true
+        output_schema: null
+        paramSchemas:
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Markdown text
+            ja_JP: Markdown text
+            pt_BR: Markdown text
+            zh_Hans: Markdown格式文本
+          label:
+            en_US: Markdown text
+            ja_JP: Markdown text
+            pt_BR: Markdown text
+            zh_Hans: Markdown格式文本
+          llm_description: ''
+          max: null
+          min: null
+          name: md_text
+          options: []
+          placeholder: null
+          precision: null
+          required: true
+          scope: null
+          template: null
+          type: string
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional docx template file for styling。Use "Home"-"Styles Pane"
+              in Microsoft Word to edit styles of the docx file.
+            ja_JP: Optional docx template file for styling。Use "Home"-"Styles Pane"
+              in Microsoft Word to edit styles of the docx file.
+            pt_BR: Optional docx template file for styling。Use "Home"-"Styles Pane"
+              in Microsoft Word to edit styles of the docx file.
+            zh_Hans: 可选的docx模板文件，用于样式控制。使用Microsoft Word中“开始”-“样式窗格”对docx文件的样式进行编辑。
+          label:
+            en_US: DOCX Template File
+            ja_JP: DOCX Template File
+            pt_BR: DOCX Template File
+            zh_Hans: DOCX 模板文件
+          llm_description: An optional .pptx file that serves as a template for the
+            generated presentation
+          max: null
+          min: null
+          name: docx_template_file
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: file
+        - auto_generate: null
+          default: null
+          form: llm
+          human_description:
+            en_US: Optional custom output file name, and the filename suffix is not
+              required.
+            ja_JP: Optional custom output file name, and the filename suffix is not
+              required.
+            pt_BR: Optional custom output file name, and the filename suffix is not
+              required.
+            zh_Hans: 可选的自定义输出文件名，后缀名无需指定
+          label:
+            en_US: Output Filename
+            ja_JP: Output Filename
+            pt_BR: Output Filename
+            zh_Hans: 输出文件名
+          llm_description: ''
+          max: null
+          min: null
+          name: output_filename
+          options: []
+          placeholder: null
+          precision: null
+          required: false
+          scope: null
+          template: null
+          type: string
+        params:
+          docx_template_file: ''
+          md_text: ''
+          output_filename: ''
+        provider_id: bowenliang123/md_exporter/md_exporter
+        provider_name: bowenliang123/md_exporter/md_exporter
+        provider_type: builtin
+        selected: false
+        title: Markdown 转 DOCX 文件
+        tool_configurations: {}
+        tool_description: 将 Markdown 转换为 DOCX 文件的工具
+        tool_label: Markdown 转 DOCX 文件
+        tool_name: md_to_docx
+        tool_node_version: '2'
+        tool_parameters:
+          docx_template_file:
+            type: constant
+            value: null
+          md_text:
+            type: mixed
+            value: '{{#1758439534939.output#}}'
+          output_filename:
+            type: mixed
+            value: 合同审查结果
+        type: tool
+      height: 54
+      id: '1759053416154'
+      position:
+        x: 4739.45715906552
+        y: 439.47884615321817
+      positionAbsolute:
+        x: 4739.45715906552
+        y: 439.47884615321817
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    - data:
+        answer: '{{#1759053416154.files#}}'
+        desc: ''
+        selected: false
+        title: 输出合同文档
+        type: answer
+        variables: []
+      height: 105
+      id: '1759053457780'
+      position:
+        x: 5043.45715906552
+        y: 439.47884615321817
+      positionAbsolute:
+        x: 5043.45715906552
+        y: 439.47884615321817
+      selected: false
+      sourcePosition: right
+      targetPosition: left
+      type: custom
+      width: 244
+    viewport:
+      x: 432.51343683199366
+      y: 75.09366223939946
+      zoom: 0.7436592743350796
