@@ -37,7 +37,7 @@ for import_path in (PROJECT_ROOT, DEMO_ROOT):
 
 from crewai import Agent, Crew, Task
 from llm import aliyun_llm
-from crewai.hooks import before_tool_call
+from crewai.hooks import before_tool_call, ToolCallHookContext
 from crewai_tools import FileReadTool, FileWriterTool
 from m2l8_context import user_id
 
@@ -45,8 +45,8 @@ from m2l8_context import user_id
 # 绑定到当前脚本目录，避免从不同 cwd 启动脚本时写到不同的 workspace。
 WORKSPACE_BASE_PATH = (MODULE_DIR / "workspace").resolve()
 FILE_TOOL_PATH_FIELDS = {
-    "Read a file's content": "file_path",
-    "File Writer Tool": "filename",
+    FileReadTool().name: "file_path",
+    FileWriterTool().name: "filename",
 }
 
 
@@ -61,10 +61,11 @@ FILE_TOOL_PATH_FIELDS = {
 # 4. 将文件路径重定向到用户的工作空间
 
 @before_tool_call
-def file_path_hook(context: Any):
+def file_path_hook(context: ToolCallHookContext):
     path_field = FILE_TOOL_PATH_FIELDS.get(context.tool_name)
 
     if path_field:
+        print(f"工具调用 full context：{context}")
         print(f"工具调用：{context.tool_name}")
         print(f"工具输入：{context.tool_input}")
         # 检查 user_id 是否存在

@@ -1,1 +1,1 @@
-30 9 * * 1-5 {"task_name": "阿里云港股股票行情监控", "task_description": "每周一至周五上午9点抓取阿里云港股实时股价，并汇总相关新闻资讯发送至用户QQ", "expected_output": "通过QQ发送包含最新股价和重要新闻的报告"}
+0 9 * * 1-5 {"task_name": "阿里港股与资讯推送", "task_description": "每周一至周五早上9点定时查询阿里港股股价及本周资讯，并发送QQ通知", "expected_output": "收到包含股价和资讯的QQ消息"}
