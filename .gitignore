@@ -1,0 +1,19 @@
+.DS_Store
+.vscode/
+
+# Local environment and generated Python files
+.env
+.env.*
+!.env.example
+.venv/
+venv/
+env/
+__pycache__/
+*.py[cod]
+
+# Generated logs and demo runtime artifacts
+*.log
+*.log.*
+geek_enterprise_grade_multi_agents_design/crewai_mas_demo/**/logs/
+geek_enterprise_grade_multi_agents_design/crewai_mas_demo/**/data/
+geek_enterprise_grade_multi_agents_design/crewai_mas_demo/workspace/output/
