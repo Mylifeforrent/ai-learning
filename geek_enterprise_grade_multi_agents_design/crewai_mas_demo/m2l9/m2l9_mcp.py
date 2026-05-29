@@ -74,9 +74,9 @@ email_agent = Agent(
     """,
     # MCP 服务器配置：使用 HTTP 方式连接外部工具服务
     mcps=[MCPServerHTTP(
-        url="http://localhost:8005/mcp",  # MCP 服务器地址
+        url="http://localhost:8000/mcp",  # MCP 服务器地址
         headers={
-            "Authorization": "Bearer qqkkk",  # 认证令牌
+            "Authorization": "Bearer test-api-key",  # 认证令牌
             "X-User-Id": user_id  # 用户ID（多租户支持）
         },
         streamable=True,  # 支持流式响应
@@ -84,7 +84,7 @@ email_agent = Agent(
         tool_filter=static_filter,  # 工具过滤器，限制可用工具
     )],
     llm=aliyun_llm.AliyunLLM(
-        model="qwen-plus",
+        model="qwen3.6-flash",
         api_key=os.getenv("QWEN_API_KEY"),
         region="cn",  # 使用 region 参数，可选值: "cn", "intl", "finance"
     ),
@@ -96,13 +96,13 @@ email_agent = Agent(
 # ==============================================================================
 
 send_email_task = Task(
-    description="你需要帮我撰写一封邮件，使用我的邮箱569323972@qq.com，收件人是xh_1988@sina.com, 邮件主题是告诉对方我开发了一个邮箱的MCP服务，让他过来试用。",
+    description="你需要帮我撰写一封邮件，使用我的邮箱1299351443@qq.com，收件人是tony.p.tian@qq.com, 邮件主题是告诉对方我开发了一个邮箱的MCP服务，让他过来试用。",
     expected_output="成功调用send_email工具，发送邮件成功",
     agent=email_agent,
 )
 
 get_email_task = Task(
-    description="你需要帮我查看我的邮箱xh_1988@sina.com，查看邮件列表，并将其中第一封邮件的详情告诉我。",
+    description="你需要帮我查看我的邮箱tony.p.tian@qq.com，查看邮件列表，并将其中第一封邮件的详情告诉我。",
     expected_output="成功调用get_mail_list工具，查看邮件列表成功，并成功调用get_mail_detail工具，查看邮件详情成功，最终返回邮件列表和详情的信息给用户",
     agent=email_agent,
 )
