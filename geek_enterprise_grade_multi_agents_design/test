@@ -1,0 +1,874 @@
+# backend_technical_design.md
+
+## 一、参考依据与取舍
+
+### 1. 已阅读并采用的 playbook 文档
+
+本方案依据当前产品与 UI 文档，并严格参考以下 playbook：
+
+- [03_ai_engineering_design_methodology.md](/Users/macbookair/vscode-workspace/ai-learning/geek_enterprise_grade_multi_agents_design/ai_engineering_design_playbook/03_ai_engineering_design_methodology.md)：采用“先用户流、输入输出、验收标准，再 Agent/Workflow”的设计顺序。
+- [04_reusable_project_template.md](/Users/macbookair/vscode-workspace/ai-learning/geek_enterprise_grade_multi_agents_design/ai_engineering_design_playbook/04_reusable_project_template.md)：采用 API、Service、Graph/Workflow、Tools、Memory、Observability、Eval 的模块边界。
+- [05_harness_engineering_practices.md](/Users/macbookair/vscode-workspace/ai-learning/geek_enterprise_grade_multi_agents_design/ai_engineering_design_playbook/05_harness_engineering_practices.md)：采用统一入口、session 隔离、context lifecycle、SkillLoader、Human checkpoint、Hook、Guardrails、Observability、Eval 思想。
+- [06_agent_long_term_reference.md](/Users/macbookair/vscode-workspace/ai-learning/geek_enterprise_grade_multi_agents_design/ai_engineering_design_playbook/06_agent_long_term_reference.md)：采用任务契约优先、工具最小权限、记忆准入、上下文治理、安全不靠 prompt、Eval 持续回归等长期规则。
+- [07_reference_selection_guide.md](/Users/macbookair/vscode-workspace/ai-learning/geek_enterprise_grade_multi_agents_design/ai_engineering_design_playbook/07_reference_selection_guide.md)：用于选择综合项目和 demo 参考，避免参考污染。
+
+补充核对了 LangGraph 官方文档中的 StateGraph、checkpointer、interrupt/resume、streaming、retry policy 术语，用于将 CrewAI 生命周期概念迁移到 LangGraph。参考：[Thinking in LangGraph](https://docs.langchain.com/oss/python/langgraph/thinking-in-langgraph)、[Persistence](https://docs.langchain.com/oss/python/langgraph/persistence)、[Streaming](https://docs.langchain.com/oss/python/langgraph/streaming)。
+
+### 2. 根据 07 选择的额外参考
+
+当前项目是“企业级 AI Web/API 应用 + 知识库/RAG + 工具扩展 + 可审计运行 + 生产安全加固”的组合，因此采用：
+
+| 参考 | 采用内容 | 不采用内容 |
+| --- | --- | --- |
+| Project 1：FastAPI AI Web/API 项目 | API、Service、Flow、Pydantic schema、测试分层 | CrewAI 运行时、具体小红书业务 |
+| Project 3：XiaoPaw With Memory | Harness、session、bootstrap、context lifecycle、SkillLoader、RAG、异步索引 | 飞书入口、文件记忆作为唯一主存储 |
+| Project 5：Security Enhancement | Hook、Guardrails、Observability、SSOT、E2E、安全与成本策略 | CrewAI adapter、过早完整生产加固 |
+| m2l16、m3l19、m3l21、m4l27、m5l30-32 demo | SkillLoader、上下文生命周期、混合检索、Human checkpoint、Hook/可靠性/安全策略 | demo 代码结构照搬 |
+
+不优先参考 Project 2，因为本产品是 Web 工作台，不是企业 IM 助手。不整体引入 Project 4，因为 MVP 不是多角色 Agent Team，只从 m4l27 借鉴异步 Human checkpoint。
+
+### 3. 迁移与不迁移
+
+迁移：
+
+- 方法论：先契约、后实现；先状态机、后节点代码；先测试策略、后开发计划。
+- 目录思想：API、Service、Graph、Tools、Memory、Knowledge、Observability、Eval 分层。
+- Harness：统一 run 入口、session/context/checkpoint/workspace/trace 分层。
+- Memory：短期 session、Graph checkpoint、长期 memory、知识库 RAG 分离。
+- Tool：Agent-Native Tool，语义完整、瘦输出、可恢复错误、最小权限、审计。
+- Guardrails：权限、PII、工具 allowlist、成本、循环、人工审批由确定性代码控制。
+- Observability/Eval：trace、metrics、audit、golden dataset、bad case 回归。
+
+不迁移：
+
+- 不使用 CrewAI。
+- 不迁移 CrewAI Agent/Crew/Task/Process 类。
+- 不把 Project 4 的团队 workspace、mailbox、角色协作全套搬进 MVP。
+- 不把文件系统 memory 作为 SaaS 主存储，只保留 workspace/bootstrap 思想，主存储改为 PostgreSQL、对象存储和 pgvector。
+
+### 4. CrewAI 概念到 LangGraph/LangChain 的替换
+
+| CrewAI / playbook 概念 | LangGraph / LangChain 替换 | 说明 |
+| --- | --- | --- |
+| Agent | LangGraph node + LangChain ChatModel/Runnable | 角色规则进入 node prompt/config，行为边界由状态机和 guardrail 控制 |
+| Task | node contract + Pydantic output schema | 每个 node 定义输入、输出、错误和状态更新 |
+| Process | StateGraph edges / conditional edges | 顺序、并行、条件分支、fallback 都显式建模 |
+| Crew | Graph 或 subgraph | 不使用 CrewAI runtime，复杂能力拆成子图或 worker task |
+| Skill | Skill registry + Reference Skill + LangChain Tool + subgraph | reference skill 注入说明书，task skill 通过受控工具或子图执行 |
+| Harness | FastAPI RunService + GraphRunner + Context/Memory/Tool/Audit services | 负责入口、会话、上下文、工具、安全、观测、评估 |
+| Hook | middleware + graph callback + before/after node/tool/LLM event | 实现 5+2 事件体系，不依赖 CrewAdapter |
+| Human checkpoint | LangGraph interrupt/resume + approval API | graph 暂停，前端审批后用 resume 恢复 |
+| MemoryAwareCrew | Graph checkpoint + SessionContext + Memory service | checkpoint 只保图执行状态，业务 memory 单独治理 |
+
+## 二、产品需求理解
+
+### 1. 核心用户、场景、流程
+
+核心用户：
+
+- 后端工程师、QA/SDET、DevOps/SRE、Tech Lead、Release coordinator、Production support engineer。
+
+核心场景：
+
+- Requirement Copilot：从需求、Issue、API spec、event schema、DB schema、runbook 中生成影响范围、任务拆分、验收标准、测试关注点。
+- Test Case Copilot：从需求和 schema 生成正向、异常、边界、回归、smoke 用例、mock message、API 示例、validation SQL。
+- Daily Health Check：聚合服务状态、队列、日志、指标、部署记录，生成健康报告。
+- Alert Analysis：聚合 alert、日志、指标、部署、runbook，生成 root cause 假设、影响范围、下一步动作和 follow-up draft。
+- Copilot Run Review：查看 input、output、evidence、tool calls、open questions、feedback、audit events。
+- Knowledge Base、Extensions、Audit Log：支撑证据、扩展和审计闭环。
+
+主要输入：
+
+- 文本需求、mock Issue、上传文档、知识库文档、API spec、event schema、DB schema、runbook、历史 defect、日志、指标、队列数据、部署记录、alert payload。
+
+主要输出：
+
+- 结构化 AI output、evidence、confidence、open questions、tool call trace、draft artifacts、Markdown report、approval request、feedback record。
+
+成功标准：
+
+- 核心 run 可重复演示，输出结构完整，有 evidence，低信心和缺失上下文可见。
+- 外部写入只生成 draft 或 approval-required。
+- 每次 run 可回放、可审计、可反馈、可导出。
+
+### 2. 普通后端逻辑与 LLM/Agent/LangGraph 边界
+
+普通后端逻辑负责：
+
+- 鉴权、workspace、权限、数据隔离。
+- API contract、请求校验、状态流转。
+- 文件上传、对象存储、文档索引任务。
+- connector 配置、mock 数据读取、工具权限检查。
+- 审计日志、trace、metrics、成本统计。
+- schema validation、JSON validation、SQL safety check、PII mask。
+- run 列表、详情、筛选、导出、反馈、审批。
+
+LLM / Agent / LangGraph 负责：
+
+- 需求摘要、影响范围推理、风险识别、任务拆分。
+- 测试场景生成、mock 数据草稿、SQL 草稿。
+- 日志/指标/部署/runbook 的语义关联和报告生成。
+- 告警 root cause 假设、runbook 推荐、next actions。
+- evidence 与结论的语义绑定。
+- 信息不足时生成 open questions。
+
+### 3. MVP 范围
+
+MVP 必做：
+
+- 用户登录和单 workspace。
+- Requirement、Test Case、Daily Health Check、Alert Analysis 四类 run。
+- Copilot Runs 列表与详情。
+- Knowledge Base 上传、索引、检索、引用展示。
+- Extensions 管理 mock/readonly/approval-required 状态。
+- Audit Log、Feedback、Markdown 导出。
+- mock 数据完整演示。
+- LangGraph checkpoint、SSE 进度流、人工审批 interrupt/resume。
+- 基础 Guardrails、Observability、Eval seed cases。
+
+暂不实现：
+
+- 企业 SSO、多团队 workspace、复杂权限矩阵、计费。
+- Release Copilot 外部写入、Maintenance 真实环境验证。
+- 真实 CI/CD 测试触发和生产修复动作。
+- 完整 Agent Team、角色 mailbox、自我进化闭环。
+- 自动关闭告警、自动发布、自动修改生产配置。
+
+### 4. 关键假设
+
+- MVP 采用单 workspace + 基础 RBAC，后续扩展多 workspace。
+- 默认 connector 为 mock 或 readonly，写入能力仅生成 draft。
+- LLM provider 通过 LangChain abstraction 配置，不在设计中绑定单一模型。
+- 知识库首期支持 Markdown、txt、JSON、YAML、PDF；PDF 可先转文本后索引。
+- 前端通过 REST + SSE 获取 run 状态和流式进度，WebSocket 暂缓。
+
+## 三、总体技术架构
+
+### 1. 后端模块划分
+
+| 模块 | 职责 |
+| --- | --- |
+| `api` | FastAPI routers、request/response schema、鉴权依赖、错误映射 |
+| `services` | RunService、KnowledgeService、ExtensionService、ApprovalService、FeedbackService |
+| `graphs` | LangGraph StateGraph、subgraph、node contracts、routing、retry/fallback |
+| `graph_runtime` | GraphRunner、checkpoint 配置、stream adapter、interrupt/resume |
+| `tools` | Agent-Native Tool registry、LangChain Tool adapters、mock/readonly connector tools |
+| `skills` | Reference skill、task skill metadata、SkillLoader 化注册 |
+| `harness` | session、context、workspace、memory、trace、budget、event bus |
+| `memory` | short-term summary、long-term memory、memory write governance、search_memory |
+| `knowledge` | document ingestion、chunking、embedding、hybrid retrieval、citation building |
+| `guardrails` | permission gate、PII mask、prompt injection filter、tool allowlist、cost/loop guard |
+| `observability` | structured logs、OpenTelemetry、Prometheus metrics、LangSmith trace、audit |
+| `evals` | golden dataset、judge prompts、eval runner、bad case reports |
+| `workers` | Celery graph execution、document indexing、export、eval jobs |
+
+### 2. 技术栈选择
+
+| 组件 | 选择 | 理由 |
+| --- | --- | --- |
+| API | Python + FastAPI + Pydantic v2 | 与约束一致，契约清晰，适合 async API |
+| Graph | LangGraph | 支持显式状态机、checkpoint、interrupt/resume、streaming、durable execution |
+| LLM/Tools | LangChain | 模型、tool calling、retriever、structured output 生态成熟 |
+| DB | PostgreSQL + SQLAlchemy 2.0 + Alembic | 业务数据、审计、任务状态、结构化查询 |
+| 向量库 | pgvector | 与 PostgreSQL 共库，适合 MVP 和企业部署，支持 metadata 过滤 |
+| 缓存/队列 | Redis | run 状态缓存、SSE pub/sub、rate limit、Celery broker |
+| 异步任务 | Celery worker | 长 run、索引、导出、eval 异步化，成熟可观测 |
+| 对象存储 | S3 compatible 或 MinIO | 上传文件、导出报告、大工具结果、trace artifact |
+| Observability | OpenTelemetry + Prometheus + Grafana + LangSmith | 系统指标、trace、LLM/graph 可视化 |
+| 测试 | pytest + httpx + respx + testcontainers | API、graph、tool、DB、RAG、E2E 可测试 |
+
+### 3. 来自 playbook 的设计与 LangGraph 化改造
+
+来自 playbook：
+
+- API/Service/Flow 分层。
+- Runner/Harness 不做智能判断，只做调度、上下文、安全和观测。
+- SkillLoader 渐进式披露。
+- 三层 memory、异步索引、混合检索。
+- Hook 5+2 事件、权限 gate、审计、成本、循环检测。
+- Unit/Integration/E2E/Eval 分层。
+
+LangGraph 化改造：
+
+- CrewAI Process 改为 StateGraph edges。
+- CrewAI Task 改为 node contract + state update。
+- CrewAI before_llm_call 改为 GraphRunner 的 context builder 和 LangChain callbacks。
+- CrewAI Hook Adapter 改为 `GraphEventBus`，统一 `BEFORE_RUN`、`BEFORE_NODE`、`BEFORE_LLM`、`BEFORE_TOOL_CALL`、`AFTER_TOOL_CALL`、`AFTER_NODE`、`AFTER_RUN`、`RUN_INTERRUPTED`、`RUN_RESUMED`。
+- Human checkpoint 改为 LangGraph interrupt/resume，审批结果走 API 写入状态并恢复 graph。
+
+## 四、API 契约设计
+
+### 1. 通用约定
+
+- Base path：`/api/v1`
+- Auth：MVP 使用 Bearer JWT；开发可启用 mock auth，但生产必须关闭。
+- 通用响应：`{ "request_id", "data", "error" }`
+- 通用错误：`400 invalid_request`、`401 unauthenticated`、`403 forbidden`、`404 not_found`、`409 conflict`、`422 validation_error`、`429 rate_limited`、`500 internal_error`、`503 dependency_unavailable`、`504 timeout`
+- 所有响应携带 `request_id`，所有 run 相关响应携带 `trace_id`、`run_id`、`session_id`。
+- 外部写入能力必须返回 `approval_required` 或 `draft_created`，不得直接执行。
+
+### 2. 同步 API
+
+| MVP | Method | Path | Request | Response | Auth |
+| --- | --- | --- | --- | --- | --- |
+| 是 | `POST` | `/auth/login` | `{email,password}` | `{access_token,expires_at,user}` | none |
+| 是 | `GET` | `/me` | none | `{user,workspace,roles}` | user |
+| 是 | `GET` | `/dashboard/summary` | query: `time_range` | `{run_counts,evidence_coverage,acceptance_rate,attention_needed,usage}` | user |
+| 是 | `GET` | `/copilot-runs` | query: `run_type,status,created_by,confidence,approval_required,page,page_size` | `{items,total,page,page_size}` | user |
+| 是 | `GET` | `/copilot-runs/{run_id}` | none | `{run,input,output,evidence,tool_calls,open_questions,feedback,audit_events,artifacts}` | run viewer |
+| 是 | `GET` | `/copilot-runs/{run_id}/trace` | none | `{trace_id,nodes,events,tool_calls,llm_calls,cost,errors}` | run viewer |
+| 是 | `GET` | `/knowledge/documents` | query filters | `{items,total}` | workspace member |
+| 是 | `GET` | `/knowledge/documents/{document_id}` | none | `{metadata,index_status,chunks,referenced_runs,permission_note}` | document viewer |
+| 是 | `GET` | `/extensions` | query: `type,status,mode` | `{items}` | workspace member |
+| 是 | `GET` | `/audit-events` | query filters | `{items,total}` | auditor/admin |
+| 后续 | `GET` | `/admin/eval-runs` | query filters | `{items,total}` | admin |
+
+### 3. 异步任务 API
+
+| MVP | Method | Path | Request schema | Response schema | 错误 |
+| --- | --- | --- | --- | --- | --- |
+| 是 | `POST` | `/requirement-runs` | `{source_type, requirement_text?, issue_id?, file_ids?, knowledge_document_ids?, context_selection, options}` | `{run_id,task_id,status:"queued",trace_id,events_url}` | `invalid_context`、`permission_denied` |
+| 是 | `POST` | `/test-case-runs` | `{source_type, source_run_id?, requirement_text?, schema_document_ids?, checklist_ids?, options}` | `{run_id,task_id,status:"queued",trace_id,events_url}` | `source_run_not_found`、`schema_invalid` |
+| 是 | `POST` | `/health-check-runs` | `{data_source_mode,time_range,service_group?,signals,options}` | `{run_id,task_id,status:"queued",trace_id,events_url}` | `connector_unavailable` |
+| 是 | `POST` | `/alert-analysis-runs` | `{alert_payload?, mock_alert_id?, context_selection, options}` | `{run_id,task_id,status:"queued",trace_id,events_url}` | `missing_alert` |
+| 是 | `POST` | `/knowledge/documents` | multipart: `file, metadata{type,team,system,valid_until}` | `{document_id,index_task_id,index_status:"queued"}` | `unsupported_file`、`file_too_large` |
+| 是 | `POST` | `/extensions/{extension_id}/test` | `{mode,config_ref?}` | `{task_id,status:"queued"}` | `invalid_extension_mode` |
+| 后续 | `POST` | `/eval-runs` | `{suite,run_type,model_config_ref}` | `{eval_run_id,status}` | admin only |
+
+### 4. 流式响应 API
+
+| MVP | Method | Path | Protocol | Events |
+| --- | --- | --- | --- | --- |
+| 是 | `GET` | `/copilot-runs/{run_id}/events` | SSE | `run.started`、`node.started`、`tool.started`、`tool.completed`、`llm.started`、`progress.updated`、`run.interrupted`、`run.completed`、`run.failed` |
+| 后续 | `GET` | `/copilot-runs/{run_id}/tokens` | SSE | token-level output，仅在明确需要实时生成文本时开启 |
+| 后续 | `GET` | `/notifications/events` | SSE | approval、indexing、extension test 全局通知 |
+
+SSE event payload：
+
+- `{event_id, run_id, trace_id, timestamp, type, status, stage, message, progress, node_name?, tool_call_id?, error?}`
+
+### 5. 回调 / Webhook API
+
+| MVP | Method | Path | Request | Response | Auth |
+| --- | --- | --- | --- | --- | --- |
+| 后续 | `POST` | `/webhooks/connectors/{connector_id}/events` | connector-specific event envelope | `{accepted,event_id}` | HMAC signature |
+| 后续 | `POST` | `/webhooks/ci/test-results` | `{provider,run_ref,status,artifacts}` | `{accepted}` | HMAC signature |
+| 是 | `POST` | `/approvals/{approval_id}/decision` | `{decision:"approved|rejected",comment?,edited_payload?}` | `{run_id,status,resume_submitted}` | approver |
+| 是 | `POST` | `/copilot-runs/{run_id}/resume` | `{resume_type, payload}` | `{run_id,status:"running"}` | run owner/approver |
+
+### 6. 管理类 API
+
+| MVP | Method | Path | Request | Response |
+| --- | --- | --- | --- | --- |
+| 是 | `GET` | `/health/live` | none | `{status:"ok"}` |
+| 是 | `GET` | `/health/ready` | none | `{status,db,redis,object_storage,vector_index}` |
+| 是 | `GET` | `/metrics` | Prometheus | Prometheus text |
+| 是 | `PATCH` | `/extensions/{extension_id}` | `{enabled?,mode?,risk_note?,owner?}` | `{extension}` |
+| 是 | `POST` | `/copilot-runs/{run_id}/feedback` | `{rating:"accepted|partially_accepted|rejected",comment?,labels?}` | `{feedback_id}` |
+| 是 | `POST` | `/copilot-runs/{run_id}/export` | `{format:"markdown"}` | `{artifact_id,download_url,status}` |
+| 是 | `POST` | `/copilot-runs/{run_id}/cancel` | `{reason?}` | `{run_id,status:"canceled"}` |
+
+## 四-2、前端交互契约假设
+
+### 1. 页面与 API 对应
+
+| 页面 | 用户动作 | API | 响应方式 |
+| --- | --- | --- | --- |
+| Dashboard | 查看工作台摘要 | `GET /dashboard/summary` | 同步 |
+| Dashboard | 点击 quick action | 前端跳转 | 无后端 |
+| Copilot Runs | 筛选 run | `GET /copilot-runs` | 同步 |
+| Run Detail | 查看 run 全量信息 | `GET /copilot-runs/{run_id}` | 同步 |
+| Run Detail | 查看执行流 | `GET /copilot-runs/{run_id}/events` | SSE |
+| Run Detail | 导出 Markdown | `POST /copilot-runs/{run_id}/export` | 异步，可轮询或 SSE |
+| Requirement | Run Analysis | `POST /requirement-runs` | 异步 + SSE |
+| Test Case | Generate | `POST /test-case-runs` | 异步 + SSE |
+| Health Check | Run Check | `POST /health-check-runs` | 异步 + SSE |
+| Alert Analysis | Analyze Alert | `POST /alert-analysis-runs` | 异步 + SSE |
+| Alert Analysis | Create follow-up draft | graph 生成 draft 后 `approval_required` | interrupt + approval |
+| Knowledge Base | 上传文档 | `POST /knowledge/documents` | 异步索引 |
+| Extensions | 测试连接 | `POST /extensions/{id}/test` | 异步 |
+| Audit Log | 筛选审计 | `GET /audit-events` | 同步 |
+| Feedback | 提交反馈 | `POST /copilot-runs/{id}/feedback` | 同步 |
+
+### 2. 交互响应模式
+
+- 同步响应：列表、详情、筛选、Dashboard summary、反馈提交。
+- 异步任务：四类 Copilot run、文档索引、导出、extension test。
+- 流式输出：run progress、tool call、LLM node stage、interrupt、completion，通过 SSE。
+- 轮询：SSE 不可用时，前端可轮询 `GET /copilot-runs/{id}`。
+- WebSocket：MVP 不需要，后续如果有多 run 通知中心再引入。
+
+### 3. 前端状态枚举
+
+后端返回 canonical status，前端按以下状态展示：
+
+| UI 状态 | 后端 status | 说明 |
+| --- | --- | --- |
+| `idle` | none / draft | 未发起 |
+| `loading` | queued / indexing | 请求已提交，等待 worker |
+| `running` | running | graph 正在执行 |
+| `waiting_for_human` | waiting_for_human | LangGraph interrupt，等待审批或补充信息 |
+| `success` | success / completed_with_warnings | 完成，warnings 需显示 |
+| `failed` | failed | 非权限类失败 |
+| `denied` | denied | guardrail 或 permission gate 拒绝 |
+| `timeout` | timeout | run、node 或 tool 超时 |
+
+### 4. 错误、进度、trace、文件、反馈契约
+
+- 错误返回：`{code,message,details,recoverable,next_action,affected_sections}`。
+- 进度返回：SSE event 中包含 `stage`、`progress`、`current_node`、`last_tool_call`。
+- 执行 trace：详情页通过 `/trace` 获取 node、tool、LLM、cost、errors。
+- 文件上传：上传后返回 `file_id`，run request 只引用 `file_id`。
+- 文件下载：导出和工具大结果返回 `artifact_id` 和短期 `download_url`。
+- 用户反馈：反馈写入 `run_feedback`，同时作为 Eval/Data Flywheel 信号。
+- permission denied evidence：返回 evidence placeholder，展示 `permission_note`，不泄漏内容。
+
+## 五、LangGraph 状态机契约
+
+### 1. Graph State Schema
+
+`EngineeringCopilotState` 逻辑字段：
+
+| 字段 | 类型 | 说明 |
+| --- | --- | --- |
+| `flow_version` | string | 图版本，新旧 run 恢复时保持原版本 |
+| `run_id/task_id/session_id/trace_id` | string | 贯穿 API、Graph、Tool、Memory |
+| `workspace_id/user_id` | string | 权限与隔离 |
+| `run_type` | enum | requirement、test_case、health_check、alert_analysis |
+| `input` | object | 原始业务输入引用，长文本和文件只存引用 |
+| `context_selection` | object | 用户选择的 API spec、schema、runbook、mock data |
+| `retrieval_plan` | object | 检索计划和所需工具 |
+| `retrieved_context` | list | 已过滤的上下文摘要和 source refs |
+| `tool_calls` | list | 工具调用摘要、状态、耗时、错误 |
+| `evidence` | list | source、excerpt、related_conclusion、permission_note |
+| `draft_output` | object | LLM 结构化草稿 |
+| `validated_output` | object | 通过 schema/rule 检查后的输出 |
+| `open_questions` | list | 缺失上下文或需人工确认的问题 |
+| `approval_request` | object? | human-in-the-loop payload |
+| `status` | enum | queued/running/waiting_for_human/success/failed/denied/timeout |
+| `errors` | list | 可恢复和不可恢复错误 |
+| `safety_findings` | list | PII、prompt injection、permission、cost、risk |
+| `artifacts` | list | Markdown、mock JSON、SQL、report 文件引用 |
+| `memory_candidates` | list | 待治理的长期记忆候选 |
+| `metrics` | object | token、cost、latency、node attempts |
+
+### 2. Node 契约
+
+| Node | 类型 | 职责 | 输入 | 输出 | 失败处理 |
+| --- | --- | --- | --- | --- | --- |
+| `intake_validate` | 确定性 | 校验 request、建立 run/session/trace | API request | normalized input | 422 或 failed |
+| `auth_scope_gate` | 确定性 | 检查 workspace、role、document/tool 权限 | user/context | allowed scopes | denied + audit |
+| `build_retrieval_plan` | LLM + 规则 | 按 run_type 规划所需上下文 | input/context_selection | retrieval_plan | fallback 到规则计划 |
+| `retrieve_context` | 工具 | 知识库、mock、connector 检索 | retrieval_plan | retrieved_context/evidence seeds | partial data + warning |
+| `filter_and_compress_context` | 确定性 | 权限过滤、去噪、摘要、token budget | retrieved_context | compact context | 超预算则降级 |
+| `collect_domain_signals` | 工具/确定性 | health/alert 采集指标日志部署 | run_type/context | normalized signals | 区分采集失败和业务异常 |
+| `generate_requirement_analysis` | LLM | 需求摘要、影响、风险、tasks、AC、test focus | compact context | draft_output | retry 2 次，失败转 open_questions |
+| `generate_test_cases` | LLM | 测试场景、mock message、SQL 草稿 | source + schemas | draft_output | schema 缺失则 needs input |
+| `generate_health_report` | LLM + 规则 | 健康报告和 recommended actions | signals/evidence | draft_output | 采集失败不得推断异常 |
+| `generate_alert_analysis` | LLM | RCA 假设、runbook、next actions、draft issue | alert/timeline/runbook | draft_output | conflicting evidence 降低 confidence |
+| `validate_structured_output` | 确定性 | Pydantic/schema/rule validation | draft_output | validated_output | failed 或 retry repair |
+| `link_evidence` | LLM + 确定性 | 结论到 evidence 的映射 | output/context | evidence map | 高风险无 evidence 降级 |
+| `guardrail_review` | 确定性 + judge | PII、权限、写入风险、prompt injection、成本 | state | safety_findings | denied/waiting_for_human |
+| `human_checkpoint` | LangGraph interrupt | 审批外部 draft 或补充信息 | approval_request | resume payload | timeout/rejected |
+| `persist_artifacts` | 确定性 | 写 output、artifact、audit、events | final state | artifact refs | 重试，失败保留 run failed |
+| `memory_candidate_index` | 异步 | 生成记忆候选和索引任务 | final state | memory/index tasks | 不阻塞主 run |
+| `finalize_run` | 确定性 | 更新 run 状态、发 SSE completed | state | final response | 失败进入 audit |
+
+### 3. Edge 与 Conditional Edge
+
+主流程：
+
+```text
+START
+  -> intake_validate
+  -> auth_scope_gate
+  -> build_retrieval_plan
+  -> retrieve_context
+  -> filter_and_compress_context
+  -> route_by_run_type
+```
+
+按 run type 分支：
+
+- requirement：`generate_requirement_analysis -> validate_structured_output`
+- test_case：`generate_test_cases -> validate_structured_output`
+- health_check：`collect_domain_signals -> generate_health_report -> validate_structured_output`
+- alert_analysis：`collect_domain_signals -> generate_alert_analysis -> validate_structured_output`
+
+公共收尾：
+
+```text
+validate_structured_output
+  -> link_evidence
+  -> guardrail_review
+  -> if approval_required: human_checkpoint
+  -> persist_artifacts
+  -> memory_candidate_index
+  -> finalize_run
+  -> END
+```
+
+条件边：
+
+- `route_by_run_type`：根据 `run_type` 路由。
+- `after_retrieve_context`：如果关键上下文缺失，进入 `needs_input_output` 或继续低信心生成。
+- `after_validate_output`：schema invalid 可进入 `repair_output`，最多 1 次。
+- `after_guardrail_review`：allow、deny、ask_human、fallback。
+- `after_human_checkpoint`：approved 继续，rejected 结束为 denied，timeout 结束为 timeout。
+
+### 4. Checkpoint、重试、fallback、恢复
+
+- `thread_id = run_id`，LangGraph checkpoint 存每个 node 后的 state。
+- 业务 `copilot_runs` 只存可展示摘要，完整 checkpoint 由 checkpointer 表管理。
+- 每个外部 tool node 使用 retry policy，默认最多 2 次，指数退避。
+- LLM 节点失败时先做一次 structured repair，仍失败则进入 failed 或 open_questions。
+- `human_checkpoint` 使用 interrupt，审批 API 写入 approval decision 后 resume。
+- 长 run worker 崩溃后，通过 checkpoint 和 task lease 恢复到最近 node。
+- graph 结束条件：success、failed、denied、timeout、canceled。
+- run 超时：MVP 默认 10 分钟，可按 run_type 配置。
+
+## 六、数据模型与存储设计
+
+### 1. 核心表
+
+| 表 | 关键字段 | 数据类型归属 |
+| --- | --- | --- |
+| `users` | `id,email,name,status,created_at` | 业务数据 |
+| `workspaces` | `id,name,mode,created_at` | 业务数据 |
+| `workspace_members` | `workspace_id,user_id,role` | 权限数据 |
+| `sessions` | `id,workspace_id,user_id,routing_key,summary,last_run_id` | AI 会话数据 |
+| `copilot_runs` | `id,workspace_id,user_id,session_id,run_type,status,confidence,evidence_coverage,approval_state,trace_id,started_at,finished_at` | 业务 + AI 执行数据 |
+| `run_inputs` | `run_id,input_type,payload_json,file_refs,source_run_id` | AI 执行数据 |
+| `run_outputs` | `run_id,output_json,summary,open_questions,risk_level,version` | AI 执行数据 |
+| `run_events` | `id,run_id,event_type,node_name,status,payload_json,created_at` | 观测数据 |
+| `tool_calls` | `id,run_id,tool_name,input_summary,output_summary,status,latency_ms,error_code,audited` | AI 执行 + 审计 |
+| `evidence_items` | `id,run_id,source_type,source_id,excerpt,related_conclusion,permission_note,score` | AI 执行数据 |
+| `files` | `id,workspace_id,owner_id,storage_key,mime_type,size,sha256,status` | 业务数据 |
+| `artifacts` | `id,run_id,type,storage_key,metadata_json,expires_at` | AI 产物 |
+| `knowledge_documents` | `id,workspace_id,title,type,system,team,index_status,permission_scope,source_file_id` | 业务 + 知识数据 |
+| `document_chunks` | `id,document_id,chunk_index,text,summary,metadata,embedding,tsvector,hash` | RAG 数据 |
+| `memory_items` | `id,workspace_id,user_id?,scope,type,content,summary,metadata,embedding,status,expires_at` | 长期 AI memory |
+| `extensions` | `id,workspace_id,name,type,mode,status,permission_level,owner,risk_note,last_error` | 业务配置 |
+| `approvals` | `id,run_id,type,status,request_payload,decision_payload,decided_by,decided_at` | 审批/审计 |
+| `feedback` | `id,run_id,user_id,rating,comment,labels,created_at` | 质量反馈 |
+| `audit_events` | `id,trace_id,actor_id,event_type,target_type,target_id,risk_level,status,payload_redacted` | 审计数据 |
+| `eval_cases` | `id,suite,run_type,input_json,expected_behavior,must_include,must_not_include` | Eval 数据 |
+| `eval_results` | `id,eval_run_id,case_id,score,passed,reason,output_ref` | Eval 数据 |
+
+### 2. Checkpoint 与业务状态边界
+
+- LangGraph checkpoint：保存 graph 内部恢复所需 state，不作为前端展示主表。
+- `copilot_runs`：保存 run 的业务状态和 UI 摘要。
+- `run_events`：保存可展示的进度和回放事件。
+- `audit_events`：保存安全、审批、权限、工具调用审计。
+- `sessions`：保存跨 run 的会话摘要，不保存全部 raw prompt。
+- `memory_items`：只保存经过准入的长期事实、偏好、决策、复用流程摘要。
+
+### 3. RAG / Memory 设计
+
+向量库：
+
+- 使用 PostgreSQL + pgvector。
+- `document_chunks` 和 `memory_items` 都支持 embedding，但分表治理。
+- 检索必须带 `workspace_id`、`permission_scope`、`document_type`、`system`、`team` 过滤。
+
+chunk 策略：
+
+- Markdown 按 heading 切分。
+- JSON/YAML 按对象边界和 schema path 切分。
+- API spec 按 endpoint/schema 切分。
+- Runbook 按步骤、症状、处理动作切分。
+- PDF 先抽文本，保留 page number 和 source file。
+- 每个 chunk 存 `source_uri`、`source_title`、`section_path`、`valid_until`、`sha256`、`created_by`。
+
+检索策略：
+
+- 精确字段优先：API endpoint、event name、service name、alert name。
+- 混合检索：BM25/tsvector + vector search + metadata filters。
+- rerank：优先同 system、同 run_type、近期有效文档。
+- 输出给 LLM 前压缩为 evidence candidates，避免传入全文。
+- 低召回时返回 open_questions，不编造结论。
+
+## 七、Tool / Function 契约设计
+
+### 1. Tool 设计原则
+
+- 工具名使用动词 + 名词，语义完整。
+- 输入用 Pydantic/JSON schema，字段面向模型理解。
+- 输出只包含决策必要字段、source refs、错误恢复建议。
+- 所有外部工具默认 readonly。
+- 写入类工具只创建 draft 或 approval request。
+- BEFORE_TOOL_CALL 必须经过 permission gate、PII mask、cost guard、audit logger。
+
+### 2. 工具清单
+
+| Tool | 用途 | 输入 schema | 输出 schema | 权限与审计 | 实现 |
+| --- | --- | --- | --- | --- | --- |
+| `search_knowledge` | 检索知识库文档 | `{query,filters,top_k,run_id}` | `{results:[{source_id,title,excerpt,score,permission_note}]}` | 需要 document read 权限，审计 | LangChain Tool |
+| `fetch_mock_context` | 加载 mock Issue/metrics/logs/schema | `{mock_id,context_type}` | `{payload,source_ref}` | MVP 允许，审计 | 确定性代码 |
+| `fetch_issue` | 读取 Jira/GitHub/GitLab Issue | `{connector_id,issue_ref}` | `{title,body,status,links,source_ref}` | readonly，用户继承权限 | LangChain Tool |
+| `fetch_api_spec` | 读取 API spec | `{document_id|connector_ref}` | `{endpoints,schemas,source_refs}` | read 权限 | 确定性 + Tool |
+| `fetch_event_schema` | 读取 event/message schema | `{document_id|schema_ref}` | `{schema_json,examples,source_ref}` | read 权限 | 确定性 + Tool |
+| `fetch_db_schema` | 读取 DB schema 文档 | `{document_id|schema_ref}` | `{tables,columns,relations,source_ref}` | 禁止真实 DB introspection in MVP | Tool |
+| `fetch_runbook` | 查找 runbook | `{query,system,alert_name?}` | `{runbooks,evidence}` | read 权限 | LangChain Tool |
+| `fetch_metrics` | 读取指标摘要 | `{connector_id,time_range,service_group,metric_names}` | `{series_summary,abnormal_points,source_ref}` | readonly，审计 | LangChain Tool |
+| `fetch_logs` | 读取日志摘要 | `{connector_id,time_range,query,limit}` | `{patterns,error_samples,source_ref}` | PII mask，limit 强制 | LangChain Tool |
+| `fetch_queue_stats` | 读取队列/stream 状态 | `{connector_id,time_range,queue_names}` | `{lag,retry,dead_letter,source_ref}` | readonly | LangChain Tool |
+| `fetch_deployments` | 读取部署记录 | `{connector_id,time_range,services}` | `{deployments,timeline}` | readonly | LangChain Tool |
+| `validate_json_schema` | 验证 mock message | `{schema_json,messages}` | `{valid,errors,valid_count,invalid_count}` | 无外部权限，审计可选 | 确定性代码 |
+| `check_sql_safety` | 检查 validation SQL 草稿 | `{sql,dialect}` | `{safe,violations,normalized_sql}` | 禁止执行 SQL | 确定性代码 |
+| `create_external_draft` | 创建 follow-up Issue/release draft | `{target_system,title,body,links}` | `{draft_id,approval_required}` | 必须 approval，审计 | LangChain Tool wrapper |
+| `export_markdown` | 生成 Markdown 报告 | `{run_id,sections}` | `{artifact_id,storage_key}` | run viewer | 确定性代码 |
+| `search_memory` | 检索长期 memory | `{query,scope,top_k}` | `{memories,source_refs}` | workspace/user 隔离，审计 | LangChain Tool |
+| `propose_memory_write` | 生成记忆候选 | `{run_id,candidate}` | `{candidate_id,status:"pending_review"}` | 不直接写入长期记忆 | 确定性 + 可选 LLM |
+
+### 3. 不暴露给 LangGraph 节点的能力
+
+以下只能由确定性后端调用，不作为 LangChain Tool 暴露给 LLM：
+
+- 鉴权、角色判断、workspace ACL。
+- 凭证读取和注入。
+- 数据库写入审批状态。
+- 真实外部系统写操作。
+- 删除文件、删除文档、修改 extension 权限。
+- 执行 SQL、执行 shell、访问任意 URL。
+
+## 八、Harness 工程设计
+
+### 1. Harness 职责
+
+本项目 Harness 等价于：
+
+```text
+FastAPI 入口
+  -> RunCommand 标准化
+  -> Auth/Workspace/Session 隔离
+  -> Context Builder
+  -> LangGraph GraphRunner
+  -> Tool Registry + Permission Gate
+  -> Checkpoint + Business State
+  -> Memory/Knowledge
+  -> SSE/Event/Audit/Trace
+  -> Eval/Data Flywheel
+```
+
+### 2. Session、Context、Memory、Checkpoint、Workspace、Trace 边界
+
+| 对象 | 作用 | 存储 | 边界 |
+| --- | --- | --- | --- |
+| `business session` | 前端会话和 run 关联 | `sessions` | 不保存完整 prompt |
+| `LangGraph checkpoint` | graph 恢复和 interrupt/resume | checkpointer tables | 不作为长期 memory |
+| `workspace` | 用户可见文件、文档、配置、artifacts | DB + object storage | workspace_id 强隔离 |
+| `context` | 本次 LLM 调用的最小上下文 | runtime state | 每个 node 动态构建 |
+| `long-term memory` | 稳定偏好、项目事实、决策 | `memory_items` + pgvector | 准入、去重、过期 |
+| `trace` | 调试和观测链路 | LangSmith/OTel + DB events | 脱敏，不存凭证 |
+
+### 3. 上下文污染防护
+
+- 每个 run 从 `input`、`context_selection` 和明确检索结果构造上下文。
+- 不自动把所有历史 run 注入 prompt。
+- `search_memory` 只有在 run_type 或 query 需要历史时调用。
+- tool 大结果写 artifact，只给 LLM 摘要、路径和 source ref。
+- 检索文档标记为 untrusted content，不能覆盖 system/developer 指令。
+- 上下文超过预算时按 evidence relevance、用户选择、文档类型、时间有效性裁剪。
+
+### 4. 工具结果膨胀防护
+
+- 工具输出必须有最大 item 数、最大字符数、摘要字段。
+- 日志和指标只返回 pattern、sample、timeline，不返回全量原文。
+- 文件解析结果按 chunk 存储，LLM 只看相关 chunk。
+- SSE 展示 tool summary，完整 artifact 需用户显式打开。
+
+### 5. 记忆污染防护
+
+- 长期 memory 写入分两步：candidate -> review/auto-policy -> active。
+- 不保存敏感凭证、完整 prompt、未经确认的推测、大段工具输出。
+- 同一事实写入前做相似度去重和冲突检测。
+- memory 有 `scope`、`source_run_id`、`confidence`、`expires_at`。
+- 用户反馈和 eval bad cases 可进入改进队列，但不直接成为 prompt 规则。
+
+## 九、安全与 Guardrails
+
+### 1. 鉴权、权限、数据隔离
+
+- MVP：Bearer JWT + workspace role。
+- Roles：`viewer`、`operator`、`admin`、`auditor`。
+- 所有 query 必须带 `workspace_id` 过滤。
+- connector 读取遵守当前用户或 workspace service account 的权限。
+- `trace_id`、`run_id`、`session_id` 由服务端生成，不接受客户端覆盖。
+- 审计日志不可被普通用户修改。
+
+### 2. Prompt Injection 防护
+
+- 检索内容统一包裹为 untrusted evidence。
+- 文档中的“忽略之前指令”“调用工具”等内容只作为被分析文本。
+- Tool 参数由 node 结构化生成，并经 schema/allowlist 校验。
+- 关键安全判断不交给 LLM。
+- 高风险输出必须通过 evidence 和 guardrail review。
+
+### 3. 工具调用限制
+
+- Tool allowlist 按 run_type、role、extension mode 生效。
+- 写入类工具默认 disabled，MVP 只 draft-write + approval-required。
+- 每个 run 有 tool call 数、token、成本、耗时上限。
+- 重复工具输入 hash 达阈值触发 loop deny。
+- 外部 connector timeout 后返回 partial data，不让 LLM无限重试。
+
+### 4. PII 与敏感信息
+
+- 输入、日志、trace、tool output 进入 LLM 前做 PII mask。
+- 凭证只在执行层注入，不进入 prompt、tool schema、trace。
+- audit 保存 redacted payload。
+- 下载 artifact 前检查权限和过期时间。
+
+### 5. 确定性控制点
+
+必须由确定性代码控制：
+
+- Auth/RBAC/ACL。
+- Tool allow/deny/ask。
+- connector mode 和 write protection。
+- PII mask 和 secret redaction。
+- SQL safety check 和禁止执行。
+- 成本、超时、循环检测。
+- approval 状态流转。
+- evidence coverage 门槛。
+
+### 6. LangGraph 关键节点安全检查
+
+| 节点 | 安全检查 |
+| --- | --- |
+| `intake_validate` | 文件类型、大小、输入长度、恶意 payload |
+| `auth_scope_gate` | workspace、role、document、extension 权限 |
+| `retrieve_context` | connector mode、用户权限继承、检索范围 |
+| `filter_and_compress_context` | prompt injection 标记、PII mask |
+| `generate_*` | token/cost budget、model policy |
+| `validate_structured_output` | schema、字段完整率、JSON 可解析 |
+| `guardrail_review` | evidence、PII、写入风险、低信心降级 |
+| `human_checkpoint` | approval role、decision audit、timeout |
+| `persist_artifacts` | artifact ACL、redaction、retention |
+
+## 十、Observability
+
+### 1. 日志、指标、Trace
+
+| 类型 | 方案 | 内容 |
+| --- | --- | --- |
+| Structured log | JSON log | request、run、node、tool、error、deny |
+| Metrics | Prometheus | API latency、run count、node latency、tool error、token、cost、deny |
+| Trace | OpenTelemetry | HTTP -> queue -> graph -> node -> LLM/tool spans |
+| LLM/Graph trace | LangSmith | prompt 摘要、structured output、tool chain、graph path |
+| Audit | PostgreSQL `audit_events` | 权限、审批、外部工具、反馈、安全事件 |
+
+### 2. Trace ID 贯穿
+
+- API request 创建 `request_id` 和 `trace_id`。
+- 创建 run 时写入 `copilot_runs.trace_id`。
+- Celery task payload 携带 `trace_id/run_id/session_id/user_id/workspace_id`。
+- GraphRunner 将 trace 写入 contextvar 和 LangGraph config。
+- 每个 node、LLM、tool span 都带相同 trace_id。
+- Tool call、audit event、SSE event、artifact metadata 都写 trace_id。
+
+### 3. 一次 LangGraph 执行的追踪结构
+
+```text
+HTTP POST /requirement-runs
+  span: run.create
+  span: queue.enqueue
+worker graph.execute
+  span: node.intake_validate
+  span: node.retrieve_context
+    span: tool.search_knowledge
+  span: node.generate_requirement_analysis
+    span: llm.chat
+  span: node.guardrail_review
+  span: node.persist_artifacts
+SSE events and audit_events share trace_id
+```
+
+### 4. 核心 Metrics
+
+- API：request count、latency、error rate、rate limit。
+- Run：run started/completed/failed/denied/timeout、duration、status by run_type。
+- Graph：node duration、retry count、interrupt count、resume count。
+- Tool：call count、latency、error rate、deny count、partial data count。
+- LLM：input/output tokens、cost、structured output validation failure。
+- RAG：retrieval latency、hit count、evidence coverage、permission restricted count。
+- Product：acceptance rate、feedback rate、Markdown export count。
+- Security：PII mask count、prompt injection findings、approval required count。
+
+## 十一、测试与 TDD 策略
+
+### 1. 测试分层
+
+| 层 | 测试目标 | 写实现前先完成 |
+| --- | --- | --- |
+| API contract tests | 请求/响应 schema、错误码、鉴权、状态 | 是 |
+| Graph state schema tests | state 必填字段、状态枚举、版本兼容 | 是 |
+| Graph node unit tests | 每个 node 的输入输出和失败路径 | 是，先覆盖关键 node |
+| Graph workflow integration tests | 四类 run 的 happy path、partial、denied、interrupt/resume | 是，使用 mock LLM/tools |
+| Tool tests | schema、权限、瘦输出、可恢复错误 | 是 |
+| Memory/RAG tests | chunk、metadata filter、hybrid retrieval、隔离 | 是，先建立 fixture |
+| Guardrail tests | prompt injection、PII、tool deny、cost、loop、approval | 是 |
+| E2E tests | 从 API 到 SSE 到 run detail 的完整链路 | MVP 阶段完成 |
+| LLM Eval cases | 输出质量、事实性、evidence、低信心处理 | MVP 前完成 seed set |
+
+### 2. 关键测试用例
+
+| 类型 | 样例 | 通过标准 |
+| --- | --- | --- |
+| API contract | `POST /requirement-runs` 缺少输入 | 422，错误定位到字段，run 不创建 |
+| API contract | 无权限访问 run detail | 403，audit 记录 denied |
+| State schema | checkpoint state 缺少 `run_id` | schema validation fail |
+| Node unit | `retrieve_context` 部分 connector timeout | status 继续，warnings 标记 affected sections |
+| Node unit | `validate_structured_output` 字段缺失 | 触发 repair 或 failed |
+| Workflow | Requirement mock run | 输出 summary/impact/risks/tasks/AC/test_focus/evidence |
+| Workflow | Test Case source_run_id | 能继承 Requirement output 和 schema refs |
+| Workflow | Health Check 数据采集失败 | 不把采集失败误判为系统异常 |
+| Workflow | Alert conflicting evidence | confidence 降级，展示冲突来源 |
+| Tool | `fetch_logs` 返回超长日志 | 输出被摘要，PII masked |
+| Tool | `create_external_draft` 未审批 | 只返回 approval_required，不写外部系统 |
+| RAG | 跨 workspace 检索 | 不返回其他 workspace chunk |
+| RAG | API endpoint 精确检索 | endpoint chunk 排名前列 |
+| Guardrail | 文档包含 prompt injection | 不执行文档指令，输出 safety finding |
+| Guardrail | 高风险结论无 evidence | 输出降级或 open question |
+| E2E | run SSE | 收到 started、node、tool、completed 或 failed |
+| E2E | human approval | run interrupted，审批后 resume 并完成 |
+| Eval | Requirement golden 20 条 | 结构完整率 >= 95%，高风险 evidence >= 90% |
+| Eval | Test Case golden 20 条 | 场景覆盖 positive/negative/boundary/regression，mock JSON 过 schema |
+| Eval | Health golden 15 条 | mock 异常识别率 >= 90%，采集失败不误判 |
+| Eval | Alert golden 15 条 | runbook 命中率目标 >= 80%，低证据不确定化 |
+
+### 3. TDD 顺序
+
+1. 先写 Pydantic schema 和 API contract tests。
+2. 写 Graph state schema tests。
+3. 写 Tool contract 和 Guardrail tests。
+4. 用 mock LLM/tools 写四类 workflow integration tests。
+5. 实现最小 graph 后跑 E2E。
+6. 补 golden eval seed，进入持续回归。
+7. 再接真实 connector、复杂 memory 和生产加固。
+
+## 十二、迭代计划
+
+### Phase 1：MVP
+
+交付物：
+
+- FastAPI 基础服务、JWT/mock auth、单 workspace。
+- 四类 run API、Run Detail、SSE events、feedback、Markdown export。
+- LangGraph 四类核心流程，使用 mock connector 和 mock data。
+- PostgreSQL 表、对象存储、基础 pgvector。
+- 基础 guardrail：权限、PII、tool allowlist、approval-required。
+- API/graph/tool/guardrail contract tests。
+
+验收标准：
+
+- 产品 Story 1 到 Story 5 可用 mock 数据跑通。
+- 每个 run 展示 input、output、evidence、tool calls、feedback、audit。
+- 高风险结论无 evidence 时不显示为确定结论。
+- 写入类动作只 draft 或 waiting_for_human。
+
+不做：
+
+- 真实企业 SSO、多团队、复杂审批流、真实写入 connector。
+
+### Phase 2：Memory
+
+交付物：
+
+- `memory_items`、memory candidate、准入/去重/过期机制。
+- Knowledge hybrid retrieval 完整化。
+- session summary 与 context compress。
+- `search_memory` 和 memory/RAG eval fixtures。
+
+验收标准：
+
+- 跨 run 可检索历史决策，但不会跨 workspace 泄漏。
+- 长工具结果不进入 prompt。
+- 记忆写入有审计和冲突检测。
+
+不做：
+
+- Agent 自主改写核心规则。
+- 无治理自动长期记忆。
+
+### Phase 3：Observability
+
+交付物：
+
+- OpenTelemetry trace、Prometheus metrics、LangSmith trace。
+- Trace 页面数据 API。
+- run/node/tool/LLM/cost 指标。
+- Dashboard 质量与使用摘要。
+
+验收标准：
+
+- 任意 run 可按 trace_id 查到 API、graph、tool、LLM、audit。
+- SSE 事件和 trace 事件一致。
+- metrics 能区分 failed、denied、timeout、partial data。
+
+不做：
+
+- 复杂 APM 告警策略自动化。
+
+### Phase 4：Security
+
+交付物：
+
+- 完整 permission gate、prompt injection filter、PII/secret redaction。
+- connector credential injection。
+- approval policy、rate limit、cost guard、loop detector。
+- 安全攻击 eval 和 E2E。
+
+验收标准：
+
+- deny 可观测、可审计、可测试。
+- 外部写入 100% 进入 approval。
+- 敏感字段不进入 LLM、trace、audit 明文。
+
+不做：
+
+- 生产自动修复动作。
+- 任意 shell/SQL 执行工具。
+
+### Phase 5：Eval
+
+交付物：
+
+- Requirement/Test/Health/Alert golden datasets。
+- LLM-as-Judge + rule-based scoring。
+- bad case report 和回归门禁。
+- 用户反馈进入 data flywheel。
+
+验收标准：
+
+- 达到产品文档中的 MVP AI 质量门槛。
+- 每次 prompt、tool、memory、model 配置变更触发相关 eval。
+- failed eval 阻止高风险发布。
+
+不做：
+
+- 完全依赖 LLM judge，不保留规则检查和人工抽检。
+
+### Phase 6：Production Hardening
+
+交付物：
+
+- Docker/K8s 部署、Alembic migration、backup/restore。
+- Redis/Celery worker 水平扩展。
+- connector 真实 readonly 接入。
+- SSOT 文档：threats、flags、ports、locks、tasks。
+- 灰度、回滚、retention、cleanup 策略。
+
+验收标准：
+
+- 支持 worker 崩溃后 checkpoint 恢复。
+- 核心 API、Graph、RAG、Guardrail、Eval CI 全部通过。
+- 运行、成本、安全、质量都有 dashboard 和告警。
+
+不做：
+
+- 多区域部署。
+- 复杂企业计费。
+- 全自动生产变更执行。
