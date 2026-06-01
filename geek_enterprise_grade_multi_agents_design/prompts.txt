@@ -1,0 +1,131 @@
+
+请你系统性审查 `geek_enterprise_grade_multi_agents_design` 文件夹下的内容，并将其中关于 AI 工程、Multi-Agent 设计范式、最佳实践、Harness 工程化实践，以及阶段性综合项目的演进路径，整理成一套可迁移、可复用的 AI 工程设计方法论。
+请先进入计划模式，不要立刻生成最终文档。
+
+第一步只做以下事情：
+1. 扫描目录结构；
+2. 判断哪些目录和文件最关键；
+3. 给出分析顺序；
+4. 给出最终文档结构；
+5. 等我确认后再开始正式生成 `ai_engineering_design_playbook`。
+
+在整个过程中，不要修改原始课程目录和源码。
+## 一、背景说明
+
+该目录中包含一系列从浅入深创建 AI 工程项目的重要经验，内容包括但不限于：
+
+- AI 工程设计范式
+- Multi-Agent 架构设计
+- CrewAI / Agentic Workflow 实践
+- Harness 工程化实践
+- 阶段性综合项目演练
+- 安全增强、记忆机制、Agent Teams 等高级主题
+
+其中有几个关键的阶段性综合项目目录，用来对前面知识点进行阶段性整合和演练：
+
+- `11.项目实战一：小红书爆款笔记`
+- `17.Project2-Xiaopaw-feishu-assistant`
+- `22.Project3-Xiaopaw-with-memory`
+- `29.Project4-Agent teams`
+- `33.Project5-xiaopaw with security enhancement`
+
+此外，各小节对应的代码演示主要放在 `crewai_mas_demo` 子目录中。例如：
+
+- `crewai_mas_demo/m5l31` 表示第 31 小节对应的课程代码内容。
+
+## 二、你的任务
+
+请你仔细阅读并分析以下内容：
+
+1. `geek_enterprise_grade_multi_agents_design` 下的所有重要子文件夹、文档和代码。
+2. 阶段性综合项目目录中的项目结构、代码组织、功能设计、Agent 设计和工程化实现。
+3. `crewai_mas_demo` 中各小节 demo 与课程知识体系之间的对应关系。
+4. 阶段性项目如何吸收前面小节的知识点，并逐步迭代为更复杂、更工程化的 AI 项目。
+5. 不同项目之间的演进关系，例如：
+   - 从单 Agent 到 Multi-Agent
+   - 从简单任务执行到复杂工作流
+   - 从无记忆到有记忆
+   - 从普通 Agent 到 Agent Teams
+   - 从功能可用到安全增强
+   - 从 demo 到可复用工程结构
+
+## 三、重点分析目标
+
+请重点回答以下问题：
+
+1. 这些课程小节和 demo 分别讲了哪些核心知识点？
+2. 每个阶段性综合项目分别整合了哪些前置知识？
+3. 每个项目相较于前一个项目做了哪些能力增强？
+4. 这些项目背后是否存在一条通用的 AI 工程设计路径？
+5. 如果未来要做一个新的企业级 AI 项目，应该如何复用这套路径？
+6. 哪些目录结构、代码组织方式、Agent 设计模式、配置方式、Prompt 设计方式可以沉淀为模板？
+7. 哪些内容适合给 AI Agent 作为长期参考，以便未来做知识迁移和项目结构复用？
+
+## 四、输出要求
+
+请在当前工作区下创建一个新的输出目录：
+
+`ai_engineering_design_playbook`
+
+并在其中整理生成一套结构化文档。建议至少包含以下文件：
+
+1. `README.md`
+
+   总览文档，说明这套方法论的目标、适用场景、目录结构和阅读顺序。
+
+2. `01_knowledge_map.md`
+
+   梳理课程小节、demo 目录、核心知识点、对应项目之间的映射关系。
+
+   请尽量使用表格，例如：
+
+   | 小节 / 目录 | 核心知识点 | 对应 demo | 被哪个综合项目使用 | 作用 |
+   | --- | --- | --- | --- | --- |
+
+3. `02_project_evolution_path.md`
+
+   分析几个阶段性综合项目之间的演进路径，包括：
+
+   - Project 1 解决什么问题
+   - Project 2 增加了什么能力
+   - Project 3 如何引入 memory
+   - Project 4 如何引入 Agent Teams
+   - Project 5 如何做 security enhancement
+   - 每次迭代背后的设计动机和工程收益
+
+4. `03_ai_engineering_design_methodology.md`
+
+   提炼一套通用 AI 工程设计方法论，要求由浅入深、层层推进，包括：
+
+   - 需求分析
+   - 场景建模
+   - Agent 角色拆分
+   - Tool / Function 设计
+   - Workflow 编排
+   - Memory 设计
+   - Knowledge / RAG 设计
+   - Guardrails / 安全设计
+   - Observability / 日志 / 调试
+   - Harness / CI/CD / 工程化
+   - 测试与评估
+   - 部署与运维
+
+5. `04_reusable_project_template.md`
+
+   总结一套未来可以复用的 AI 项目结构模板，包括推荐目录结构、模块职责和文件命名。
+
+   请给出类似下面的示例：
+
+   ```text
+   project-root/
+     agents/
+     tools/
+     workflows/
+     memory/
+     knowledge/
+     prompts/
+     configs/
+     tests/
+     evals/
+     harness/
+     docs/
