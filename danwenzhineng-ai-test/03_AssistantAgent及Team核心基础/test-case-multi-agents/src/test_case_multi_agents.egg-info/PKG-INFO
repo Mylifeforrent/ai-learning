@@ -1,0 +1,85 @@
+Metadata-Version: 2.4
+Name: test-case-multi-agents
+Version: 0.1.0
+Summary: AutoGen multi-agent workflow for generating, reviewing, and human-approving test cases.
+Requires-Python: >=3.10
+Description-Content-Type: text/markdown
+Requires-Dist: autogen-agentchat>=0.4.0
+Requires-Dist: autogen-ext[openai]>=0.4.0
+Requires-Dist: python-dotenv>=1.0.1
+
+# test-case-multi-agents
+
+This project demonstrates a Microsoft AutoGen AgentChat workflow for:
+
+1. Test-case generation from requirements.
+2. AI review of the generated test cases.
+3. Human review and double confirmation.
+4. Final test-case output to a markdown file.
+
+The implementation follows the AutoGen AgentChat team pattern from the official Teams tutorial and uses a suitable termination setup based on the Termination tutorial:
+
+- `RoundRobinGroupChat` runs `TestCaseWriter -> TestCaseReviewer -> HumanReviewer` in order.
+- `UserProxyAgent` pauses for human review in the console.
+- `TextMentionTermination("HUMAN_APPROVED")` stops the workflow when the human approves.
+- `MaxMessageTermination` is a safety stop so the loop cannot continue forever.
+
+Official references:
+
+- Teams: https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/teams.html
+- Human-in-the-loop: https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/human-in-the-loop.html
+- Termination: https://microsoft.github.io/autogen/stable/user-guide/agentchat-user-guide/tutorial/termination.html
+
+## Setup
+
+```bash
+cd 03_AssistantAgent及Team核心基础/test-case-multi-agents
+python -m venv .venv
+source .venv/bin/activate
+pip install -e .
+cp .env.example .env
+```
+
+Edit `.env` and set `DEEPSEEK_API_KEY`.
+
+By default the project uses DeepSeek's OpenAI-compatible endpoint:
+
+```text
+DEEPSEEK_BASE_URL=https://api.deepseek.com
+DEEPSEEK_MODEL=deepseek-v4-flash
+```
+
+## Run
+
+```bash
+test-case-agents
+```
+
+Or run the module directly:
+
+```bash
+python -m test_case_multi_agents.main
+```
+
+When the console asks for human input:
+
+- Type feedback to request another revision.
+- Type `HUMAN_APPROVED` to confirm the reviewed test cases and terminate the team.
+
+The final output is written to:
+
+```text
+outputs/final_test_cases.md
+```
+
+## Custom Requirement File
+
+```bash
+test-case-agents --requirements path/to/your_requirement.md --output outputs/my_test_cases.md
+```
+
+You can also override the DeepSeek model or endpoint:
+
+```bash
+test-case-agents --model deepseek-v4-pro --base-url https://api.deepseek.com
+```

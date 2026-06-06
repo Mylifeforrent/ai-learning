@@ -1,0 +1,22 @@
+[project]
+name = "test-case-multi-agents"
+version = "0.1.0"
+description = "AutoGen multi-agent workflow for generating, reviewing, and human-approving test cases."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "autogen-agentchat>=0.4.0",
+    "autogen-ext[openai]>=0.4.0",
+    "python-dotenv>=1.0.1",
+]
+
+[project.scripts]
+test-case-agents = "test_case_multi_agents.main:cli"
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+

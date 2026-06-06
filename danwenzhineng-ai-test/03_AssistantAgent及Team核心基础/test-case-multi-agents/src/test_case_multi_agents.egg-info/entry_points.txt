@@ -1,0 +1,2 @@
+[console_scripts]
+test-case-agents = test_case_multi_agents.main:cli
