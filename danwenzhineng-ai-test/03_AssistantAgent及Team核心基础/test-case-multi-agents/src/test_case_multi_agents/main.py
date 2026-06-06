@@ -107,7 +107,7 @@ def create_team(
     writer = AssistantAgent(
         "TestCaseWriter",
         model_client=model_client,
-        model_client_stream=True,
+        model_client_stream=True,#如果不希望用户看到stream输出，只要最终结果，那就给他改为false
         system_message=(
             "You are a principal QA test architect responsible for converting product "
             "requirements into production-ready manual test cases. Your test cases must "
@@ -428,6 +428,81 @@ async def run_counter_agent_safely(
         }
 
 
+async def stream_counter_agent_events(
+    model_client: OpenAIChatCompletionClient,
+    test_cases: str,
+):
+    """Stream counter-agent tool events and emit a final counter result event."""
+    counter_agent = create_counter_agent(model_client=model_client)
+    trace: list[dict[str, str]] = []
+    summary = ""
+    count: int | None = None
+
+    task = f"""统计下面测试用例中的中文字符个数：
+
+{test_cases}
+"""
+
+    try:
+        async for event in counter_agent.run_stream(task=task):
+            if isinstance(event, ToolCallRequestEvent):
+                payload = message_to_payload(event)
+                trace.append(payload)
+                yield {"event": "tool_call_request", **payload}
+                continue
+
+            if isinstance(event, ToolCallExecutionEvent):
+                payload = message_to_payload(event)
+                trace.append(payload)
+                extracted_count = extract_count_from_tool_results(getattr(event, "content", None))
+                if extracted_count is not None:
+                    count = extracted_count
+                yield {"event": "tool_call_execution", **payload}
+                continue
+
+            if isinstance(event, ToolCallSummaryMessage):
+                payload = message_to_payload(event)
+                trace.append(payload)
+                content = getattr(event, "content", "")
+                if isinstance(content, str):
+                    summary = content
+                extracted_count = extract_count_from_tool_results(getattr(event, "results", None))
+                if extracted_count is not None:
+                    count = extracted_count
+                yield {"event": "tool_call_summary", **payload}
+                continue
+
+            if isinstance(event, TaskResult):
+                for message in event.messages:
+                    payload = message_to_payload(message)
+                    if payload not in trace:
+                        trace.append(payload)
+                if event.messages:
+                    content = getattr(event.messages[-1], "content", "")
+                    if isinstance(content, str):
+                        summary = content
+                continue
+    except Exception as exc:
+        trace.append(
+            {
+                "source": "TestCaseCounter",
+                "content": str(exc),
+                "type": exc.__class__.__name__,
+            }
+        )
+        summary = f"Chinese character counter failed: {exc}"
+
+    yield {
+        "event": "counter_result",
+        "source": "TestCaseCounter",
+        "type": "CounterResult",
+        "content": summary,
+        "chinese_character_count": count,
+        "counter_summary": summary,
+        "counter_trace": trace,
+    }
+
+
 def task_result_to_payload(result: TaskResult, final_content: str) -> dict[str, object]:
     """Build a JSON-serializable response for API and UI clients."""
     messages = [message_to_payload(message) for message in result.messages]
@@ -509,6 +584,99 @@ async def generate_review_cycle_for_web(
             }
         )
         return payload
+    finally:
+        await model_client.close()
+
+
+async def stream_review_cycle_for_web(
+    requirements: str,
+    previous_test_cases: str | None = None,
+    reviewer_comments: str | None = None,
+    human_feedback: str | None = None,
+    model: str | None = None,
+    base_url: str | None = None,
+    max_messages: int = DEFAULT_MAX_MESSAGES,
+):
+    """Stream a web review cycle as JSON-serializable events."""
+    load_project_environment()
+    selected_model = model or os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    selected_base_url = base_url or os.getenv("DEEPSEEK_BASE_URL", DEFAULT_DEEPSEEK_BASE_URL)
+
+    if human_feedback:
+        if not previous_test_cases or not reviewer_comments:
+            raise ValueError("previous_test_cases and reviewer_comments are required for revision.")
+        task = build_revision_task(
+            requirements=requirements,
+            previous_test_cases=previous_test_cases,
+            reviewer_comments=reviewer_comments,
+            human_feedback=human_feedback,
+        )
+    else:
+        task = build_task(requirements)
+
+    model_client = create_deepseek_model_client(model=selected_model, base_url=selected_base_url)
+    result: TaskResult | None = None
+    try:
+        team = create_writer_reviewer_team(model_client=model_client, max_messages=max_messages)
+        yield {
+            "event": "status",
+            "source": "system",
+            "type": "Status",
+            "content": "Starting TestCaseWriter and TestCaseReviewer.",
+        }
+
+        async for event in team.run_stream(task=task):
+            if isinstance(event, ModelClientStreamingChunkEvent):
+                yield {"event": "chunk", **message_to_payload(event)}
+                continue
+
+            if isinstance(event, TextMessage):
+                yield {"event": "message", **message_to_payload(event)}
+                continue
+
+            if isinstance(event, TaskResult):
+                result = event
+                yield {
+                    "event": "team_result",
+                    "source": "system",
+                    "type": "TaskResult",
+                    "content": str(event.stop_reason),
+                    "stop_reason": event.stop_reason,
+                    "message_count": len(event.messages),
+                }
+                continue
+
+        if result is None:
+            raise RuntimeError("AutoGen stream finished without returning a TaskResult.")
+
+        draft = extract_latest_source_output(result=result, source="TestCaseWriter")
+        review = extract_latest_source_output(result=result, source="TestCaseReviewer")
+
+        yield {
+            "event": "status",
+            "source": "TestCaseCounter",
+            "type": "Status",
+            "content": "Counting Chinese characters with count_chinese_characters.",
+        }
+        counter_result: dict[str, object] = {}
+        async for counter_event in stream_counter_agent_events(model_client=model_client, test_cases=draft):
+            yield counter_event
+            if counter_event.get("event") == "counter_result":
+                counter_result = counter_event
+
+        payload = task_result_to_payload(result=result, final_content=draft)
+        payload.update(
+            {
+                "draft_test_cases": draft,
+                "review": review,
+                "awaiting_human_review": True,
+                "approved": False,
+                "chinese_character_count": counter_result.get("chinese_character_count"),
+                "counter_summary": counter_result.get("counter_summary", ""),
+                "counter_trace": counter_result.get("counter_trace", []),
+            }
+        )
+        yield {"event": "final", "source": "system", "type": "FinalPayload", "content": "Review cycle complete.", **payload}
     finally:
         await model_client.close()
 

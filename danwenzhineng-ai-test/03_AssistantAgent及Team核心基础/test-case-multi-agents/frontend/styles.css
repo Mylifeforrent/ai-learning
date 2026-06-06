@@ -353,27 +353,94 @@ summary {
   font-weight: 700;
 }
 
-.trace {
+.timeline {
+  position: relative;
   display: grid;
-  gap: 10px;
+  gap: 12px;
   margin-top: 12px;
-  max-height: 220px;
+  max-height: 320px;
   overflow: auto;
-  font-family: "Courier New", monospace;
+  padding-left: 18px;
+}
+
+.timeline::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 5px;
+  width: 1px;
+  background: var(--line);
+  content: "";
+}
+
+.timeline-item {
+  position: relative;
+  border: 1px solid var(--line);
+  background: #fbf7ec;
+}
+
+.timeline-item::before {
+  position: absolute;
+  top: 15px;
+  left: -18px;
+  width: 11px;
+  height: 11px;
+  border: 2px solid var(--panel);
+  border-radius: 50%;
+  background: var(--accent);
+  content: "";
+}
+
+.timeline-item.TestCaseReviewer::before {
+  background: #7b5a19;
+}
+
+.timeline-item.TestCaseCounter::before {
+  background: #315d91;
+}
+
+.timeline-item.system::before {
+  background: var(--muted);
+}
+
+.timeline-item summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  color: var(--ink);
+  border-bottom: 1px solid transparent;
+  list-style: none;
+}
+
+.timeline-item[open] summary {
+  border-bottom-color: var(--line);
+}
+
+.timeline-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.timeline-item summary strong {
+  color: var(--accent-strong);
+}
+
+.timeline-item summary span {
+  color: var(--muted);
+  font-family: "Trebuchet MS", Verdana, sans-serif;
   font-size: 12px;
 }
 
-.trace-item {
-  padding: 10px;
-  border: 1px solid var(--line);
-  background: #fbf7ec;
-  white-space: pre-wrap;
-}
-
-.trace-item strong {
-  display: block;
-  margin-bottom: 6px;
-  color: var(--accent-strong);
+.timeline-item pre {
+  min-height: 0;
+  max-height: 260px;
+  padding: 12px;
+  border: 0;
+  background: #fffaf0;
+  color: var(--ink);
+  box-shadow: none;
+  font-size: 12px;
 }
 
 @media (max-width: 1180px) {

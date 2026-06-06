@@ -4,11 +4,14 @@ from __future__ import annotations
 
 import argparse
 import asyncio
+import json
 import logging
 from pathlib import Path
+from typing import AsyncGenerator
 
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse
+from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
@@ -17,6 +20,7 @@ from test_case_multi_agents.main import (
     PROJECT_ROOT,
     ConfigurationError,
     generate_review_cycle_for_web,
+    stream_review_cycle_for_web,
 )
 
 
@@ -43,6 +47,24 @@ class RevisionRequest(BaseModel):
 
 app = FastAPI(title="Test Case Multi Agents API")
 app.mount("/static", StaticFiles(directory=FRONTEND_DIR), name="static")
+
+
+def sse_event(payload: dict[str, object]) -> str:
+    """Encode a payload as an SSE frame."""
+    return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
+
+
+async def stream_review_response(payload: dict[str, object]) -> AsyncGenerator[str, None]:
+    """Stream review-cycle events as server-sent events."""
+    try:
+        async for event in stream_review_cycle_for_web(**payload):
+            yield sse_event(event)
+    except ConfigurationError as exc:
+        logger.exception("Configuration error while streaming review.")
+        yield sse_event({"event": "error", "source": "system", "type": exc.__class__.__name__, "content": str(exc)})
+    except Exception as exc:
+        logger.exception("Unexpected error while streaming review.")
+        yield sse_event({"event": "error", "source": "system", "type": exc.__class__.__name__, "content": str(exc)})
 
 
 @app.get("/")
@@ -73,6 +95,20 @@ async def create_review(request: TestCaseRequest) -> dict[str, object]:
         raise HTTPException(status_code=500, detail=str(exc)) from exc
 
 
+@app.post("/api/review/stream")
+async def create_review_stream(request: TestCaseRequest) -> StreamingResponse:
+    """Stream draft test cases, review, tool calls, and final payload."""
+    payload = {
+        "requirements": request.requirement.strip(),
+        "max_messages": request.max_messages,
+    }
+    return StreamingResponse(
+        stream_review_response(payload),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
+    )
+
+
 @app.post("/api/revise")
 async def revise_test_cases(request: RevisionRequest) -> dict[str, object]:
     """Revise test cases using human rejection feedback."""
@@ -90,6 +126,23 @@ async def revise_test_cases(request: RevisionRequest) -> dict[str, object]:
     except Exception as exc:
         logger.exception("Unexpected error while revising test cases.")
         raise HTTPException(status_code=500, detail=str(exc)) from exc
+
+
+@app.post("/api/revise/stream")
+async def revise_test_cases_stream(request: RevisionRequest) -> StreamingResponse:
+    """Stream revised test cases, review, tool calls, and final payload."""
+    payload = {
+        "requirements": request.requirement.strip(),
+        "previous_test_cases": request.previous_test_cases.strip(),
+        "reviewer_comments": request.reviewer_comments.strip(),
+        "human_feedback": request.human_feedback.strip(),
+        "max_messages": request.max_messages,
+    }
+    return StreamingResponse(
+        stream_review_response(payload),
+        media_type="text/event-stream",
+        headers={"Cache-Control": "no-cache", "Connection": "keep-alive"},
+    )
 
 
 @app.post("/api/test-cases")

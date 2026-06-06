@@ -3,6 +3,13 @@ frontend: jsx,vue,react,tsx
 backend: fastapi, autogen
 interaction protocol: websocket: 双向协议，sse：单向协议
 
+
+整个的ai执行输出内容有大概3类：
+1，流式输出：方便给客户看进度
+2，总体结果输出，如果客户不需要看这种实时输出内容，直接最后展示结果
+3，工具调用的输出，ai调用工具，会有tool call类似的标签，和assistant不一样，要注意区别。但是基本上都有start，event，execution，end类似的概念。
+
+
 这句代码后面2个换行，表示sse协议结束？
  # 发送结束事件
  yield f"data: {json.dumps({'type': 'end', 'content': '', 'finished': True})}\n\n"

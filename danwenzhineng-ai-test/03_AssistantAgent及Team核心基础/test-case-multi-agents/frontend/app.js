@@ -17,6 +17,8 @@ const counterValue = document.querySelector("#counterValue");
 const counterSummary = document.querySelector("#counterSummary");
 
 let currentReview = null;
+let activeTimelineItems = new Map();
+let writerStreamBuffer = "";
 
 const sampleRequirement = `Build a login feature for a web application.
 
@@ -67,21 +69,82 @@ function renderCounter(data) {
   counterSummary.textContent = data.counter_summary || "Tool call completed.";
 }
 
-function renderTrace(messagesList = []) {
+function resetTimeline() {
   traceOutput.innerHTML = "";
+  activeTimelineItems = new Map();
+}
+
+function formatTime() {
+  return new Date().toLocaleTimeString([], {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+  });
+}
+
+function timelineKey(event) {
+  if (event.event === "chunk") {
+    return `${event.source}:stream`;
+  }
+  return `${event.source}:${event.type}:${Date.now()}:${Math.random()}`;
+}
+
+function createTimelineItem(event, content = "") {
+  const details = document.createElement("details");
+  details.className = `timeline-item ${event.source || "system"}`;
+  details.open = event.event === "chunk" || event.event === "error";
+
+  const summary = document.createElement("summary");
+  const title = document.createElement("strong");
+  title.textContent = event.source || "system";
+
+  const meta = document.createElement("span");
+  meta.textContent = `${event.type || event.event} · ${formatTime()}`;
+
+  summary.append(title, meta);
+
+  const body = document.createElement("pre");
+  body.textContent = content;
+
+  details.append(summary, body);
+  traceOutput.appendChild(details);
+  traceOutput.scrollTop = traceOutput.scrollHeight;
+
+  return { details, body };
+}
+
+function appendTimelineEvent(event) {
+  const content = event.content || "";
+
+  if (event.event === "chunk") {
+    const key = timelineKey(event);
+    let item = activeTimelineItems.get(key);
+    if (!item) {
+      item = createTimelineItem({ ...event, type: "Streaming" });
+      activeTimelineItems.set(key, item);
+    }
+    item.body.textContent += content;
+    traceOutput.scrollTop = traceOutput.scrollHeight;
+    return;
+  }
+
+  if (event.event === "message") {
+    activeTimelineItems.delete(`${event.source}:stream`);
+  }
+
+  createTimelineItem(event, content);
+}
+
+function renderTrace(messagesList = []) {
+  resetTimeline();
 
   for (const message of messagesList) {
-    const item = document.createElement("div");
-    item.className = "trace-item";
-
-    const source = document.createElement("strong");
-    source.textContent = `${message.source} · ${message.type}`;
-
-    const content = document.createElement("span");
-    content.textContent = message.content;
-
-    item.append(source, content);
-    traceOutput.appendChild(item);
+    appendTimelineEvent({
+      event: "message",
+      source: message.source,
+      type: message.type,
+      content: message.content,
+    });
   }
 }
 
@@ -112,10 +175,95 @@ async function postJson(url, payload) {
 }
 
 async function generateReview(requirement) {
-  return postJson("/api/review", {
+  return postStream("/api/review/stream", {
     requirement,
     max_messages: 12,
   });
+}
+
+async function postStream(url, payload) {
+  const response = await fetch(url, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!response.ok || !response.body) {
+    let detail = "Backend request failed";
+    try {
+      const data = await response.json();
+      detail = data.detail || detail;
+    } catch {
+      detail = response.statusText || detail;
+    }
+    throw new Error(detail);
+  }
+
+  const reader = response.body.getReader();
+  const decoder = new TextDecoder();
+  let buffer = "";
+  let finalPayload = null;
+
+  while (true) {
+    const { value, done } = await reader.read();
+    if (done) {
+      break;
+    }
+
+    buffer += decoder.decode(value, { stream: true });
+    const frames = buffer.split("\n\n");
+    buffer = frames.pop() || "";
+
+    for (const frame of frames) {
+      const dataLine = frame
+        .split("\n")
+        .find((line) => line.startsWith("data:"));
+
+      if (!dataLine) {
+        continue;
+      }
+
+      const event = JSON.parse(dataLine.slice(5).trim());
+      handleStreamEvent(event);
+
+      if (event.event === "error") {
+        throw new Error(event.content || "Stream failed");
+      }
+
+      if (event.event === "final") {
+        finalPayload = event;
+      }
+    }
+  }
+
+  if (!finalPayload) {
+    throw new Error("Stream finished without final payload");
+  }
+  return finalPayload;
+}
+
+function handleStreamEvent(event) {
+  appendTimelineEvent(event);
+
+  if (event.event === "chunk" && event.source === "TestCaseWriter") {
+    writerStreamBuffer += event.content || "";
+    output.textContent = writerStreamBuffer;
+  }
+
+  if (event.event === "message" && event.source === "TestCaseWriter") {
+    writerStreamBuffer = event.content || writerStreamBuffer;
+    output.textContent = writerStreamBuffer;
+  }
+
+  if (event.event === "counter_result") {
+    renderCounter(event);
+  }
+
+  if (event.event === "status") {
+    statusText.textContent = event.content || "Running";
+  }
 }
 
 async function reviseReview() {
@@ -138,7 +286,8 @@ async function reviseReview() {
     setLoading(true);
 
   try {
-    const data = await postJson("/api/revise", {
+    writerStreamBuffer = "";
+    const data = await postStream("/api/revise/stream", {
       requirement: currentReview.requirement,
       previous_test_cases: currentReview.draft_test_cases,
       reviewer_comments: currentReview.review,
@@ -152,7 +301,6 @@ async function reviseReview() {
     };
     output.textContent = data.draft_test_cases || data.final_test_cases || "No draft returned.";
     renderCounter(data);
-    renderTrace([...(data.messages || []), ...(data.counter_trace || [])]);
     feedbackInput.value = "";
     setReviewControlsVisible(true);
     addMessage("assistant", "Revision ready. Please approve or reject again with feedback.");
@@ -190,7 +338,8 @@ form.addEventListener("submit", async (event) => {
   addMessage("user", requirement);
   addMessage("assistant", "Received. Running TestCaseWriter and TestCaseReviewer...");
   output.textContent = "Generating draft test cases and reviewer comments...";
-  traceOutput.innerHTML = "";
+  writerStreamBuffer = "";
+  resetTimeline();
   counterOutput.hidden = true;
   copyButton.disabled = true;
   currentReview = null;
@@ -206,7 +355,6 @@ form.addEventListener("submit", async (event) => {
     };
     output.textContent = data.draft_test_cases || data.final_test_cases || "No draft returned.";
     renderCounter(data);
-    renderTrace([...(data.messages || []), ...(data.counter_trace || [])]);
     setReviewControlsVisible(true);
     addMessage("assistant", "Draft and AI review are ready. Please approve or reject with feedback.");
     statusText.textContent = "Awaiting human review";
