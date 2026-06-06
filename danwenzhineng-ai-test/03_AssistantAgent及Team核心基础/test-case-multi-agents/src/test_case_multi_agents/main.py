@@ -12,13 +12,20 @@ from __future__ import annotations
 import argparse
 import asyncio
 import os
+import re
 from pathlib import Path
 from typing import Callable
 
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.conditions import MaxMessageTermination, SourceMatchTermination, TextMentionTermination
-from autogen_agentchat.messages import ModelClientStreamingChunkEvent, TextMessage
+from autogen_agentchat.messages import (
+    ModelClientStreamingChunkEvent,
+    TextMessage,
+    ToolCallExecutionEvent,
+    ToolCallRequestEvent,
+    ToolCallSummaryMessage,
+)
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from dotenv import load_dotenv
@@ -51,6 +58,11 @@ def load_requirements(path: Path) -> str:
     if not path.exists():
         raise FileNotFoundError(f"Requirement file does not exist: {path}")
     return path.read_text(encoding="utf-8").strip()
+
+
+async def count_chinese_characters(text: str) -> int:
+    """统计中文字符个数。"""
+    return len(re.findall(r"[\u4e00-\u9fff]", text))
 
 
 def build_task(requirements: str) -> str:
@@ -195,6 +207,21 @@ def create_writer_reviewer_team(
     )
 
 
+def create_counter_agent(model_client: OpenAIChatCompletionClient) -> AssistantAgent:
+    """Create an agent that counts Chinese characters through a tool call."""
+    return AssistantAgent(
+        "TestCaseCounter",
+        model_client=model_client,
+        system_message=(
+            "通过调用工具统计测试用例中的中文字符个数。必须调用 count_chinese_characters 工具，"
+            "不要自己估算。输出一句简洁中文总结，例如：测试用例中的中文字符总数为：235 字。"
+        ),
+        tools=[count_chinese_characters],
+        reflect_on_tool_use=False,
+        model_client_stream=True,
+    )
+
+
 def create_deepseek_model_client(model: str, base_url: str) -> OpenAIChatCompletionClient:
     """Create an AutoGen model client for DeepSeek's OpenAI-compatible API."""
     api_key = os.getenv("DEEPSEEK_API_KEY")
@@ -294,20 +321,116 @@ async def run_team_silently(team: RoundRobinGroupChat, task: str) -> TaskResult:
     return result
 
 
+def message_to_payload(message: object) -> dict[str, str]:
+    """Convert an AutoGen message/event object into a JSON-friendly trace item."""
+    content = getattr(message, "content", "")
+    if not isinstance(content, str):
+        content = str(content)
+    return {
+        "source": str(getattr(message, "source", "unknown")),
+        "content": content,
+        "type": message.__class__.__name__,
+    }
+
+
+def extract_count_from_tool_results(results: object) -> int | None:
+    """Extract the integer count from AutoGen function execution results."""
+    if not isinstance(results, list):
+        return None
+
+    for result in results:
+        content = getattr(result, "content", None)
+        if isinstance(content, int):
+            return content
+        if isinstance(content, str):
+            text = content.strip()
+            if text.isdigit():
+                return int(text)
+            match = re.search(r"\d+", text)
+            if match:
+                return int(match.group(0))
+    return None
+
+
+async def run_counter_agent(
+    model_client: OpenAIChatCompletionClient,
+    test_cases: str,
+) -> dict[str, object]:
+    """Run the counter agent and collect tool-call events."""
+    counter_agent = create_counter_agent(model_client=model_client)
+    trace: list[dict[str, str]] = []
+    summary = ""
+    count: int | None = None
+
+    task = f"""统计下面测试用例中的中文字符个数：
+
+{test_cases}
+"""
+
+    async for event in counter_agent.run_stream(task=task):
+        if isinstance(event, ToolCallRequestEvent):
+            trace.append(message_to_payload(event))
+            continue
+
+        if isinstance(event, ToolCallExecutionEvent):
+            trace.append(message_to_payload(event))
+            extracted_count = extract_count_from_tool_results(getattr(event, "content", None))
+            if extracted_count is not None:
+                count = extracted_count
+            continue
+
+        if isinstance(event, ToolCallSummaryMessage):
+            trace.append(message_to_payload(event))
+            content = getattr(event, "content", "")
+            if isinstance(content, str):
+                summary = content
+            extracted_count = extract_count_from_tool_results(getattr(event, "results", None))
+            if extracted_count is not None:
+                count = extracted_count
+            continue
+
+        if isinstance(event, TaskResult):
+            for message in event.messages:
+                payload = message_to_payload(message)
+                if payload not in trace:
+                    trace.append(payload)
+            if event.messages:
+                content = getattr(event.messages[-1], "content", "")
+                if isinstance(content, str):
+                    summary = content
+            continue
+
+    return {
+        "chinese_character_count": count,
+        "counter_summary": summary,
+        "counter_trace": trace,
+    }
+
+
+async def run_counter_agent_safely(
+    model_client: OpenAIChatCompletionClient,
+    test_cases: str,
+) -> dict[str, object]:
+    """Run the counter agent without failing the whole review cycle."""
+    try:
+        return await run_counter_agent(model_client=model_client, test_cases=test_cases)
+    except Exception as exc:
+        return {
+            "chinese_character_count": None,
+            "counter_summary": f"Chinese character counter failed: {exc}",
+            "counter_trace": [
+                {
+                    "source": "TestCaseCounter",
+                    "content": str(exc),
+                    "type": exc.__class__.__name__,
+                }
+            ],
+        }
+
+
 def task_result_to_payload(result: TaskResult, final_content: str) -> dict[str, object]:
     """Build a JSON-serializable response for API and UI clients."""
-    messages: list[dict[str, str]] = []
-    for message in result.messages:
-        content = getattr(message, "content", "")
-        if not isinstance(content, str):
-            content = str(content)
-        messages.append(
-            {
-                "source": str(getattr(message, "source", "unknown")),
-                "content": content,
-                "type": message.__class__.__name__,
-            }
-        )
+    messages = [message_to_payload(message) for message in result.messages]
 
     return {
         "final_test_cases": final_content,
@@ -374,6 +497,7 @@ async def generate_review_cycle_for_web(
         result = await run_team_silently(team=team, task=task)
         draft = extract_latest_source_output(result=result, source="TestCaseWriter")
         review = extract_latest_source_output(result=result, source="TestCaseReviewer")
+        counter_result = await run_counter_agent_safely(model_client=model_client, test_cases=draft)
         payload = task_result_to_payload(result=result, final_content=draft)
         payload.update(
             {
@@ -381,6 +505,7 @@ async def generate_review_cycle_for_web(
                 "review": review,
                 "awaiting_human_review": True,
                 "approved": False,
+                **counter_result,
             }
         )
         return payload

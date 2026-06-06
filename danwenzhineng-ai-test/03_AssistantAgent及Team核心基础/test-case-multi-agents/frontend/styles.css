@@ -253,7 +253,7 @@ textarea:focus {
 
 .result-panel {
   display: grid;
-  grid-template-rows: auto 1fr auto auto;
+  grid-template-rows: auto 1fr auto auto auto;
   gap: 18px;
   background: var(--panel);
 }
@@ -275,6 +275,38 @@ pre {
 details {
   border-top: 1px solid var(--line);
   padding-top: 14px;
+}
+
+.counter-output {
+  display: grid;
+  grid-template-columns: auto auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  background: #eef4ec;
+  font-family: "Trebuchet MS", Verdana, sans-serif;
+}
+
+.counter-output[hidden] {
+  display: none;
+}
+
+.counter-output span {
+  color: var(--muted);
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.counter-output strong {
+  color: var(--accent-strong);
+  font-size: 24px;
+}
+
+.counter-output em {
+  color: var(--muted);
+  font-size: 13px;
+  font-style: normal;
 }
 
 .review-controls {

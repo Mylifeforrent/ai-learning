@@ -123,3 +123,8 @@ POST /api/revise
 The final result is only marked done in the UI after the user clicks `Approve final`.
 The web review team stops when `TestCaseReviewer` responds, with `max_messages` kept as a safety limit.
 Do not set `max_messages` below `4`, because AutoGen can count the initial task message as part of the run.
+
+After each draft or revision, the backend also runs `TestCaseCounter`, an AutoGen assistant with the
+`count_chinese_characters` tool. Its `ToolCallRequestEvent`, `ToolCallExecutionEvent`, and
+`ToolCallSummaryMessage` are included in the frontend agent trace, and the Chinese-character count is
+shown above the human review controls.

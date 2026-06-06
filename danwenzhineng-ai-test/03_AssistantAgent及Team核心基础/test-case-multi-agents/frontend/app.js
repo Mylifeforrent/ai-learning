@@ -12,6 +12,9 @@ const reviewControls = document.querySelector("#reviewControls");
 const feedbackInput = document.querySelector("#feedbackInput");
 const rejectButton = document.querySelector("#rejectButton");
 const approveButton = document.querySelector("#approveButton");
+const counterOutput = document.querySelector("#counterOutput");
+const counterValue = document.querySelector("#counterValue");
+const counterSummary = document.querySelector("#counterSummary");
 
 let currentReview = null;
 
@@ -55,6 +58,13 @@ function setLoading(isLoading) {
 
 function setReviewControlsVisible(isVisible) {
   reviewControls.hidden = !isVisible;
+}
+
+function renderCounter(data) {
+  const count = data.chinese_character_count;
+  counterOutput.hidden = count === null || count === undefined;
+  counterValue.textContent = String(count ?? 0);
+  counterSummary.textContent = data.counter_summary || "Tool call completed.";
 }
 
 function renderTrace(messagesList = []) {
@@ -123,8 +133,9 @@ async function reviseReview() {
 
   addMessage("user", `Rejected with feedback:\n${feedback}`);
   addMessage("assistant", "Sending feedback to TestCaseWriter and TestCaseReviewer...");
-  output.textContent = "Revising test cases...";
-  setLoading(true);
+    output.textContent = "Revising test cases...";
+    counterOutput.hidden = true;
+    setLoading(true);
 
   try {
     const data = await postJson("/api/revise", {
@@ -140,7 +151,8 @@ async function reviseReview() {
       requirement: currentReview.requirement,
     };
     output.textContent = data.draft_test_cases || data.final_test_cases || "No draft returned.";
-    renderTrace(data.messages);
+    renderCounter(data);
+    renderTrace([...(data.messages || []), ...(data.counter_trace || [])]);
     feedbackInput.value = "";
     setReviewControlsVisible(true);
     addMessage("assistant", "Revision ready. Please approve or reject again with feedback.");
@@ -179,6 +191,7 @@ form.addEventListener("submit", async (event) => {
   addMessage("assistant", "Received. Running TestCaseWriter and TestCaseReviewer...");
   output.textContent = "Generating draft test cases and reviewer comments...";
   traceOutput.innerHTML = "";
+  counterOutput.hidden = true;
   copyButton.disabled = true;
   currentReview = null;
   feedbackInput.value = "";
@@ -192,7 +205,8 @@ form.addEventListener("submit", async (event) => {
       requirement,
     };
     output.textContent = data.draft_test_cases || data.final_test_cases || "No draft returned.";
-    renderTrace(data.messages);
+    renderCounter(data);
+    renderTrace([...(data.messages || []), ...(data.counter_trace || [])]);
     setReviewControlsVisible(true);
     addMessage("assistant", "Draft and AI review are ready. Please approve or reject with feedback.");
     statusText.textContent = "Awaiting human review";
