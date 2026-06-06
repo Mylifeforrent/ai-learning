@@ -6,7 +6,9 @@ Requires-Python: >=3.10
 Description-Content-Type: text/markdown
 Requires-Dist: autogen-agentchat>=0.4.0
 Requires-Dist: autogen-ext[openai]>=0.4.0
+Requires-Dist: fastapi>=0.115.0
 Requires-Dist: python-dotenv>=1.0.1
+Requires-Dist: uvicorn[standard]>=0.30.0
 
 # test-case-multi-agents
 
@@ -72,6 +74,19 @@ The final output is written to:
 outputs/final_test_cases.md
 ```
 
+## Stream Event Handling
+
+The CLI consumes `team.run_stream(...)` directly instead of using `Console(...)`.
+This makes the workflow easier to understand and customize:
+
+- `ModelClientStreamingChunkEvent`: token/chunk-level streaming output from an LLM-backed agent.
+- `TextMessage`: one complete message from an agent or the human reviewer.
+- `TaskResult`: final result for the whole team run, including all messages and the stop reason.
+
+Because `RoundRobinGroupChat` rotates through the participants in order, human feedback that does not
+contain `HUMAN_APPROVED` becomes part of the conversation history and the next turn returns to
+`TestCaseWriter` for another revision.
+
 ## Custom Requirement File
 
 ```bash
@@ -83,3 +98,26 @@ You can also override the DeepSeek model or endpoint:
 ```bash
 test-case-agents --model deepseek-v4-pro --base-url https://api.deepseek.com
 ```
+
+## Web Frontend
+
+This project also includes a lightweight HTML/CSS/JS frontend served by FastAPI.
+
+```bash
+test-case-agents-api --host 127.0.0.1 --port 8000
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+The frontend posts the user's requirement to:
+
+```text
+POST /api/test-cases
+```
+
+For web requests, the backend reuses the same writer/reviewer AutoGen workflow and automatically
+confirms after the AI reviewer responds so the HTTP request can finish without blocking on terminal input.

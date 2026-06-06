@@ -13,10 +13,11 @@ import argparse
 import asyncio
 import os
 from pathlib import Path
+from typing import Callable
 
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.base import TaskResult
-from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+from autogen_agentchat.conditions import MaxMessageTermination, SourceMatchTermination, TextMentionTermination
 from autogen_agentchat.messages import ModelClientStreamingChunkEvent, TextMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
@@ -28,6 +29,21 @@ DEFAULT_DEEPSEEK_BASE_URL = "https://api.deepseek.com"
 DEFAULT_MODEL = "deepseek-v4-flash"
 DEFAULT_MAX_MESSAGES = 12
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
+HumanInputFunc = Callable[[str, object | None], str]
+
+
+class ConfigurationError(RuntimeError):
+    """Raised when required runtime configuration is missing or invalid."""
+
+
+def load_project_environment() -> None:
+    """Load environment variables from a stable project-level .env path."""
+    explicit_env_path = os.getenv("DEEPSEEK_ENV_PATH")
+    if explicit_env_path:
+        load_dotenv(explicit_env_path)
+        return
+
+    load_dotenv(PROJECT_ROOT / ".env")
 
 
 def load_requirements(path: Path) -> str:
@@ -70,7 +86,11 @@ def human_review_input(prompt: str = "", cancellation_token: object | None = Non
     return input("> ")
 
 
-def create_team(model_client: OpenAIChatCompletionClient, max_messages: int) -> RoundRobinGroupChat:
+def create_team(
+    model_client: OpenAIChatCompletionClient,
+    max_messages: int,
+    human_input_func: HumanInputFunc = human_review_input,
+) -> RoundRobinGroupChat:
     """Create the writer, reviewer, and human-reviewer team."""
     writer = AssistantAgent(
         "TestCaseWriter",
@@ -119,17 +139,59 @@ def create_team(model_client: OpenAIChatCompletionClient, max_messages: int) -> 
 
     human_reviewer = UserProxyAgent(
         "HumanReviewer",
-        input_func=human_review_input,
+        input_func=human_input_func,
         description=(
             f"Human reviewer. Type feedback to request revisions, or type {APPROVAL_TOKEN} "
             "to approve and stop the workflow."
         ),
     )
 
-    termination = TextMentionTermination(APPROVAL_TOKEN) | MaxMessageTermination(max_messages)
+    termination = TextMentionTermination(APPROVAL_TOKEN, sources=["HumanReviewer"]) | MaxMessageTermination(
+        max_messages
+    )
     return RoundRobinGroupChat(
         [writer, reviewer, human_reviewer],
         termination_condition=termination,
+    )
+
+
+def create_writer_reviewer_team(
+    model_client: OpenAIChatCompletionClient,
+    max_messages: int = DEFAULT_MAX_MESSAGES,
+) -> RoundRobinGroupChat:
+    """Create a web-friendly team that stops before human approval."""
+    writer = AssistantAgent(
+        "TestCaseWriter",
+        model_client=model_client,
+        model_client_stream=True,
+        system_message=(
+            "You are a principal QA test architect responsible for converting product "
+            "requirements into production-ready manual test cases. Your test cases must "
+            "be clear enough that another tester can execute them without extra context. "
+            "Analyze requirements for business rules, user flows, validation rules, "
+            "state transitions, error handling, security/privacy risks, accessibility, "
+            "and non-functional expectations. Return the full revised test case table "
+            "whenever feedback is provided."
+        ),
+    )
+
+    reviewer = AssistantAgent(
+        "TestCaseReviewer",
+        model_client=model_client,
+        model_client_stream=True,
+        system_message=(
+            "You are a senior QA review lead and quality gatekeeper. Review the latest "
+            "TestCaseWriter output against the requirements and any human feedback. "
+            "Assess traceability, coverage, priority, clarity, observability, duplicate "
+            "coverage, missing edge cases, security, accessibility, performance, and "
+            "recovery behavior. If ready for human confirmation, start with REVIEW_READY. "
+            "If not ready, list blocking issues and concrete revision instructions."
+        ),
+    )
+
+    return RoundRobinGroupChat(
+        [writer, reviewer],
+        termination_condition=SourceMatchTermination(["TestCaseReviewer"]) | MaxMessageTermination(max_messages),
     )
 
 
@@ -137,7 +199,10 @@ def create_deepseek_model_client(model: str, base_url: str) -> OpenAIChatComplet
     """Create an AutoGen model client for DeepSeek's OpenAI-compatible API."""
     api_key = os.getenv("DEEPSEEK_API_KEY")
     if not api_key:
-        raise RuntimeError("DEEPSEEK_API_KEY is not set. Add it to .env or your shell environment.")
+        raise ConfigurationError(
+            "DEEPSEEK_API_KEY is not set. Add it to the project .env file, export it in your shell, "
+            "or set DEEPSEEK_ENV_PATH to the env file path."
+        )
 
     return OpenAIChatCompletionClient(
         model=model,
@@ -155,12 +220,21 @@ def create_deepseek_model_client(model: str, base_url: str) -> OpenAIChatComplet
 
 def extract_latest_writer_output(result: TaskResult) -> str:
     """Return the latest test case content produced by TestCaseWriter."""
+    return extract_latest_source_output(result=result, source="TestCaseWriter")
+
+
+def extract_latest_source_output(result: TaskResult, source: str) -> str:
+    """Return the latest text content produced by a specific message source."""
     for message in reversed(result.messages):
-        if getattr(message, "source", None) == "TestCaseWriter":
+        if getattr(message, "source", None) == source:
             content = getattr(message, "content", "")
             if isinstance(content, str) and content.strip():
                 return content.strip()
-    raise RuntimeError("No TestCaseWriter output was found in the team result.")
+    sources = [str(getattr(message, "source", "unknown")) for message in result.messages]
+    raise RuntimeError(
+        f"No {source} output was found in the team result. "
+        f"stop_reason={result.stop_reason!r}; message_sources={sources}"
+    )
 
 
 async def run_team_stream(team: RoundRobinGroupChat, task: str) -> TaskResult:
@@ -208,6 +282,112 @@ async def run_team_stream(team: RoundRobinGroupChat, task: str) -> TaskResult:
     return result
 
 
+async def run_team_silently(team: RoundRobinGroupChat, task: str) -> TaskResult:
+    """Run the team stream without printing intermediate events."""
+    result: TaskResult | None = None
+    async for event in team.run_stream(task=task):
+        if isinstance(event, TaskResult):
+            result = event
+
+    if result is None:
+        raise RuntimeError("AutoGen stream finished without returning a TaskResult.")
+    return result
+
+
+def task_result_to_payload(result: TaskResult, final_content: str) -> dict[str, object]:
+    """Build a JSON-serializable response for API and UI clients."""
+    messages: list[dict[str, str]] = []
+    for message in result.messages:
+        content = getattr(message, "content", "")
+        if not isinstance(content, str):
+            content = str(content)
+        messages.append(
+            {
+                "source": str(getattr(message, "source", "unknown")),
+                "content": content,
+                "type": message.__class__.__name__,
+            }
+        )
+
+    return {
+        "final_test_cases": final_content,
+        "stop_reason": result.stop_reason,
+        "messages": messages,
+    }
+
+
+def build_revision_task(
+    requirements: str,
+    previous_test_cases: str,
+    reviewer_comments: str,
+    human_feedback: str,
+) -> str:
+    """Build a revision prompt for the web reject-with-feedback loop."""
+    return f"""
+Revise the test cases using the original requirements, reviewer comments, and human feedback.
+
+Return the complete updated test case table in the required format. Do not only explain changes.
+
+Original requirements:
+{requirements}
+
+Previous test cases:
+{previous_test_cases}
+
+Reviewer comments:
+{reviewer_comments}
+
+Human feedback:
+{human_feedback}
+""".strip()
+
+
+async def generate_review_cycle_for_web(
+    requirements: str,
+    previous_test_cases: str | None = None,
+    reviewer_comments: str | None = None,
+    human_feedback: str | None = None,
+    model: str | None = None,
+    base_url: str | None = None,
+    max_messages: int = DEFAULT_MAX_MESSAGES,
+) -> dict[str, object]:
+    """Generate or revise test cases and stop before human approval."""
+    load_project_environment()
+    selected_model = model or os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)
+    selected_base_url = base_url or os.getenv("DEEPSEEK_BASE_URL", DEFAULT_DEEPSEEK_BASE_URL)
+
+    if human_feedback:
+        if not previous_test_cases or not reviewer_comments:
+            raise ValueError("previous_test_cases and reviewer_comments are required for revision.")
+        task = build_revision_task(
+            requirements=requirements,
+            previous_test_cases=previous_test_cases,
+            reviewer_comments=reviewer_comments,
+            human_feedback=human_feedback,
+        )
+    else:
+        task = build_task(requirements)
+
+    model_client = create_deepseek_model_client(model=selected_model, base_url=selected_base_url)
+    try:
+        team = create_writer_reviewer_team(model_client=model_client, max_messages=max_messages)
+        result = await run_team_silently(team=team, task=task)
+        draft = extract_latest_source_output(result=result, source="TestCaseWriter")
+        review = extract_latest_source_output(result=result, source="TestCaseReviewer")
+        payload = task_result_to_payload(result=result, final_content=draft)
+        payload.update(
+            {
+                "draft_test_cases": draft,
+                "review": review,
+                "awaiting_human_review": True,
+                "approved": False,
+            }
+        )
+        return payload
+    finally:
+        await model_client.close()
+
+
 def write_final_test_cases(content: str, output_path: Path) -> None:
     """Persist the final test case markdown."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -216,7 +396,7 @@ def write_final_test_cases(content: str, output_path: Path) -> None:
 
 async def run_workflow(args: argparse.Namespace) -> None:
     """Run the AutoGen team and save the final approved test cases."""
-    load_dotenv()
+    load_project_environment()
 
     requirements = load_requirements(args.requirements)
     model = args.model or os.getenv("DEEPSEEK_MODEL", DEFAULT_MODEL)

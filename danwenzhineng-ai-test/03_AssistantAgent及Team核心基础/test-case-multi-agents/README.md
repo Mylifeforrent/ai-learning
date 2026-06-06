@@ -39,6 +39,12 @@ DEEPSEEK_BASE_URL=https://api.deepseek.com
 DEEPSEEK_MODEL=deepseek-v4-flash
 ```
 
+The backend loads `.env` from the project root. If your env file is somewhere else, set:
+
+```bash
+export DEEPSEEK_ENV_PATH=/absolute/path/to/your/.env
+```
+
 ## Run
 
 ```bash
@@ -86,3 +92,34 @@ You can also override the DeepSeek model or endpoint:
 ```bash
 test-case-agents --model deepseek-v4-pro --base-url https://api.deepseek.com
 ```
+
+## Web Frontend
+
+This project also includes a lightweight HTML/CSS/JS frontend served by FastAPI.
+
+```bash
+test-case-agents-api --host 127.0.0.1 --port 8000
+```
+
+Then open:
+
+```text
+http://127.0.0.1:8000
+```
+
+The frontend posts the user's requirement to:
+
+```text
+POST /api/review
+```
+
+The backend returns a draft from `TestCaseWriter`, review comments from `TestCaseReviewer`, and then
+waits for the user to approve or reject in the browser. Rejection feedback is sent to:
+
+```text
+POST /api/revise
+```
+
+The final result is only marked done in the UI after the user clicks `Approve final`.
+The web review team stops when `TestCaseReviewer` responds, with `max_messages` kept as a safety limit.
+Do not set `max_messages` below `4`, because AutoGen can count the initial task message as part of the run.

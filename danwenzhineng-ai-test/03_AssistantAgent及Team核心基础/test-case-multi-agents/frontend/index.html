@@ -1,0 +1,113 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Test Case Multi Agents</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace" aria-label="Test case generation workspace">
+        <aside class="rail" aria-label="Workflow status">
+          <div class="brand">
+            <span class="mark">TC</span>
+            <div>
+              <h1>Test Case Agents</h1>
+              <p>Writer + reviewer workflow</p>
+            </div>
+          </div>
+
+          <ol class="steps" aria-label="Agent workflow">
+            <li class="is-active">
+              <span>1</span>
+              <strong>Requirement</strong>
+            </li>
+            <li>
+              <span>2</span>
+              <strong>Writer</strong>
+            </li>
+            <li>
+              <span>3</span>
+              <strong>Reviewer</strong>
+            </li>
+            <li>
+              <span>4</span>
+              <strong>Final output</strong>
+            </li>
+          </ol>
+
+          <div class="meter">
+            <span>Backend</span>
+            <strong id="health">checking</strong>
+          </div>
+        </aside>
+
+        <section class="chat" aria-label="Requirement chatbox">
+          <div class="chat-header">
+            <div>
+              <p class="eyebrow">AutoGen + DeepSeek</p>
+              <h2>Describe a feature. Get reviewed test cases.</h2>
+            </div>
+            <button id="sampleButton" class="ghost-button" type="button">Sample</button>
+          </div>
+
+          <div id="messages" class="messages" aria-live="polite">
+            <article class="message assistant">
+              <div class="bubble">
+                Paste a product requirement below. The backend will run the writer and reviewer agents, then wait for your approval or feedback.
+              </div>
+            </article>
+          </div>
+
+          <form id="requirementForm" class="composer">
+            <label for="requirementInput">Requirement</label>
+            <textarea
+              id="requirementInput"
+              name="requirement"
+              rows="6"
+              placeholder="Example: Users can log in with email and password. Invalid credentials show a safe error. Five failed attempts lock the account for 15 minutes."
+              required
+            ></textarea>
+            <div class="composer-actions">
+              <span id="statusText">Ready</span>
+              <button id="submitButton" type="submit">Generate</button>
+            </div>
+          </form>
+        </section>
+
+        <section class="result-panel" aria-label="Agent output">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">Final Test Cases</p>
+              <h2>Output</h2>
+            </div>
+            <button id="copyButton" class="ghost-button" type="button" disabled>Copy</button>
+          </div>
+          <pre id="resultOutput">The generated markdown table will appear here.</pre>
+          <section id="reviewControls" class="review-controls" aria-label="Human review controls" hidden>
+            <div>
+              <p class="eyebrow">Human Review</p>
+              <h3>Approve the draft or reject it with feedback.</h3>
+            </div>
+            <textarea
+              id="feedbackInput"
+              rows="4"
+              placeholder="Feedback for rejection, for example: Add account lock recovery and keyboard-only accessibility cases."
+            ></textarea>
+            <div class="review-actions">
+              <button id="rejectButton" class="ghost-button danger" type="button">Reject with feedback</button>
+              <button id="approveButton" class="approve-button" type="button">Approve final</button>
+            </div>
+          </section>
+          <details id="traceDetails">
+            <summary>Agent trace</summary>
+            <div id="traceOutput" class="trace"></div>
+          </details>
+        </section>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>

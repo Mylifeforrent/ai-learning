@@ -1,0 +1,49 @@
+- main [ref=e2]:
+  - region "Test case generation workspace" [ref=e3]:
+    - complementary "Workflow status" [ref=e4]:
+      - generic [ref=e5]:
+        - generic [ref=e6]: TC
+        - generic [ref=e7]:
+          - heading "Test Case Agents" [level=1] [ref=e8]
+          - paragraph [ref=e9]: Writer + reviewer workflow
+      - list "Agent workflow" [ref=e10]:
+        - listitem [ref=e11]:
+          - generic [ref=e12]: "1"
+          - strong [ref=e13]: Requirement
+        - listitem [ref=e14]:
+          - generic [ref=e15]: "2"
+          - strong [ref=e16]: Writer
+        - listitem [ref=e17]:
+          - generic [ref=e18]: "3"
+          - strong [ref=e19]: Reviewer
+        - listitem [ref=e20]:
+          - generic [ref=e21]: "4"
+          - strong [ref=e22]: Final output
+      - generic [ref=e23]:
+        - generic [ref=e24]: Backend
+        - strong [ref=e25]: online
+    - region "Requirement chatbox" [ref=e26]:
+      - generic [ref=e27]:
+        - generic [ref=e28]:
+          - paragraph [ref=e29]: AutoGen + DeepSeek
+          - heading "Describe a feature. Get reviewed test cases." [level=2] [ref=e30]
+        - button "Sample" [ref=e31] [cursor=pointer]
+      - article [ref=e33]:
+        - generic [ref=e34]: Paste a product requirement below. The backend will run the writer and reviewer agents, then return the final test cases.
+      - generic [ref=e35]:
+        - generic [ref=e36]: Requirement
+        - textbox "Requirement" [active] [ref=e37]:
+          - /placeholder: "Example: Users can log in with email and password. Invalid credentials show a safe error. Five failed attempts lock the account for 15 minutes."
+          - text: "Build a login feature for a web application. Functional requirements: - Users can log in with email and password. - Email must use a valid email format. - Password is required and must not be empty. - Valid users are redirected to the dashboard. - Invalid credentials show a clear error message. - After five consecutive failed attempts, the account is locked for 15 minutes. Non-functional requirements: - Normal login response time should be under 2 seconds. - Error messages must not reveal whether the email or password was incorrect. - The login page must support keyboard navigation."
+        - generic [ref=e38]:
+          - generic [ref=e39]: Ready
+          - button "Generate" [ref=e40] [cursor=pointer]
+    - region "Agent output" [ref=e41]:
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - paragraph [ref=e44]: Final Test Cases
+          - heading "Output" [level=2] [ref=e45]
+        - button "Copy" [disabled] [ref=e46]
+      - generic [ref=e47]: The generated markdown table will appear here.
+      - group [ref=e48]:
+        - generic "Agent trace" [ref=e49] [cursor=pointer]

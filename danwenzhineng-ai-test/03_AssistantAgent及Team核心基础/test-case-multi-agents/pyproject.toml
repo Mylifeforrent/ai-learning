@@ -7,11 +7,14 @@ requires-python = ">=3.10"
 dependencies = [
     "autogen-agentchat>=0.4.0",
     "autogen-ext[openai]>=0.4.0",
+    "fastapi>=0.115.0",
     "python-dotenv>=1.0.1",
+    "uvicorn[standard]>=0.30.0",
 ]
 
 [project.scripts]
 test-case-agents = "test_case_multi_agents.main:cli"
+test-case-agents-api = "test_case_multi_agents.api:cli"
 
 [build-system]
 requires = ["setuptools>=68"]
@@ -19,4 +22,3 @@ build-backend = "setuptools.build_meta"
 
 [tool.setuptools.packages.find]
 where = ["src"]
-
