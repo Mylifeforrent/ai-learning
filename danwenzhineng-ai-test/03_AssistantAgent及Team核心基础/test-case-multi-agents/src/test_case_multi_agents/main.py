@@ -17,8 +17,8 @@ from pathlib import Path
 from autogen_agentchat.agents import AssistantAgent, UserProxyAgent
 from autogen_agentchat.base import TaskResult
 from autogen_agentchat.conditions import MaxMessageTermination, TextMentionTermination
+from autogen_agentchat.messages import ModelClientStreamingChunkEvent, TextMessage
 from autogen_agentchat.teams import RoundRobinGroupChat
-from autogen_agentchat.ui import Console
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from dotenv import load_dotenv
 
@@ -75,6 +75,7 @@ def create_team(model_client: OpenAIChatCompletionClient, max_messages: int) -> 
     writer = AssistantAgent(
         "TestCaseWriter",
         model_client=model_client,
+        model_client_stream=True,
         system_message=(
             "You are a principal QA test architect responsible for converting product "
             "requirements into production-ready manual test cases. Your test cases must "
@@ -97,6 +98,7 @@ def create_team(model_client: OpenAIChatCompletionClient, max_messages: int) -> 
     reviewer = AssistantAgent(
         "TestCaseReviewer",
         model_client=model_client,
+        model_client_stream=True,
         system_message=(
             "You are a senior QA review lead and quality gatekeeper. Review only the "
             "latest test cases from TestCaseWriter against the provided requirements. "
@@ -161,6 +163,51 @@ def extract_latest_writer_output(result: TaskResult) -> str:
     raise RuntimeError("No TestCaseWriter output was found in the team result.")
 
 
+async def run_team_stream(team: RoundRobinGroupChat, task: str) -> TaskResult:
+    """Run the team stream and render events according to their concrete type."""
+    result: TaskResult | None = None
+    streamed_sources: set[str] = set()
+    active_stream_source: str | None = None
+
+    async for event in team.run_stream(task=task):
+        if isinstance(event, ModelClientStreamingChunkEvent):
+            source = getattr(event, "source", "unknown")
+            if source != active_stream_source:
+                if active_stream_source is not None:
+                    print()
+                print(f"\n[{source} streaming]")
+                active_stream_source = source
+                streamed_sources.add(source)
+            print(event.content, end="", flush=True)
+            continue
+
+        if isinstance(event, TextMessage):
+            source = event.source
+            if active_stream_source is not None:
+                print()
+                active_stream_source = None
+            if source in streamed_sources:
+                print(f"[{source} complete]")
+            else:
+                print(f"\n[{source}]\n{event.content}")
+            continue
+
+        if isinstance(event, TaskResult):
+            if active_stream_source is not None:
+                print()
+                active_stream_source = None
+            result = event
+            print(f"\n[TaskResult] stop_reason={event.stop_reason}")
+            print(f"[TaskResult] total_messages={len(event.messages)}")
+            continue
+
+        print(f"\n[{event.__class__.__name__}]\n{event}")
+
+    if result is None:
+        raise RuntimeError("AutoGen stream finished without returning a TaskResult.")
+    return result
+
+
 def write_final_test_cases(content: str, output_path: Path) -> None:
     """Persist the final test case markdown."""
     output_path.parent.mkdir(parents=True, exist_ok=True)
@@ -178,7 +225,7 @@ async def run_workflow(args: argparse.Namespace) -> None:
     model_client = create_deepseek_model_client(model=model, base_url=base_url)
     try:
         team = create_team(model_client=model_client, max_messages=args.max_messages)
-        result = await Console(team.run_stream(task=build_task(requirements)))
+        result = await run_team_stream(team=team, task=build_task(requirements))
 
         final_content = extract_latest_writer_output(result)
         write_final_test_cases(final_content, args.output)

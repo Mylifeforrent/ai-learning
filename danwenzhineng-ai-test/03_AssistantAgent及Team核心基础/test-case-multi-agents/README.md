@@ -62,6 +62,19 @@ The final output is written to:
 outputs/final_test_cases.md
 ```
 
+## Stream Event Handling
+
+The CLI consumes `team.run_stream(...)` directly instead of using `Console(...)`.
+This makes the workflow easier to understand and customize:
+
+- `ModelClientStreamingChunkEvent`: token/chunk-level streaming output from an LLM-backed agent.
+- `TextMessage`: one complete message from an agent or the human reviewer.
+- `TaskResult`: final result for the whole team run, including all messages and the stop reason.
+
+Because `RoundRobinGroupChat` rotates through the participants in order, human feedback that does not
+contain `HUMAN_APPROVED` becomes part of the conversation history and the next turn returns to
+`TestCaseWriter` for another revision.
+
 ## Custom Requirement File
 
 ```bash
