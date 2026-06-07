@@ -3,6 +3,8 @@ LLamaindex 检索厉害，围绕检索展开的，比如RAG，索引。
 autogen 最新的版本ai不可以直接识别，因为它训练数据里面是0.2版本的，你需要把官方源码给他，才可以生成好的符合要求的最新版本的代码
 langgraph --智能体也比较优秀
 
+企业开发其实也可以结合不同ai框架的各自优势，进行整合，然后发挥最大优势，做出产品来。
+
 autogen也可以和其他框架整合，比如crewai,pydanticai,LLmaindex, langchain
 autogen 
     studio --图形化界面低代码平台--原型

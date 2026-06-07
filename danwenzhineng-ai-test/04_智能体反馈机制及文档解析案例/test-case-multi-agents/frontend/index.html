@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Test Case Multi Agents</title>
+    <link rel="icon" href="/static/favicon.svg" type="image/svg+xml" />
+    <link rel="stylesheet" href="/static/styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="workspace" aria-label="Document-driven test case workflow">
+        <aside class="rail" aria-label="Workflow status">
+          <div class="brand">
+            <span class="mark">TC</span>
+            <div>
+              <h1>Test Case Agents</h1>
+              <p>Document parse + review workflow</p>
+            </div>
+          </div>
+
+          <ol class="steps" aria-label="Agent workflow">
+            <li data-step="upload" class="is-active"><span>1</span><strong>Upload</strong></li>
+            <li data-step="file-read"><span>2</span><strong>File read</strong></li>
+            <li data-step="parse"><span>3</span><strong>Parse</strong></li>
+            <li data-step="parse-confirm"><span>4</span><strong>Parse confirm</strong></li>
+            <li data-step="writer"><span>5</span><strong>Writer</strong></li>
+            <li data-step="reviewer"><span>6</span><strong>Reviewer</strong></li>
+            <li data-step="final-confirm"><span>7</span><strong>Final confirm</strong></li>
+          </ol>
+
+          <div class="meter">
+            <span>Backend</span>
+            <strong id="health">checking</strong>
+          </div>
+        </aside>
+
+        <section class="input-panel" aria-label="Upload and parse confirmation">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">FileReadAgent -> DocumentParseAgent</p>
+              <h2>Upload a requirement document.</h2>
+            </div>
+            <button id="sampleButton" class="ghost-button" type="button">Sample text</button>
+          </div>
+
+          <form id="uploadForm" class="upload-form">
+            <label id="dropZone" class="drop-zone" for="fileInput">
+              <input id="fileInput" name="file" type="file" accept=".md,.markdown,.txt,.csv,.xlsx,.pdf,.docx" />
+              <strong>Choose or drop a file</strong>
+              <span>Local parse supports md, txt, csv, xlsx. PDF/DOCX use the reserved Marker adapter.</span>
+            </label>
+            <div class="composer-actions">
+              <span id="statusText">Ready</span>
+              <button id="parseButton" type="submit">Parse file</button>
+            </div>
+          </form>
+
+          <section class="manual-input" aria-label="Manual text fallback">
+            <label for="manualInput">Paste text fallback</label>
+            <textarea
+              id="manualInput"
+              rows="5"
+              placeholder="Paste product requirements here when you do not want to upload a file."
+            ></textarea>
+            <button id="useManualButton" class="ghost-button" type="button">Use pasted text</button>
+          </section>
+
+          <section id="parseSummary" class="parse-summary" hidden>
+            <div class="meta-grid">
+              <div><span>File</span><strong id="parsedFilename">-</strong></div>
+              <div><span>Parser</span><strong id="parsedParser">-</strong></div>
+              <div><span>Quality</span><strong id="parsedQuality">-</strong></div>
+            </div>
+            <div id="warningList" class="warnings" hidden></div>
+          </section>
+
+          <section class="parse-confirm" aria-label="Parsed markdown confirmation">
+            <div class="section-heading">
+              <div>
+                <p class="eyebrow">HumanParseConfirm</p>
+                <h3>Confirm parsed Markdown before generation.</h3>
+              </div>
+              <button id="confirmParseButton" class="approve-button" type="button" disabled>Confirm parsed content</button>
+            </div>
+            <textarea
+              id="parsedContentInput"
+              rows="12"
+              placeholder="Parsed markdown preview will appear here. You can edit it before confirmation."
+            ></textarea>
+          </section>
+        </section>
+
+        <section class="result-panel" aria-label="Agent output">
+          <div class="panel-heading">
+            <div>
+              <p class="eyebrow">TestCaseWriter -> TestCaseReviewer</p>
+              <h2>Reviewed test cases</h2>
+            </div>
+            <div class="panel-actions">
+              <button id="generateButton" class="ghost-button" type="button" disabled>Generate</button>
+              <button id="copyButton" class="ghost-button" type="button" disabled>Copy</button>
+            </div>
+          </div>
+          <pre id="resultOutput">Confirm parsed content, then generate reviewed test cases.</pre>
+          <section id="reviewControls" class="review-controls" aria-label="Human final review controls" hidden>
+            <div>
+              <p class="eyebrow">HumanFinalConfirm</p>
+              <h3>Approve the draft or reject it with feedback.</h3>
+            </div>
+            <textarea
+              id="feedbackInput"
+              rows="4"
+              placeholder="Feedback for rejection, for example: Add account lock recovery and keyboard-only accessibility cases."
+            ></textarea>
+            <div class="review-actions">
+              <button id="rejectButton" class="ghost-button danger" type="button">Reject with feedback</button>
+              <button id="approveButton" class="approve-button" type="button">Approve final</button>
+            </div>
+          </section>
+          <details id="traceDetails" open>
+            <summary>Live agent timeline</summary>
+            <div id="traceOutput" class="timeline"></div>
+          </details>
+        </section>
+      </section>
+    </main>
+    <script src="/static/app.js"></script>
+  </body>
+</html>
