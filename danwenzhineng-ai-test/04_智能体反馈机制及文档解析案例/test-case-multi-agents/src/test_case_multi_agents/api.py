@@ -15,11 +15,19 @@ from fastapi.responses import StreamingResponse
 from fastapi.staticfiles import StaticFiles
 from pydantic import BaseModel, Field
 
-from test_case_multi_agents.document_parser import (
+from document_parse_agent import (
+    DocumentParseAgent,
     DocumentParseError,
-    ParsedDocument,
-    create_plain_text_document,
-    parse_uploaded_document,
+    ParseResult,
+)
+from document_parse_agent.events import (
+    file_read_done,
+    file_read_started,
+    parse_done,
+    parse_error,
+    parse_final,
+    parse_started,
+    parse_warning,
 )
 from test_case_multi_agents.main import (
     DEFAULT_MAX_MESSAGES,
@@ -65,20 +73,41 @@ def sse_event(payload: dict[str, object]) -> str:
     return f"data: {json.dumps(payload, ensure_ascii=False)}\n\n"
 
 
-def parsed_document_from_payload(payload: dict[str, object] | None) -> ParsedDocument | None:
-    """Rebuild a ParsedDocument from a frontend payload when available."""
+def parsed_document_from_payload(payload: dict[str, object] | None) -> ParseResult | None:
+    """Rebuild a ParseResult from a frontend payload when available."""
     if not payload:
         return None
     try:
-        return ParsedDocument(
+        warnings = payload.get("warning_details") or []
+        warning_messages = payload.get("warnings") or []
+        from document_parse_agent.models import ParseWarning
+
+        parsed_warnings = []
+        if isinstance(warnings, list) and warnings:
+            parsed_warnings = [
+                ParseWarning(
+                    message=str(item.get("message", "")),
+                    code=str(item.get("code", "warning")),
+                    details=dict(item.get("details", {})),
+                )
+                for item in warnings
+                if isinstance(item, dict)
+            ]
+        elif isinstance(warning_messages, list):
+            parsed_warnings = [ParseWarning(message=str(message)) for message in warning_messages]
+
+        return ParseResult(
             document_id=str(payload.get("document_id", "")),
             filename=str(payload.get("filename", "")),
             mime_type=str(payload.get("mime_type", "")),
-            parser=str(payload.get("parser", "")),
+            backend=str(payload.get("backend") or payload.get("parser", "")),
+            output_format=str(payload.get("output_format", "markdown")),
             content_markdown=str(payload.get("content_markdown", "")),
+            content_raw=payload.get("content_raw"),
             metadata=dict(payload.get("metadata", {})),
-            warnings=list(payload.get("warnings", [])),
+            warnings=parsed_warnings,
             parse_quality_score=payload.get("parse_quality_score"),  # type: ignore[arg-type]
+            assets=dict(payload.get("assets", {})),
         )
     except Exception:
         return None
@@ -97,75 +126,20 @@ async def stream_parse_response(file: UploadFile) -> AsyncGenerator[str, None]:
     filename = file.filename or "uploaded-document"
     mime_type = file.content_type or "application/octet-stream"
     try:
-        yield sse_event(
-            {
-                "event": "file_read_started",
-                "source": "FileReadAgent",
-                "type": "Status",
-                "content": f"Reading uploaded file: {filename}",
-                "filename": filename,
-                "mime_type": mime_type,
-            }
-        )
+        yield sse_event(file_read_started(filename=filename, mime_type=mime_type))
         content = await file.read()
-        yield sse_event(
-            {
-                "event": "file_read_done",
-                "source": "FileReadAgent",
-                "type": "FileInfo",
-                "content": f"Read {len(content)} bytes from {filename}.",
-                "filename": filename,
-                "mime_type": mime_type,
-                "byte_count": len(content),
-            }
-        )
-        yield sse_event(
-            {
-                "event": "parse_started",
-                "source": "DocumentParseAgent",
-                "type": "Status",
-                "content": "Parsing document into Markdown.",
-            }
-        )
-        parsed = parse_uploaded_document(filename=filename, mime_type=mime_type, content=content)
+        yield sse_event(file_read_done(filename=filename, mime_type=mime_type, byte_count=len(content)))
+        yield sse_event(parse_started())
+        parsed = DocumentParseAgent().parse_bytes(filename=filename, mime_type=mime_type, content=content)
         for warning in parsed.warnings:
-            yield sse_event(
-                {
-                    "event": "warning",
-                    "source": "DocumentParseAgent",
-                    "type": "Warning",
-                    "content": warning,
-                }
-            )
-        yield sse_event(
-            {
-                "event": "parse_done",
-                "source": "DocumentParseAgent",
-                "type": "ParsedDocument",
-                "content": f"Parsed {filename} with {parsed.parser}.",
-                "parsed_document": parsed.to_dict(),
-            }
-        )
-        yield sse_event(
-            {
-                "event": "final",
-                "source": "DocumentParseAgent",
-                "type": "FinalPayload",
-                "content": "Document parsing complete. Awaiting human parse confirmation.",
-                "parsed_document": parsed.to_dict(),
-                "awaiting_parse_confirmation": True,
-            }
-        )
-    except (DocumentParseError, Exception) as exc:
-        logger.exception("Document parsing failed.")
-        yield sse_event(
-            {
-                "event": "error",
-                "source": "DocumentParseAgent",
-                "type": exc.__class__.__name__,
-                "content": str(exc),
-            }
-        )
+            yield sse_event(parse_warning(warning.message))
+        yield sse_event(parse_done(parsed))
+        yield sse_event(parse_final(parsed))
+    except DocumentParseError as exc:
+        yield sse_event(parse_error(exc))
+    except Exception as exc:
+        logger.exception("Unexpected document parsing failure.")
+        yield sse_event(parse_error(exc))
 
 
 async def stream_review_response(payload: dict[str, object]) -> AsyncGenerator[str, None]:
@@ -210,7 +184,7 @@ async def create_review(request: TestCaseRequest) -> dict[str, object]:
         confirmed_content = confirmed_content_from_request(request)
         parsed_document = parsed_document_from_payload(request.parsed_document)
         if parsed_document is None and request.requirement and not request.confirmed_content:
-            parsed_document = create_plain_text_document(request.requirement)
+            parsed_document = DocumentParseAgent().parse_text(request.requirement)
         return await generate_review_cycle_for_web(
             confirmed_content=confirmed_content,
             parsed_document=parsed_document,
@@ -230,7 +204,7 @@ async def create_review_stream(request: TestCaseRequest) -> StreamingResponse:
     confirmed_content = confirmed_content_from_request(request)
     parsed_document = parsed_document_from_payload(request.parsed_document)
     if parsed_document is None and request.requirement and not request.confirmed_content:
-        parsed_document = create_plain_text_document(request.requirement)
+        parsed_document = DocumentParseAgent().parse_text(request.requirement)
     payload = {
         "confirmed_content": confirmed_content,
         "parsed_document": parsed_document,

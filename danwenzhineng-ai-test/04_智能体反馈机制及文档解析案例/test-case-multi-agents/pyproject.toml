@@ -5,13 +5,19 @@ description = "AutoGen multi-agent workflow for generating, reviewing, and human
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "autogen-agentchat>=0.4.0",
-    "autogen-ext[openai]>=0.4.0",
+    "autogen-agentchat==0.7.5",
+    "autogen-ext[openai]==0.7.5",
     "fastapi>=0.115.0",
     "openpyxl>=3.1.5",
     "python-multipart>=0.0.9",
     "python-dotenv>=1.0.1",
     "uvicorn[standard]>=0.30.0",
+]
+
+[project.optional-dependencies]
+test = [
+    "pytest>=8.0.0",
+    "reportlab>=4.0.0",
 ]
 
 [project.scripts]

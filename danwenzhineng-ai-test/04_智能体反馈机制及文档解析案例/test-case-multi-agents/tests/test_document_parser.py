@@ -4,7 +4,8 @@ import unittest
 
 from openpyxl import Workbook
 
-from test_case_multi_agents.document_parser import DocumentParseError, parse_uploaded_document
+from document_parse_agent import ParseLimitError, UnsupportedDocumentError
+from test_case_multi_agents.document_parser import parse_uploaded_document
 
 
 class DocumentParserTests(unittest.TestCase):
@@ -15,6 +16,7 @@ class DocumentParserTests(unittest.TestCase):
             content="# Login\n\nUsers can log in.".encode("utf-8"),
         )
 
+        self.assertEqual(parsed.backend, "local_text")
         self.assertEqual(parsed.parser, "local_text")
         self.assertIn("Users can log in.", parsed.content_markdown)
 
@@ -25,7 +27,7 @@ class DocumentParserTests(unittest.TestCase):
             content="功能,规则\n登录,密码不能为空\n".encode("utf-8"),
         )
 
-        self.assertEqual(parsed.parser, "local_csv")
+        self.assertEqual(parsed.backend, "local_csv")
         self.assertIn("| 功能 | 规则 |", parsed.content_markdown)
         self.assertIn("| 登录 | 密码不能为空 |", parsed.content_markdown)
 
@@ -47,12 +49,12 @@ class DocumentParserTests(unittest.TestCase):
             content=buffer.getvalue(),
         )
 
-        self.assertEqual(parsed.parser, "local_xlsx")
+        self.assertEqual(parsed.backend, "local_xlsx")
         self.assertIn("## Sheet: Login", parsed.content_markdown)
         self.assertIn("| Field | Rule |", parsed.content_markdown)
 
     def test_unsupported_extension_returns_clear_error(self) -> None:
-        with self.assertRaises(DocumentParseError) as context:
+        with self.assertRaises(UnsupportedDocumentError) as context:
             parse_uploaded_document(
                 filename="requirements.json",
                 mime_type="application/json",
@@ -62,7 +64,7 @@ class DocumentParserTests(unittest.TestCase):
         self.assertIn("Unsupported file type", str(context.exception))
 
     def test_oversized_upload_is_rejected(self) -> None:
-        with self.assertRaises(DocumentParseError) as context:
+        with self.assertRaises(ParseLimitError) as context:
             parse_uploaded_document(
                 filename="requirements.txt",
                 mime_type="text/plain",

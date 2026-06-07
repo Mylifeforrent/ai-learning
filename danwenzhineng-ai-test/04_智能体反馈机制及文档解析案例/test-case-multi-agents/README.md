@@ -34,6 +34,24 @@ pip install -e .
 cp .env.example .env
 ```
 
+The app dependencies are locked to AutoGen `0.7.5`.
+
+Local Marker parsing must be installed in a separate parser environment because current
+`marker-pdf` releases require `Pillow<11`, while `autogen-core` requires `Pillow>=11`.
+The latest stable Marker version is pinned in `requirements/marker.txt`:
+
+```bash
+python -m venv .venv-marker
+source .venv-marker/bin/activate
+pip install -r requirements/marker.txt
+```
+
+For tests and generated fixtures:
+
+```bash
+pip install -e ".[test]"
+```
+
 Edit `.env` and set `DEEPSEEK_API_KEY`.
 
 By default the project uses DeepSeek's OpenAI-compatible endpoint:
@@ -49,15 +67,67 @@ Document parsing configuration:
 DOCUMENT_MAX_UPLOAD_MB=20
 DOCUMENT_PARSER_MODE=local_first
 DATALAB_API_KEY=
-MARKER_USE_LLM=false
+MARKER_OUTPUT_FORMAT=markdown
+MARKER_USE_LLM=true
+MARKER_LLM_PROVIDER=qianwen
+MARKER_FORCE_OCR=false
+MARKER_PAGE_RANGE=
+MARKER_DISABLE_IMAGE_EXTRACTION=false
+MARKER_BLOCK_CORRECTION_PROMPT=
+MARKER_QIANWEN_API_KEY=
+MARKER_QIANWEN_BASE_URL=https://dashscope.aliyuncs.com/compatible-mode/v1
+MARKER_QIANWEN_MODEL=qwen3-vl-flash
+MARKER_DEEPSEEK_API_KEY=
+MARKER_DEEPSEEK_BASE_URL=https://api.deepseek.com
+MARKER_DEEPSEEK_MODEL=deepseek-v4-flash
 MARKER_OPENAI_API_KEY=
 MARKER_OPENAI_BASE_URL=
 MARKER_OPENAI_MODEL=
 ```
 
 The default parser is intentionally lightweight. It supports `md`, `txt`, `csv`, and `xlsx` locally.
-`pdf` and `docx` are routed to a reserved Marker/Datalab adapter and return a clear setup error until
-you wire a concrete local Marker or Datalab Convert API backend.
+`pdf`, `docx`, images, and other complex documents are routed to the optional local Marker backend.
+If `marker-pdf` is not installed, the parser returns a clear setup error with the `requirements/marker.txt` install hint.
+
+Marker LLM enhancement is enabled by default through a provider adapter:
+
+- `MARKER_LLM_PROVIDER=qianwen` uses Alibaba Cloud Bailian/DashScope's OpenAI-compatible endpoint and defaults to `qwen3-vl-flash`. Use `qwen3-vl-plus` when you prefer stronger multimodal quality over speed/cost.
+- `MARKER_LLM_PROVIDER=deepseek` uses DeepSeek's OpenAI-compatible endpoint and defaults to `deepseek-v4-flash`.
+- `MARKER_LLM_PROVIDER=custom` uses the generic `MARKER_OPENAI_API_KEY`, `MARKER_OPENAI_BASE_URL`, and `MARKER_OPENAI_MODEL` values.
+
+Official references:
+
+- DeepSeek OpenAI-compatible API: https://api-docs.deepseek.com/
+- Qwen-VL OpenAI-compatible API: https://help.aliyun.com/zh/model-studio/qwen-vl-compatible-with-openai
+
+## Portable Document Parse Agent
+
+The reusable parser lives in `src/document_parse_agent/` and has no AutoGen or FastAPI dependency.
+You can migrate it to another project as a small standalone package:
+
+```python
+from document_parse_agent import DocumentParseAgent, ParseOptions
+
+agent = DocumentParseAgent(
+    ParseOptions(
+        output_format="markdown",
+        use_llm=True,
+        llm_provider="qianwen",
+    )
+)
+
+result = agent.parse_file("requirements.pdf")
+print(result.content_markdown)
+```
+
+Public entry points:
+
+- `parse_bytes(filename, content, mime_type="")`
+- `parse_file(path, mime_type="")`
+- `parse_text(content, filename="pasted-requirement.md")`
+
+The normalized result includes `document_id`, `filename`, `mime_type`, `backend`, `parser` compatibility alias,
+`output_format`, `content_markdown`, `content_raw`, `metadata`, `warnings`, `parse_quality_score`, and `assets`.
 
 The backend loads `.env` from the project root. If your env file is somewhere else, set:
 

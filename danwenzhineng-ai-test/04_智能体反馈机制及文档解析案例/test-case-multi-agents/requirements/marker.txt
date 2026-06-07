@@ -1,0 +1,4 @@
+# marker-pdf 1.10.2 is the latest stable PyPI release verified on 2026-06-07.
+# Keep it in a separate parser environment: marker-pdf requires Pillow<11,
+# while autogen-core 0.4+ requires Pillow>=11.
+marker-pdf==1.10.2

@@ -31,7 +31,7 @@ from autogen_agentchat.teams import RoundRobinGroupChat
 from autogen_ext.models.openai import OpenAIChatCompletionClient
 from dotenv import load_dotenv
 
-from test_case_multi_agents.document_parser import ParsedDocument
+from document_parse_agent import ParseResult
 
 
 APPROVAL_TOKEN = "HUMAN_APPROVED"
@@ -68,17 +68,19 @@ async def count_chinese_characters(text: str) -> int:
     return len(re.findall(r"[\u4e00-\u9fff]", text))
 
 
-def build_task(confirmed_content: str, parsed_document: ParsedDocument | None = None) -> str:
+def build_task(confirmed_content: str, parsed_document: ParseResult | None = None) -> str:
     """Build the task prompt sent to the multi-agent team."""
     document_context = ""
     if parsed_document is not None:
+        warning_text = ", ".join(warning.message for warning in parsed_document.warnings) if parsed_document.warnings else "none"
         document_context = f"""
 Parsed document metadata:
 - document_id: {parsed_document.document_id}
 - filename: {parsed_document.filename}
+- backend: {parsed_document.backend}
 - parser: {parsed_document.parser}
 - mime_type: {parsed_document.mime_type}
-- warnings: {", ".join(parsed_document.warnings) if parsed_document.warnings else "none"}
+- warnings: {warning_text}
 """.strip()
 
     return f"""
@@ -561,7 +563,7 @@ Human feedback:
 
 async def generate_review_cycle_for_web(
     confirmed_content: str,
-    parsed_document: ParsedDocument | None = None,
+    parsed_document: ParseResult | None = None,
     previous_test_cases: str | None = None,
     reviewer_comments: str | None = None,
     human_feedback: str | None = None,
@@ -608,7 +610,7 @@ async def generate_review_cycle_for_web(
 
 async def stream_review_cycle_for_web(
     confirmed_content: str,
-    parsed_document: ParsedDocument | None = None,
+    parsed_document: ParseResult | None = None,
     previous_test_cases: str | None = None,
     reviewer_comments: str | None = None,
     human_feedback: str | None = None,
