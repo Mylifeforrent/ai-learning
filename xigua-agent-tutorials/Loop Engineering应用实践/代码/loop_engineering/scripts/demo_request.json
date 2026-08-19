@@ -1,0 +1,6 @@
+{
+  "event_id": "demo-001",
+  "source": "slack",
+  "instruction": "Improve the getting-started guide. State the Python requirement, add the pip installation command, and keep the link to the configuration guide. Make only the necessary documentation changes.",
+  "requested_by": "youtube-demo"
+}
