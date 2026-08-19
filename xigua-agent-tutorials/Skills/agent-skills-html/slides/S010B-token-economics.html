@@ -1,0 +1,174 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered" style="padding-top:40px;">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">经济学原理</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:4px;margin-bottom:6px;">
+            渐进式披露 设计
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2"
+            style="max-width:920px;margin-bottom:12px;font-size:0.85rem;">
+            按需加载 vs 全量注入——动态路由让 Agent 只为使用的能力付费
+        </p>
+
+        <!-- 场景选择器 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="max-width:600px;margin-bottom:16px;">
+            <div style="display:flex;gap:10px;justify-content:center;">
+                <button class="scenario-btn active" data-scenario="test">
+                    场景1: 补充测试
+                </button>
+                <button class="scenario-btn" data-scenario="review">
+                    场景2: 代码审查
+                </button>
+                <button class="scenario-btn" data-scenario="docs">
+                    场景3: 文档整理
+                </button>
+            </div>
+        </div>
+
+        <!-- 对比展示区 -->
+        <div class="animate-ready center-block" data-delay="0.3" style="max-width:1000px;margin-bottom:16px;">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+                <!-- 传统方式 -->
+                <div class="card" style="padding:20px;border:2px solid rgba(239,68,68,0.3);background:var(--bg-white);">
+                    <div style="text-align:center;margin-bottom:16px;">
+                        <div style="font-size:1.1rem;font-weight:700;color:#ef4444;margin-bottom:4px;">❌ 传统方式</div>
+                        <div style="font-size:0.8rem;color:var(--text-secondary);">全量注入</div>
+                    </div>
+
+                    <!-- System Prompt -->
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px;font-weight:600;">
+                            System Prompt</div>
+                        <div
+                            style="height:36px;background:var(--bg-cool);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:6px;">
+                            <div id="traditional-bar"
+                                style="height:100%;width:100%;background:linear-gradient(90deg, #ef4444, #dc2626);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.85rem;transition:width 0.3s ease;">
+                                <span id="traditional-tokens">5000</span> tokens
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--text-tertiary);">所有规则硬编码</div>
+                    </div>
+
+                    <!-- 总计 -->
+                    <div style="padding-top:16px;border-top:1px solid var(--border);text-align:center;">
+                        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px;">总计</div>
+                        <div style="font-size:1.3rem;font-weight:700;color:#ef4444;margin-bottom:6px;">
+                            <span id="traditional-total">5000</span> tokens
+                        </div>
+                        <div style="font-size:1rem;font-weight:600;color:var(--text-primary);">
+                            💰 <span id="traditional-cost">$0.025</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Skill 方式 -->
+                <div class="card" style="padding:20px;border:2px solid var(--teal);background:var(--bg-white);">
+                    <div style="text-align:center;margin-bottom:16px;">
+                        <div style="font-size:1.1rem;font-weight:700;color:var(--teal);margin-bottom:4px;">✅ Skill 方式
+                        </div>
+                        <div style="font-size:0.8rem;color:var(--text-secondary);">按需加载</div>
+                    </div>
+
+                    <!-- System Prompt -->
+                    <div style="margin-bottom:12px;">
+                        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px;font-weight:600;">
+                            System Prompt</div>
+                        <div
+                            style="height:28px;background:var(--bg-cool);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:6px;">
+                            <div id="skill-system-bar"
+                                style="height:100%;width:40%;background:linear-gradient(90deg, #22c55e, #16a34a);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.75rem;transition:width 0.3s ease;">
+                                <span id="skill-system-tokens">200</span> tokens
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--text-tertiary);">基础规则</div>
+                    </div>
+
+                    <!-- Skill -->
+                    <div style="margin-bottom:16px;">
+                        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px;font-weight:600;">+
+                            Skill</div>
+                        <div
+                            style="height:28px;background:var(--bg-cool);border-radius:var(--radius-sm);overflow:hidden;margin-bottom:6px;">
+                            <div id="skill-skill-bar"
+                                style="height:100%;width:60%;background:linear-gradient(90deg, #3b82f6, #2563eb);display:flex;align-items:center;justify-content:center;color:white;font-weight:600;font-size:0.75rem;transition:width 0.3s ease;">
+                                <span id="skill-skill-tokens">300</span> tokens
+                            </div>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--text-tertiary);">按需加载</div>
+                    </div>
+
+                    <!-- 总计 -->
+                    <div style="padding-top:16px;border-top:1px solid var(--border);text-align:center;">
+                        <div style="font-size:0.8rem;color:var(--text-secondary);margin-bottom:6px;">总计</div>
+                        <div style="font-size:1.3rem;font-weight:700;color:var(--teal);margin-bottom:6px;">
+                            <span id="skill-total">500</span> tokens
+                        </div>
+                        <div style="font-size:1rem;font-weight:600;color:var(--text-primary);">
+                            💰 <span id="skill-cost">$0.0025</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 成本节省 -->
+        <div class="animate-ready center-block" data-delay="0.35"
+            style="max-width:700px;padding:16px 24px;background:var(--amber-pale);border-left:4px solid var(--amber);border-radius:var(--radius-md);text-align:center;margin-bottom:12px;">
+            <div style="font-size:1.1rem;font-weight:700;color:var(--amber);">
+                💡 节省 <span id="savings-percent">90</span>% Token 消耗 = 节省 <span id="savings-percent-2">90</span>% 成本
+            </div>
+        </div>
+
+        <!-- 底部洞察 -->
+        <div class="animate-ready center-block" data-delay="0.4"
+            style="max-width:700px;padding:12px 20px;background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:var(--radius-sm);font-size:0.85rem;">
+            <strong>关键洞察：</strong>动态路由让 Agent 只加载需要的能力，而不是所有能力
+        </div>
+    </div>
+</div>
+
+<style>
+    /* 场景选择按钮 */
+    .scenario-btn {
+        padding: 8px 16px;
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: var(--radius-full);
+        color: var(--text-primary);
+        font-size: 0.85rem;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .scenario-btn:hover {
+        background: var(--teal-pale);
+        border-color: var(--teal);
+        color: var(--teal);
+    }
+
+    .scenario-btn.active {
+        background: var(--teal);
+        border-color: var(--teal);
+        color: var(--text-white);
+        font-weight: 600;
+    }
+
+    /* 响应式 */
+    @media (max-width: 768px) {
+        .content>div[style*="grid-template-columns"] {
+            grid-template-columns: 1fr !important;
+        }
+
+        .scenario-btn {
+            padding: 6px 12px;
+            font-size: 0.75rem;
+        }
+    }
+</style>

@@ -1,0 +1,247 @@
+<!-- S018 Compress - Observation Masking - show actual content before/after -->
+<style>
+  .obs-rounds {
+    width: clamp(520px, 64vw, 780px);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .obs-round {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .obs-round.visible { opacity: 1; }
+  .obs-round-label {
+    font-family: var(--font-heading);
+    font-size: clamp(0.82rem, 1.15vw, 0.95rem);
+    font-weight: 600;
+    color: var(--text-dim);
+    margin-bottom: 2px;
+  }
+  .obs-part {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.4rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 0.4rem;
+    font-family: 'Menlo','Consolas',monospace;
+    font-size: clamp(0.75rem, 1.08vw, 0.88rem);
+    line-height: 1.5;
+  }
+  .obs-tag {
+    font-weight: 700;
+    flex-shrink: 0;
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    padding: 0.1rem 0.3rem;
+    border-radius: 0.25rem;
+    color: white;
+    white-space: nowrap;
+  }
+  .obs-text {
+    flex: 1;
+    color: var(--card-text);
+    min-width: 0;
+  }
+  .obs-tok {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+  }
+  .part-thought { background: rgba(45,90,122,0.06); }
+  .part-thought .obs-tag { background: var(--primary); }
+  .part-action { background: rgba(39,174,96,0.06); }
+  .part-action .obs-tag { background: #27ae60; }
+  .part-obs { background: rgba(231,76,60,0.06); border-left: 3px solid rgba(231,76,60,0.4); }
+  .part-obs .obs-tag { background: #e74c3c; }
+  .part-obs .obs-text {
+    max-height: 2.2rem;
+    overflow: hidden;
+    color: rgba(231,76,60,0.7);
+  }
+  .part-obs.masked {
+    background: rgba(150,150,150,0.08);
+    border-left-color: rgba(150,150,150,0.3);
+    transition: all 0.5s ease;
+  }
+  .part-obs.masked .obs-tag { background: #999; }
+  .part-obs.masked .obs-text {
+    color: #999;
+    max-height: none;
+    font-style: italic;
+  }
+  .part-obs.masked .obs-tok { color: #27ae60; font-weight: 600; }
+  .obs-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+  }
+  #obs-btn {
+    font-family: var(--font-heading);
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+    font-weight: 600;
+    color: white;
+    background: var(--accent);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.4rem 1.4rem;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.2s ease;
+  }
+  #obs-btn.visible { opacity: 1; }
+  #obs-btn:hover { transform: scale(1.05); }
+  #obs-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+  #obs-counter {
+    font-family: var(--font-heading);
+    font-size: clamp(1.5rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--primary);
+    transition: color 0.5s ease;
+  }
+  .obs-footer {
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    align-items: center;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    font-size: clamp(0.85rem, 1.2vw, 0.98rem);
+  }
+  .obs-footer.visible { opacity: 1; }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第三章：五策略框架</span>
+    <h1 class="slide-title" style="font-size:clamp(1.7rem,3vw,2.5rem);margin-top:0.5rem;">Compress：观察遮蔽</h1>
+    <p class="text-dim" style="font-size:clamp(0.92rem,1.3vw,1.08rem);">保留 Thought + Action，将旧 Observation 替换为占位符</p>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+
+    <div class="obs-rounds">
+      <div class="obs-round" data-r="1">
+        <div class="obs-round-label">轮次 1</div>
+        <div class="obs-part part-thought">
+          <span class="obs-tag">Thought</span>
+          <span class="obs-text">需要检查 config.py 的数据库配置</span>
+          <span class="obs-tok">50 tok</span>
+        </div>
+        <div class="obs-part part-action">
+          <span class="obs-tag">Action</span>
+          <span class="obs-text">read_file("config.py")</span>
+          <span class="obs-tok">30 tok</span>
+        </div>
+        <div class="obs-part part-obs" data-maskable="1">
+          <span class="obs-tag">Obs</span>
+          <span class="obs-text">class ConfigManager:\n  db_host='localhost'\n  db_port=5432\n  redis_url='redis://...' ... (87行完整源码)</span>
+          <span class="obs-tok" style="color:#e74c3c;font-weight:600;">5,000 tok</span>
+        </div>
+      </div>
+
+      <div class="obs-round" data-r="2">
+        <div class="obs-round-label">轮次 2</div>
+        <div class="obs-part part-thought">
+          <span class="obs-tag">Thought</span>
+          <span class="obs-text">config.py 含 db_host=localhost, port=5432, Redis 已配置 → 搜索哪些文件引用</span>
+          <span class="obs-tok">60 tok</span>
+        </div>
+        <div class="obs-part part-action">
+          <span class="obs-tag">Action</span>
+          <span class="obs-text">search_codebase("ConfigManager")</span>
+          <span class="obs-tok">25 tok</span>
+        </div>
+        <div class="obs-part part-obs" data-maskable="1">
+          <span class="obs-tag">Obs</span>
+          <span class="obs-text">api.py:42 import ConfigManager\nroutes.py:15 cfg=ConfigManager()\n... (15条匹配)</span>
+          <span class="obs-tok" style="color:#e74c3c;font-weight:600;">3,000 tok</span>
+        </div>
+      </div>
+
+      <div class="obs-round" data-r="3">
+        <div class="obs-round-label" style="color:var(--primary);">轮次 3 (当前 — 保留完整)</div>
+        <div class="obs-part part-thought">
+          <span class="obs-tag">Thought</span>
+          <span class="obs-text">api.py:42, routes.py:15 均正确引用 ConfigManager → 运行测试确认</span>
+          <span class="obs-tok">45 tok</span>
+        </div>
+        <div class="obs-part part-action">
+          <span class="obs-tag">Action</span>
+          <span class="obs-text">run_tests()</span>
+          <span class="obs-tok">35 tok</span>
+        </div>
+        <div class="obs-part part-obs" style="border-left-color:rgba(39,174,96,0.4);background:rgba(39,174,96,0.04);">
+          <span class="obs-tag" style="background:#27ae60;">Obs</span>
+          <span class="obs-text" style="color:#27ae60;max-height:none;">12/12 PASSED, 0 failed — 完整保留，Agent 当前正在使用</span>
+          <span class="obs-tok">2,000 tok</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="obs-controls">
+      <button id="obs-btn">启用观察遮蔽</button>
+      <div>
+        <span id="obs-counter">10,245</span>
+        <span style="font-size:clamp(0.85rem,1.2vw,0.98rem);color:var(--text-dim);"> tokens</span>
+      </div>
+      <div id="obs-save" style="opacity:0;transition:opacity 0.5s ease;">
+        <span style="font-family:var(--font-heading);font-size:clamp(1rem,1.8vw,1.3rem);font-weight:700;color:#27ae60;">-52%</span>
+      </div>
+    </div>
+
+    <div class="obs-footer" id="obs-footer">
+      <span style="color:var(--primary);font-weight:600;">JetBrains NeurIPS 2025：+2.6% 解决率 -52% 成本</span>
+      <span style="color:var(--accent);">仅适用于工具密集型 SE Agent</span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var rounds = document.querySelectorAll('.obs-round');
+  var maskable = document.querySelectorAll('[data-maskable]');
+  var btn = document.getElementById('obs-btn');
+  var counter = document.getElementById('obs-counter');
+  var save = document.getElementById('obs-save');
+  var footer = document.getElementById('obs-footer');
+
+  rounds.forEach(function(r, i) {
+    setTimeout(function() { r.classList.add('visible'); }, 200 + i * 400);
+  });
+  setTimeout(function() { btn.classList.add('visible'); }, 200 + rounds.length * 400 + 200);
+
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = '已遮蔽';
+    btn.style.background = '#27ae60';
+
+    maskable.forEach(function(obs, i) {
+      setTimeout(function() {
+        obs.classList.add('masked');
+        obs.querySelector('.obs-text').textContent = '[observation truncated]';
+        obs.querySelector('.obs-tok').textContent = '20 tok';
+      }, i * 500);
+    });
+
+    setTimeout(function() {
+      var start = 10245; var end = 4265; var dur = 800; var t0 = null;
+      function anim(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        counter.textContent = Math.round(start + (end - start) * p).toLocaleString();
+        if (p < 1) requestAnimationFrame(anim);
+        else { counter.style.color = '#27ae60'; save.style.opacity = '1'; footer.classList.add('visible'); }
+      }
+      requestAnimationFrame(anim);
+    }, maskable.length * 500 + 200);
+  });
+})();
+</script>

@@ -1,0 +1,177 @@
+<!-- S012 External Knowledge - Yellow - cost impact + comparison table -->
+<style>
+  .cost-hero {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .cost-hero.visible { opacity: 1; }
+  .cost-side {
+    text-align: center;
+    font-family: var(--font-heading);
+  }
+  .cost-side .cost-label {
+    font-size: clamp(0.75rem, 1.1vw, 0.9rem);
+    color: var(--text-dim);
+    margin-bottom: 0.3rem;
+  }
+  .cost-side .cost-value {
+    font-size: clamp(1.2rem, 2.2vw, 1.8rem);
+    font-weight: 700;
+  }
+  .cost-side .cost-dot {
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: 0.3rem;
+  }
+  .cost-side .cost-dot-big {
+    width: 48px; height: 48px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-top: 0.3rem;
+  }
+  .cost-multiplier {
+    font-family: var(--font-heading);
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 700;
+    color: var(--accent);
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .cost-multiplier.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  /* Comparison table */
+  .ek-table {
+    width: clamp(450px, 56vw, 680px);
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: clamp(0.72rem, 1.05vw, 0.85rem);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .ek-table.visible { opacity: 1; }
+  .ek-table th {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    color: var(--primary);
+    padding: 0.5rem 0.6rem;
+    border-bottom: 2px solid var(--primary);
+    text-align: left;
+  }
+  .ek-table td {
+    padding: 0.45rem 0.6rem;
+    border-bottom: 1px solid rgba(45,90,122,0.08);
+    color: var(--card-text);
+  }
+  .ek-table tr:hover td {
+    background: rgba(45,90,122,0.04);
+  }
+  .ek-table .ek-warn {
+    color: var(--accent);
+    font-weight: 600;
+  }
+  .ek-table .ek-good {
+    color: #27ae60;
+    font-weight: 600;
+  }
+  /* Decision tags */
+  .ek-decisions {
+    display: flex;
+    justify-content: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .ek-decisions.visible { opacity: 1; }
+  .ek-dec {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--card-border);
+    border-radius: 0.6rem;
+    padding: 0.5rem 0.9rem;
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    color: var(--card-text);
+    text-align: center;
+    cursor: default;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+  }
+  .ek-dec:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(193,127,89,0.12);
+  }
+  .ek-dec strong { color: var(--primary); }
+</style>
+
+<div style="width:100%;max-width:900px;">
+
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第二章：六大功能模块</span>
+    <h1 class="slide-title" style="font-size:clamp(1.5rem,2.8vw,2.3rem);margin-top:0.5rem;">外部知识层：RAG vs 长上下文</h1>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.8rem;">
+
+    <!-- Cost hero -->
+    <div class="cost-hero" id="cost-hero">
+      <div class="cost-side">
+        <div class="cost-label">RAG 检索</div>
+        <div class="cost-value" style="color:var(--primary);">$0.00008</div>
+        <div class="cost-dot" style="background:var(--primary);"></div>
+      </div>
+      <div class="cost-multiplier" id="cost-mult">1250x</div>
+      <div class="cost-side">
+        <div class="cost-label">全上下文</div>
+        <div class="cost-value" style="color:var(--accent);">$0.10</div>
+        <div class="cost-dot-big" style="background:rgba(193,127,89,0.3);border:2px solid var(--accent);"></div>
+      </div>
+    </div>
+
+    <!-- Comparison table -->
+    <table class="ek-table" id="ek-table">
+      <thead>
+        <tr><th>维度</th><th>RAG 检索</th><th>全上下文</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><strong>延迟</strong></td><td class="ek-good">~1 秒</td><td class="ek-warn">30-60 秒</td></tr>
+        <tr><td><strong>Token/请求</strong></td><td class="ek-good">~783</td><td class="ek-warn">数十万</td></tr>
+        <tr><td><strong>信息完整性</strong></td><td class="ek-warn">受检索质量限制</td><td class="ek-good">全部信息可用</td></tr>
+        <tr><td><strong>跨文档推理</strong></td><td class="ek-warn">受限</td><td class="ek-good">原生支持</td></tr>
+      </tbody>
+    </table>
+
+    <!-- Decision cards -->
+    <div class="ek-decisions" id="ek-decisions">
+      <div class="ek-dec"><strong>默认 RAG</strong><br>高频查询 · 成本敏感</div>
+      <div class="ek-dec"><strong>补充长上下文</strong><br>跨文档推理 · 全局理解</div>
+      <div class="ek-dec" style="border-color:var(--accent);"><strong style="color:var(--accent);">组合方案 ✓</strong><br>2025-2026 行业共识</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var hero = document.getElementById('cost-hero');
+  var mult = document.getElementById('cost-mult');
+  var table = document.getElementById('ek-table');
+  var decisions = document.getElementById('ek-decisions');
+
+  // Stage 1: cost hero
+  setTimeout(function() { hero.classList.add('visible'); }, 200);
+  // Stage 2: 1250x pop
+  setTimeout(function() { mult.classList.add('visible'); }, 800);
+  // Stage 3: table
+  setTimeout(function() { table.classList.add('visible'); }, 1400);
+  // Stage 4: decisions
+  setTimeout(function() { decisions.classList.add('visible'); }, 2000);
+})();
+</script>

@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-4",
+  "category": "should-trigger",
+  "text": "我需要一个Markdown文档的摘要，生成一个包含主要章节和关键发现的报告。",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

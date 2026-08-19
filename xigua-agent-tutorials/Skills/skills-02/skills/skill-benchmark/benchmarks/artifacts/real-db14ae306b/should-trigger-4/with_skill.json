@@ -1,0 +1,27 @@
+{
+  "output_text": "[benchmark executor failed before producing JSON]",
+  "trace_signals": {
+    "skill_attempted": false,
+    "team_mode_attempted": false,
+    "skill_triggered": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "run_kind": "with-skill",
+    "failed": true,
+    "returncode": 1,
+    "stderr_tail": "Traceback (most recent call last):\n  File \"/Users/mac/PycharmProjects/JupyterProject/Agent_Skills/Agent_Create/File/skills/skill-benchmark/scripts/claude_cli_executor.py\", line 286, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"/Users/mac/PycharmProjects/JupyterProject/Agent_Skills/Agent_Create/File/skills/skill-benchmark/scripts/claude_cli_executor.py\", line 280, in main\n    data = run(Path(args.prompt_file), args.model, args.run_kind, args.skill or None)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/mac/PycharmProjects/JupyterProject/Agent_Skills/Agent_Create/File/skills/skill-benchmark/scripts/claude_cli_executor.py\", line 249, in run\n    collected = _collect_stream(cmd, env, timeout_seconds, run_kind)\n                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/Users/mac/PycharmProjects/JupyterProject/Agent_Skills/Agent_Create/File/skills/skill-benchmark/scripts/claude_cli_executor.py\", line 161, in _collect_stream\n    proc = subprocess.Popen(\n           ^^^^^^^^^^^^^^^^^\n  File \"/opt/anaconda3/envs/skills/lib/python3.11/subprocess.py\", line 1026, in __init__\n    self._execute_child(args, executable, preexec_fn, close_fds,\n  File \"/opt/anaconda3/envs/skills/lib/python3.11/subprocess.py\", line 1955, in _execute_child\n    raise child_exception_type(errno_num, err_msg, err_filename)\nFileNotFoundError: [Errno 2] No such file or directory: 'claude'\n",
+    "command": [
+      "python3",
+      "/Users/mac/PycharmProjects/JupyterProject/Agent_Skills/Agent_Create/File/skills/skill-benchmark/scripts/claude_cli_executor.py",
+      "--prompt-file",
+      "benchmarks/artifacts/real-db14ae306b/should-trigger-4/prompt.json",
+      "--model",
+      "claude-3-5-haiku-20241022",
+      "--run-kind",
+      "with-skill",
+      "--skill",
+      "../../skills/document-summarizer"
+    ]
+  }
+}

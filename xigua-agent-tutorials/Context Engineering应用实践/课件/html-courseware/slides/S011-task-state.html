@@ -1,0 +1,176 @@
+<!-- S011 Task State - Yellow - before/after scratchpad comparison -->
+<style>
+  .sp-compare {
+    display: flex;
+    gap: 1.2rem;
+    justify-content: center;
+    flex-wrap: nowrap;
+    width: clamp(500px, 62vw, 780px);
+  }
+  .sp-panel {
+    flex: 1;
+    min-width: 0;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1.5px solid var(--card-border);
+    border-radius: 0.8rem;
+    padding: 1rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .sp-panel.visible { opacity: 1; }
+  .sp-panel-title {
+    font-family: var(--font-heading);
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    font-weight: 700;
+    text-align: center;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--card-border);
+    margin-bottom: 0.6rem;
+  }
+  .sp-step {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.3rem 0;
+    font-size: clamp(0.72rem, 1.05vw, 0.85rem);
+    color: var(--card-text);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .sp-step.visible { opacity: 1; }
+  .sp-step .step-icon {
+    flex-shrink: 0;
+    width: 1.3rem;
+    text-align: center;
+    font-size: 0.85rem;
+  }
+  .sp-divider {
+    text-align: center;
+    font-size: clamp(0.65rem, 0.95vw, 0.78rem);
+    color: var(--accent);
+    font-weight: 600;
+    padding: 0.4rem 0;
+    border-top: 1.5px dashed var(--accent);
+    margin-top: 0.3rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .sp-divider.visible { opacity: 1; }
+  .sp-result {
+    text-align: center;
+    padding: 0.5rem;
+    border-radius: 0.5rem;
+    margin-top: 0.5rem;
+    font-size: clamp(0.72rem, 1.05vw, 0.85rem);
+    font-weight: 600;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .sp-result.visible { opacity: 1; }
+</style>
+
+<div style="width:100%;max-width:900px;">
+
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第二章：六大功能模块</span>
+    <h1 class="slide-title" style="font-size:clamp(1.5rem,2.8vw,2.3rem);margin-top:0.5rem;">任务状态层：Scratchpad 对比</h1>
+    <p class="text-dim" style="font-size:clamp(0.8rem,1.2vw,0.95rem);">没有工作笔记本，压缩后 Agent 会"断片"</p>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.8rem;">
+
+    <div class="sp-compare">
+      <!-- Left: No Scratchpad -->
+      <div class="sp-panel" id="panel-no">
+        <div class="sp-panel-title" style="color:#e74c3c;">无 Scratchpad</div>
+        <div class="sp-step" data-i="0"><span class="step-icon">✅</span>Step 1：收集需求</div>
+        <div class="sp-step" data-i="1"><span class="step-icon">✅</span>Step 2：确定技术栈</div>
+        <div class="sp-step" data-i="2"><span class="step-icon">✅</span>Step 3：写数据层</div>
+        <div class="sp-divider">⚡ 上下文压缩发生</div>
+        <div class="sp-step" data-i="3"><span class="step-icon">❓</span><span style="color:var(--text-dim);text-decoration:line-through;">Step 4：???</span></div>
+        <div class="sp-step" data-i="4"><span class="step-icon">❓</span><span style="color:var(--text-dim);text-decoration:line-through;">Step 5：???</span></div>
+        <div class="sp-result" style="background:rgba(231,76,60,0.08);color:#e74c3c;">
+          "做到哪了？不记得了..."
+        </div>
+      </div>
+
+      <!-- Right: With Scratchpad -->
+      <div class="sp-panel" id="panel-yes">
+        <div class="sp-panel-title" style="color:#27ae60;">有 Scratchpad</div>
+        <div class="sp-step" data-i="0"><span class="step-icon">✅</span>Step 1：收集需求</div>
+        <div class="sp-step" data-i="1"><span class="step-icon">✅</span>Step 2：确定技术栈</div>
+        <div class="sp-step" data-i="2"><span class="step-icon">✅</span>Step 3：写数据层</div>
+        <div class="sp-divider">⚡ 上下文压缩发生</div>
+        <div class="sp-step" data-i="3"><span class="step-icon">🔄</span>Step 4：写 API 层</div>
+        <div class="sp-step" data-i="4"><span class="step-icon">⬜</span>Step 5：写测试</div>
+        <div class="sp-result" style="background:rgba(39,174,96,0.08);color:#27ae60;">
+          "第3步完成，接下来写 API 层"
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom insight -->
+    <div id="s011-insight" style="opacity:0;transition:opacity 0.6s ease;text-align:center;">
+      <div style="display:inline-flex;flex-wrap:wrap;justify-content:center;gap:1.2rem;font-size:clamp(0.78rem,1.1vw,0.9rem);color:var(--text-dim);">
+        <span>Manus 教训：反复重写 todo 浪费 <strong style="color:var(--accent);">30% token</strong></span>
+        <span>Claude Code：<strong style="color:var(--primary);">CLAUDE.md + todo.md</strong></span>
+        <span>开销：<strong style="color:var(--primary);">100-500 token</strong></span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var panelNo = document.getElementById('panel-no');
+  var panelYes = document.getElementById('panel-yes');
+  var insight = document.getElementById('s011-insight');
+
+  // Show panels
+  setTimeout(function() { panelNo.classList.add('visible'); }, 200);
+  setTimeout(function() { panelYes.classList.add('visible'); }, 200);
+
+  // Steps appear in sync on both panels
+  var allSteps = document.querySelectorAll('.sp-step');
+  var dividers = document.querySelectorAll('.sp-divider');
+  var results = document.querySelectorAll('.sp-result');
+
+  // Steps 0-2 (before compression)
+  for (var i = 0; i <= 2; i++) {
+    (function(idx) {
+      setTimeout(function() {
+        allSteps.forEach(function(s) {
+          if (parseInt(s.dataset.i) === idx) s.classList.add('visible');
+        });
+      }, 600 + idx * 400);
+    })(i);
+  }
+
+  // Compression divider
+  setTimeout(function() {
+    dividers.forEach(function(d) { d.classList.add('visible'); });
+  }, 2000);
+
+  // Steps 3-4 (after compression)
+  setTimeout(function() {
+    allSteps.forEach(function(s) {
+      if (parseInt(s.dataset.i) === 3) s.classList.add('visible');
+    });
+  }, 2600);
+  setTimeout(function() {
+    allSteps.forEach(function(s) {
+      if (parseInt(s.dataset.i) === 4) s.classList.add('visible');
+    });
+  }, 3000);
+
+  // Results
+  setTimeout(function() {
+    results.forEach(function(r) { r.classList.add('visible'); });
+  }, 3500);
+
+  // Insight
+  setTimeout(function() { insight.style.opacity = '1'; }, 4200);
+})();
+</script>

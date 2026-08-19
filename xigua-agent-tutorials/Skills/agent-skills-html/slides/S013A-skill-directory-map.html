@@ -1,0 +1,58 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">结构补全</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            一份完整 Skill 的目录架构，长什么样
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:920px;margin-bottom:22px;">
+            点击左侧目录项，右侧会显示它在 Skill 中承担的功能、职责和与其他部分的关系。
+        </p>
+
+        <!-- 灵活性提示框 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="max-width:920px;margin-bottom:20px;">
+            <div style="background:var(--amber-pale);border-left:4px solid var(--amber);padding:16px;border-radius:var(--radius-sm);">
+                <div style="display:flex;align-items:start;gap:12px;">
+                    <span style="font-size:1.3rem;">⚠️</span>
+                    <div>
+                        <div style="font-weight:600;margin-bottom:6px;color:var(--text-primary);">
+                            重要提示：目录结构非常灵活
+                        </div>
+                        <ul style="margin:0;padding-left:20px;font-size:0.9rem;line-height:1.7;color:var(--text-secondary);">
+                            <li><strong>SKILL.md 是唯一必需的文件</strong></li>
+                            <li>其他目录都是可选的，根据Skill需要添加</li>
+                            <li>不同Skill的目录结构差异很大（见下方案例）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1120px;">
+            <div class="card content-left">
+                <div style="font-size:0.86rem;color:var(--text-tertiary);margin-bottom:12px;">目录树</div>
+                <div style="display:grid;gap:10px;">
+                    <button class="skill-dir-btn btn" data-node="frontmatter" style="justify-content:flex-start;background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">--- frontmatter ---</button>
+                    <button class="skill-dir-btn btn" data-node="skillmd" style="justify-content:flex-start;background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">SKILL.md</button>
+                    <button class="skill-dir-btn btn" data-node="references" style="justify-content:flex-start;background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">references/</button>
+                    <button class="skill-dir-btn btn" data-node="scripts" style="justify-content:flex-start;background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">scripts/</button>
+                    <button class="skill-dir-btn btn" data-node="assets" style="justify-content:flex-start;background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">assets/</button>
+                </div>
+            </div>
+
+            <div class="card content-left">
+                <div style="font-size:0.86rem;color:var(--text-tertiary);margin-bottom:10px;">功能与职责</div>
+                <div id="dir-role-title" style="font-size:1.08rem;font-weight:700;color:var(--text-primary);margin-bottom:12px;"></div>
+                <p id="dir-role-desc" style="font-size:0.95rem;line-height:1.78;margin-bottom:14px;"></p>
+                <div id="dir-role-tags" style="display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px;"></div>
+                <div id="dir-role-coop" style="display:grid;gap:10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>

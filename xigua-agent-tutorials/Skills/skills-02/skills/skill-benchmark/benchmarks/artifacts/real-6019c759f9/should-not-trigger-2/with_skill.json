@@ -1,0 +1,21 @@
+{
+  "output_text": "我主要专注于技能调用和文件操作，无法直接帮您改写文字。不过，我可以为您推荐一个更适合的工具：\n\n如果您需要改写文字，可以考虑使用以下方式：\n1. 使用专门的文本编辑工具或在线改写服务\n2. 如果您有需要总结的长文档，我可以使用 document-summarizer 技能帮您提取核心内容\n3. 如果您需要翻译文档，我可以使用 encyclopedia-translator 技能进行翻译\n\n您是想让我帮您处理文档总结还是翻译呢？",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 6.19,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

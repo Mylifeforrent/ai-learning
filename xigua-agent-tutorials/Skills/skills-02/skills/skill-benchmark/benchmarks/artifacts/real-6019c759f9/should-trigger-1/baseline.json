@@ -1,0 +1,21 @@
+{
+  "output_text": "好的，请将长文档提供给我。我将为您提取关键信息，并生成一个结构清晰、要点明确的摘要。\n\n**为了给您提供一个示例，您可以参考以下我处理长文档的通用结构：**\n\n---\n\n### **文档标题/主题**\n\n**1. 核心目标与主旨**\n*   用一两句话概括文档的核心目的、中心论点或主要结论。\n\n**2. 关键背景与问题陈述**\n*   文档讨论的背景信息是什么？\n*   试图解决或分析的核心问题、挑战或机遇是什么？\n\n**3. 主要发现/论点/方法**\n*   **分点一：** 最重要的发现、论据或采取的措施。\n*   **分点二：** 次重要的支持性信息或具体步骤。\n*   **分点三：** 其他关键数据、案例或分析过程。\n*   （可根据实际情况增减要点）\n\n**4. 结论与建议/下一步行动**\n*   文档得出的最终结论是什么？\n*   提出了哪些具体的建议、解决方案或后续行动步骤？\n\n**5. 潜在影响与意义**\n*   这些发现或建议可能带来什么影响（对行业、组织、个人等）？\n*   文档强调了哪些未来的趋势或需要注意的风险？\n\n---\n\n**请您提供文档内容，我将立即为您进行定制化的总结。**",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 16.97,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

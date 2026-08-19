@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-4",
+  "category": "should-trigger",
+  "text": "请将这篇研究论文压缩成摘要，我需要快速了解主要内容",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

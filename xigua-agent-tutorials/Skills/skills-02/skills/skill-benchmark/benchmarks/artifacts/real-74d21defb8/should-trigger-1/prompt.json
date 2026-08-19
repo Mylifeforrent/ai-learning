@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-1",
+  "category": "should-trigger",
+  "text": "请帮我总结这篇长文档，提取关键要点并生成结构化摘要。",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

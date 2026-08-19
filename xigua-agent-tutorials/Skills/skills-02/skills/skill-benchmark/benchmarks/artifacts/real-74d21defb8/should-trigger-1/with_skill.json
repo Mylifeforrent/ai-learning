@@ -1,0 +1,21 @@
+{
+  "output_text": "根据文档总结器的技能定义，我需要您提供要总结的文档内容。这个工具支持处理PDF、DOCX、Markdown、TXT等格式的长文档，可以：\n\n1. **提取核心内容** - 识别文档的关键信息和主题\n2. **生成结构化摘要** - 按照文档类型组织成清晰的格式\n3. **压缩长文档** - 将原文压缩到10-20%的长度\n4. **生成汇报摘要** - 适合会议、报告等场景\n\n**请提供您要总结的文档内容**，我可以帮您：\n- 如果是技术文档：提取核心概念、步骤和要点\n- 如果是会议纪要：提取行动项和决策点  \n- 如果是报告：生成执行摘要\n- 如果是文章：提炼核心观点和结论\n\n您可以直接粘贴文档内容，或者告诉我文档的格式和大致内容，我会根据文档类型为您生成结构化的摘要。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 14.69,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

@@ -1,0 +1,228 @@
+<style>
+  .s008-wrap {
+    width: 100%;
+    max-width: 900px;
+    font-family: var(--font-body, sans-serif);
+  }
+
+  .s008-header {
+    text-align: center;
+    margin-bottom: 1.6rem;
+    opacity: 0;
+    animation: s008-fadein 0.5s ease forwards;
+  }
+
+  .s008-title {
+    font-family: var(--font-heading, sans-serif);
+    font-size: clamp(1.5rem, 2.8vw, 2.3rem);
+    color: var(--primary);
+    font-weight: 700;
+    line-height: 1.25;
+    margin-bottom: 0.4rem;
+  }
+
+  .s008-subtitle {
+    font-size: clamp(0.8rem, 1.2vw, 0.95rem);
+    color: var(--text-dim);
+    letter-spacing: 0.04em;
+  }
+
+  .s008-cards {
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: nowrap;
+  }
+
+  .s008-strategy-card {
+    flex: 1;
+    max-width: 260px;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 1.2rem 1rem 1rem;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    opacity: 0;
+    transform: translateY(14px);
+    transition: transform 0.28s ease, box-shadow 0.28s ease;
+    cursor: default;
+    position: relative;
+  }
+
+  .s008-strategy-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+  }
+
+  .s008-card-recommended::after {
+    content: "推荐";
+    position: absolute;
+    top: 0.55rem;
+    right: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 700;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 4px;
+    padding: 0.1em 0.45em;
+    letter-spacing: 0.05em;
+  }
+
+  .s008-strat-icon {
+    font-size: 1.8rem;
+    line-height: 1;
+  }
+
+  .s008-strat-title {
+    font-family: var(--font-heading, sans-serif);
+    font-size: clamp(0.9rem, 1.5vw, 1.05rem);
+    font-weight: 700;
+    color: var(--card-text, var(--primary));
+    line-height: 1.3;
+  }
+
+  .s008-strat-param {
+    display: inline-block;
+    font-size: clamp(0.7rem, 1.1vw, 0.8rem);
+    font-family: monospace;
+    background: rgba(45, 90, 122, 0.12);
+    color: var(--primary);
+    border-radius: 4px;
+    padding: 0.15em 0.5em;
+    font-weight: 600;
+    width: fit-content;
+  }
+
+  .s008-strat-desc {
+    font-size: clamp(0.78rem, 1.2vw, 0.88rem);
+    color: var(--card-text);
+    line-height: 1.45;
+  }
+
+  .s008-strat-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.18rem;
+    font-size: clamp(0.7rem, 1.1vw, 0.8rem);
+    color: var(--text-dim);
+  }
+
+  .s008-strat-meta span {
+    display: block;
+  }
+
+  .s008-strat-scene {
+    margin-top: auto;
+    font-size: clamp(0.7rem, 1.1vw, 0.8rem);
+    color: var(--text-dim);
+    border-top: 1px solid var(--card-border);
+    padding-top: 0.5rem;
+  }
+
+  .s008-conclusion {
+    margin-top: 1.4rem;
+    text-align: center;
+    background: rgba(45, 90, 122, 0.08);
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 0.75rem 1.2rem;
+    font-size: clamp(0.8rem, 1.2vw, 0.92rem);
+    color: var(--primary);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+  }
+
+  @keyframes s008-fadein {
+    to { opacity: 1; transform: none; }
+  }
+</style>
+
+<div class="slide">
+  <div class="s008-wrap">
+
+    <div class="s008-header">
+      <div class="s008-title">对话历史管理层：三策略对比</div>
+      <div class="s008-subtitle">增长最快的模块 &nbsp;·&nbsp; 20轮对话 ≈ 8K+ tokens</div>
+    </div>
+
+    <div class="s008-cards">
+
+      <div class="s008-strategy-card" id="s008-c1" style="border-left:3.5px solid var(--secondary);">
+        <div class="s008-strat-icon">✂️</div>
+        <div class="s008-strat-title">截断 Truncation</div>
+        <div class="s008-strat-param">MAX_HISTORY = 20</div>
+        <div class="s008-strat-desc">超出上限直接丢弃早期消息</div>
+        <div class="s008-strat-meta">
+          <span>成本：零</span>
+          <span>信息保留：❌ 早期丢失</span>
+        </div>
+        <div class="s008-strat-scene">适用：短对话（&lt;10 轮）</div>
+      </div>
+
+      <div class="s008-strategy-card s008-card-recommended" id="s008-c2" style="border-left:3.5px solid var(--accent);">
+        <div class="s008-strat-icon">🗜️</div>
+        <div class="s008-strat-title">压缩 Compression</div>
+        <div class="s008-strat-param">压缩率 5:1 ~ 10:1</div>
+        <div class="s008-strat-desc">LLM 摘要旧消息，追加拼接新上下文</div>
+        <div class="s008-strat-meta">
+          <span>成本：1–5 秒延迟</span>
+          <span>信息保留：✅ 保留要点</span>
+        </div>
+        <div class="s008-strat-scene">适用：中长对话（20+ 轮）</div>
+      </div>
+
+      <div class="s008-strategy-card" id="s008-c3" style="border-left:3.5px solid var(--primary);">
+        <div class="s008-strat-icon">🔄</div>
+        <div class="s008-strat-title">Compaction（Claude Code）</div>
+        <div class="s008-strat-param">95% 阈值触发</div>
+        <div class="s008-strat-desc">摘要替换全部历史，重建全新上下文</div>
+        <div class="s008-strat-meta">
+          <span>成本：全量 LLM 调用</span>
+          <span>信息保留：✅ 摘要保留</span>
+        </div>
+        <div class="s008-strat-scene">适用：长程会话（50+ 轮）</div>
+      </div>
+
+    </div>
+
+    <div class="s008-conclusion" id="s008-conclusion">
+      月处理 10 万次对话 &nbsp;·&nbsp; 压缩后省 $2,400 &nbsp;·&nbsp; 系统提示不动 → Caching 命中 90%+
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var baseDelay = 200;
+  var interval = 200;
+  var cardIds = ['s008-c1', 's008-c2', 's008-c3'];
+  var conclusion = document.getElementById('s008-conclusion');
+
+  cardIds.forEach(function (id, i) {
+    var card = document.getElementById(id);
+    if (!card) return;
+    var delay = baseDelay + i * interval;
+    setTimeout(function () {
+      card.style.transition = 'opacity 0.45s ease, transform 0.45s ease, box-shadow 0.28s ease';
+      card.style.opacity = '1';
+      card.style.transform = 'translateY(0)';
+    }, delay);
+  });
+
+  var conclusionDelay = baseDelay + cardIds.length * interval + 500;
+  setTimeout(function () {
+    if (!conclusion) return;
+    conclusion.style.transition = 'opacity 0.5s ease';
+    conclusion.style.opacity = '1';
+  }, conclusionDelay);
+})();
+</script>

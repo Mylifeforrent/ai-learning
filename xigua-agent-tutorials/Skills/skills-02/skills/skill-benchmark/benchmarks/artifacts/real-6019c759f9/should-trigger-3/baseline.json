@@ -1,0 +1,21 @@
+{
+  "output_text": "我可以帮您提取PDF文档的核心内容并生成要点列表，但需要您先提供PDF文件。由于我无法直接访问文件，请您：\n\n1. **上传PDF文件**（如果支持文件上传功能）\n2. **或提供PDF中的关键文本内容**\n\n您可以选择：\n- 直接粘贴重要段落\n- 描述文档类型（如报告、论文、合同等）\n- 告知具体需求（如需要摘要、数据提取、条款梳理等）\n\n收到内容后，我会立即为您提取核心信息并整理成简洁的要点列表。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 6.49,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

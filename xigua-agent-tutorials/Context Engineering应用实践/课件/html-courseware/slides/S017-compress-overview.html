@@ -1,0 +1,278 @@
+<!-- S017 Compress Overview - four sub-techniques with cost gradient -->
+<style>
+  #s17-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.8rem, 3.2vw, 2.6rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #s17-subtitle {
+    font-size: clamp(0.85rem, 1.3vw, 1.02rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    margin-top: 0.4rem;
+  }
+
+  /* core idea banner */
+  #s17-core {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 1rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--accent);
+    background: linear-gradient(135deg, rgba(193,127,89,0.08) 0%, rgba(193,127,89,0.02) 100%);
+    max-width: 720px;
+    margin: 0.6rem auto 0;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #s17-core.visible { opacity: 1; transform: translateY(0); }
+  #s17-core-icon { font-size: clamp(1.4rem, 2vw, 1.7rem); flex-shrink: 0; }
+  #s17-core-text {
+    font-size: clamp(0.78rem, 1.1vw, 0.92rem);
+    color: var(--card-text);
+    line-height: 1.5;
+  }
+  #s17-core-text strong { color: var(--primary); }
+
+  /* cost gradient bar - 4 segments */
+  #s17-gradient {
+    display: flex; gap: 0; width: 100%; max-width: 780px;
+    margin: 1rem auto 0; height: 6px; border-radius: 2px;
+    overflow: hidden; opacity: 0; transition: opacity 0.5s ease;
+  }
+  #s17-gradient.visible { opacity: 1; }
+  .s17-grad-seg { flex: 1; height: 100%; }
+  .s17-grad-seg:nth-child(1) { background: #27ae60; }
+  .s17-grad-seg:nth-child(2) { background: var(--accent); }
+  .s17-grad-seg:nth-child(3) { background: #e74c3c; }
+  .s17-grad-seg:nth-child(4) { background: #8b1a1a; }
+  #s17-grad-labels {
+    display: flex; justify-content: space-between;
+    width: 100%; max-width: 780px; margin: 0.2rem auto 0;
+    opacity: 0; transition: opacity 0.5s ease;
+  }
+  #s17-grad-labels.visible { opacity: 1; }
+  .s17-grad-label {
+    font-size: clamp(0.68rem, 0.95vw, 0.8rem);
+    color: var(--text-dim);
+  }
+
+  /* 2x2 grid for 4 technique cards */
+  #s17-techniques {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.7rem;
+    width: 100%;
+    max-width: 780px;
+    margin: 0.9rem auto 0;
+  }
+  .s17-tech-card {
+    border-radius: 10px;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    padding: 0.6rem 0.8rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.3rem;
+    opacity: 0;
+    transform: translateY(12px);
+    transition: opacity 0.5s ease, transform 0.5s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+    cursor: default;
+  }
+  .s17-tech-card.visible { opacity: 1; transform: translateY(0); }
+  .s17-tech-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 16px rgba(193,127,89,0.12);
+  }
+
+  /* card header */
+  .s17-card-header { display: flex; align-items: center; gap: 0.35rem; }
+  .s17-card-num {
+    font-family: var(--font-heading);
+    font-size: clamp(0.68rem, 0.95vw, 0.8rem);
+    font-weight: 700; color: white; background: var(--primary);
+    width: 1.25rem; height: 1.25rem; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .s17-card-title {
+    font-family: var(--font-heading);
+    font-size: clamp(0.82rem, 1.2vw, 0.98rem);
+    font-weight: 700; color: var(--primary);
+  }
+
+  /* cost badge */
+  .s17-cost-badge {
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    font-family: var(--font-heading);
+    font-size: clamp(0.65rem, 0.92vw, 0.78rem);
+    font-weight: 600; padding: 0.12rem 0.4rem;
+    border-radius: 1rem; width: fit-content;
+  }
+  .s17-cost-free { background: rgba(39,174,96,0.1); color: #1a8a4a; }
+  .s17-cost-config { background: rgba(193,127,89,0.1); color: var(--accent); }
+  .s17-cost-compute { background: rgba(231,76,60,0.1); color: #c0392b; }
+  .s17-cost-restart { background: rgba(139,26,26,0.1); color: #8b1a1a; }
+
+  /* card description */
+  .s17-card-desc {
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    color: var(--card-text); line-height: 1.5; flex: 1;
+  }
+
+  /* card metric */
+  .s17-card-metric {
+    display: flex; align-items: baseline; gap: 0.25rem;
+    padding-top: 0.2rem; border-top: 1px dashed var(--card-border);
+  }
+  .s17-metric-value {
+    font-family: var(--font-heading);
+    font-size: clamp(1.05rem, 1.55vw, 1.25rem);
+    font-weight: 700; color: var(--accent);
+  }
+  .s17-metric-label {
+    font-size: clamp(0.62rem, 0.88vw, 0.72rem);
+    color: var(--text-dim);
+  }
+
+  /* bottom note */
+  #s17-note {
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    color: var(--text-dim); text-align: center;
+    max-width: 680px; margin: 0.8rem auto 0;
+    line-height: 1.5; opacity: 0; transition: opacity 0.5s ease;
+  }
+  #s17-note.visible { opacity: 1; }
+  #s17-note strong { color: var(--primary); }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <!-- header -->
+  <div style="text-align:center;margin-bottom:1rem;">
+    <div id="s17-title">Compress：上下文压缩</div>
+    <div id="s17-subtitle">信息不丢失（或可控损失），但占用的 Token 大幅减少</div>
+  </div>
+
+  <!-- core idea -->
+  <div id="s17-core">
+    <div id="s17-core-icon">&#128220;</div>
+    <div id="s17-core-text">
+      Agent 每轮工具调用产生大量中间产物，<strong>上下文窗口快速膨胀</strong>。
+      Compress 的核心：<strong>用更少的 Token 表达相同（或关键）信息</strong>。四种技术，成本递增，可叠加使用。
+    </div>
+  </div>
+
+  <!-- cost gradient bar - 4 segments -->
+  <div id="s17-gradient">
+    <div class="s17-grad-seg"></div>
+    <div class="s17-grad-seg"></div>
+    <div class="s17-grad-seg"></div>
+    <div class="s17-grad-seg"></div>
+  </div>
+  <div id="s17-grad-labels">
+    <span class="s17-grad-label">零成本</span>
+    <span class="s17-grad-label">成本递增 ────────────></span>
+    <span class="s17-grad-label">重启代价</span>
+  </div>
+
+  <!-- 2x2 technique cards -->
+  <div id="s17-techniques">
+    <div class="s17-tech-card" data-t="0">
+      <div class="s17-card-header">
+        <div class="s17-card-num">1</div>
+        <div class="s17-card-title">工具结果清除</div>
+      </div>
+      <div class="s17-cost-badge s17-cost-free">零成本</div>
+      <div class="s17-card-desc">
+        工具调用完成后，<strong>丢弃原始返回</strong>，仅保留一行结论摘要。Agent 已提取信息，原始数据不再需要。
+      </div>
+      <div class="s17-card-metric">
+        <span class="s17-metric-value">-81%</span>
+        <span class="s17-metric-label">Token 消耗</span>
+      </div>
+    </div>
+
+    <div class="s17-tech-card" data-t="1">
+      <div class="s17-card-header">
+        <div class="s17-card-num">2</div>
+        <div class="s17-card-title">观察遮蔽</div>
+      </div>
+      <div class="s17-cost-badge s17-cost-config">配置成本</div>
+      <div class="s17-card-desc">
+        保留 Thought + Action 推理链，将<strong>旧轮次 Observation 替换为占位符</strong>。当前轮完整保留。
+      </div>
+      <div class="s17-card-metric">
+        <span class="s17-metric-value">-52%</span>
+        <span class="s17-metric-label">成本 · +2.6% 解决率</span>
+      </div>
+    </div>
+
+    <div class="s17-tech-card" data-t="2">
+      <div class="s17-card-header">
+        <div class="s17-card-num">3</div>
+        <div class="s17-card-title">对话动态压缩</div>
+      </div>
+      <div class="s17-cost-badge s17-cost-compute">计算成本</div>
+      <div class="s17-card-desc">
+        接近上限时，LLM <strong>将历史对话压缩为摘要</strong>。渐进式有损压缩，保持无限会话长度。
+      </div>
+      <div class="s17-card-metric">
+        <span class="s17-metric-value">~70%</span>
+        <span class="s17-metric-label">窗口释放 · 有损</span>
+      </div>
+    </div>
+
+    <div class="s17-tech-card" data-t="3">
+      <div class="s17-card-header">
+        <div class="s17-card-num">4</div>
+        <div class="s17-card-title">Compaction 压缩重启</div>
+      </div>
+      <div class="s17-cost-badge s17-cost-restart">重启代价</div>
+      <div class="s17-card-desc">
+        上下文触顶时，<strong>整个对话压缩为摘要后重启</strong>。"存档 + 新游戏+"——丢弃原始对话，只带走关键结论。
+      </div>
+      <div class="s17-card-metric">
+        <span class="s17-metric-value">-93%</span>
+        <span class="s17-metric-label">窗口释放 · 180K&#8594;12K</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom note -->
+  <div id="s17-note">
+    四种技术<strong>可叠加使用</strong>：先清除工具结果（即时），再遮蔽旧观察（配置一次），
+    渐进摘要保持会话，最终触顶时 Compaction 重启。接下来逐一深入。
+  </div>
+</div>
+
+<script>
+(function(){
+  var title = document.getElementById('s17-title');
+  var subtitle = document.getElementById('s17-subtitle');
+  var core = document.getElementById('s17-core');
+  var gradient = document.getElementById('s17-gradient');
+  var gradLabels = document.getElementById('s17-grad-labels');
+  var cards = document.querySelectorAll('.s17-tech-card');
+  var note = document.getElementById('s17-note');
+
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; }, 200);
+  setTimeout(function(){ subtitle.style.opacity='1'; }, 450);
+  setTimeout(function(){ core.classList.add('visible'); }, 650);
+  setTimeout(function(){ gradient.classList.add('visible'); }, 850);
+  setTimeout(function(){ gradLabels.classList.add('visible'); }, 950);
+
+  cards.forEach(function(card, i) {
+    setTimeout(function(){ card.classList.add('visible'); }, 1100 + i * 250);
+  });
+
+  var allDone = 1100 + cards.length * 250 + 200;
+  setTimeout(function(){ note.classList.add('visible'); }, allDone);
+})();
+</script>

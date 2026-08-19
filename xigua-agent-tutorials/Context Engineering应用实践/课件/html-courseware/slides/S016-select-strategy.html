@@ -1,0 +1,280 @@
+<!-- S016 Select Strategy - runtime retrieval -->
+<style>
+  #s16-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 3vw, 2.4rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(-10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #s16-subtitle {
+    font-size: clamp(0.8rem, 1.3vw, 1rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* ---- layout: 3-col grid per row ---- */
+  #s16-diagram {
+    display: grid;
+    grid-template-columns: minmax(180px, 210px) 1fr minmax(200px, 240px);
+    gap: 0.4rem 0.5rem;
+    width: 100%;
+    max-width: 780px;
+    margin: 0.6rem auto 0;
+    align-items: center;
+  }
+
+  /* left column: data sources */
+  #s16-sources {
+    display: contents;
+  }
+  .s16-source {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    padding: 0.45rem 0.7rem;
+    border-radius: 10px;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    opacity: 0;
+    transform: translateX(-18px);
+    transition: opacity 0.45s ease, transform 0.45s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .s16-source:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(193,127,89,0.15);
+  }
+  .s16-source.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .s16-source-name {
+    font-family: var(--font-heading);
+    font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+    font-weight: 700;
+    color: var(--primary);
+  }
+  .s16-source-method {
+    font-size: clamp(0.62rem, 0.9vw, 0.73rem);
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .s16-arrow-line {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .s16-arrow-line.visible { opacity: 1; }
+  .s16-arrow-shaft {
+    flex: 1;
+    height: 1.5px;
+    background: linear-gradient(90deg, var(--accent), var(--primary));
+    opacity: 0.55;
+  }
+  .s16-arrow-head {
+    width: 0;
+    height: 0;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    border-left: 8px solid var(--primary);
+    opacity: 0.7;
+  }
+
+  /* snippets in grid right column */
+  .s16-snippet {
+    font-size: clamp(0.6rem, 0.85vw, 0.72rem);
+    color: var(--card-text);
+    background: rgba(0,0,0,0.04);
+    border-left: 2.5px solid var(--accent);
+    border-radius: 4px;
+    padding: 0.22rem 0.4rem;
+    opacity: 0;
+    transform: translateX(8px);
+    transition: opacity 0.35s ease, transform 0.35s ease;
+    line-height: 1.4;
+  }
+  .s16-snippet.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  #s16-win-note {
+    font-size: clamp(0.55rem, 0.78vw, 0.65rem);
+    color: var(--accent);
+    text-align: center;
+    padding: 0.25rem 0.4rem;
+    border-top: 1px dashed var(--card-border);
+    font-style: italic;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  #s16-win-note.visible { opacity: 1; }
+
+  /* bottom stats */
+  #s16-stats {
+    display: flex;
+    align-items: stretch;
+    gap: 0.6rem;
+    margin-top: 0.7rem;
+    width: 100%;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #s16-stats.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .s16-stat-card {
+    flex: 1;
+    border-radius: 10px;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    padding: 0.5rem 0.7rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+  .s16-stat-card.highlight {
+    border-color: var(--accent);
+    background: linear-gradient(135deg, rgba(193,127,89,0.08) 0%, rgba(193,127,89,0.02) 100%);
+  }
+  .s16-stat-label {
+    font-family: var(--font-heading);
+    font-size: clamp(0.62rem, 0.88vw, 0.73rem);
+    font-weight: 700;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+  .s16-stat-value {
+    font-family: var(--font-heading);
+    font-size: clamp(1rem, 1.8vw, 1.35rem);
+    font-weight: 700;
+    color: var(--primary);
+    line-height: 1.1;
+  }
+  .s16-stat-card.highlight .s16-stat-value {
+    color: var(--accent);
+  }
+  .s16-stat-sub {
+    font-size: clamp(0.58rem, 0.82vw, 0.68rem);
+    color: var(--text-dim);
+  }
+  .s16-vs-divider {
+    display: flex;
+    align-items: center;
+    padding: 0 0.1rem;
+    font-family: var(--font-heading);
+    font-size: clamp(0.68rem, 0.95vw, 0.8rem);
+    font-weight: 700;
+    color: var(--text-dim);
+    opacity: 0.5;
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <!-- header -->
+  <div style="text-align:center;margin-bottom:0.4rem;">
+    <div id="s16-title">Select：运行时检索</div>
+    <div id="s16-subtitle" style="margin-top:0.25rem;">Write 的反向操作 — 用时才取，Just-in-time</div>
+  </div>
+
+  <!-- main diagram: 4 rows × 3 cols grid -->
+  <div id="s16-diagram">
+
+    <!-- Row 1: mem0 → arrow → snippet -->
+    <div class="s16-source" data-i="0">
+      <div class="s16-source-name">mem0 向量库</div>
+      <div class="s16-source-method">向量检索 · score &gt; 0.75</div>
+    </div>
+    <div class="s16-arrow-line" data-i="0"><div class="s16-arrow-shaft"></div><div class="s16-arrow-head"></div></div>
+    <div class="s16-snippet" data-j="0">用户偏好：简洁风格输出</div>
+
+    <!-- Row 2: 代码库 → arrow → snippet -->
+    <div class="s16-source" data-i="1">
+      <div class="s16-source-name">代码库</div>
+      <div class="s16-source-method">glob / grep 文件检索</div>
+    </div>
+    <div class="s16-arrow-line" data-i="1"><div class="s16-arrow-shaft"></div><div class="s16-arrow-head"></div></div>
+    <div class="s16-snippet" data-j="1">src/agent/planner.py · 第42行</div>
+
+    <!-- Row 3: 知识库 → arrow → snippet -->
+    <div class="s16-source" data-i="2">
+      <div class="s16-source-name">知识库</div>
+      <div class="s16-source-method">BM25 混合检索</div>
+    </div>
+    <div class="s16-arrow-line" data-i="2"><div class="s16-arrow-shaft"></div><div class="s16-arrow-head"></div></div>
+    <div class="s16-snippet" data-j="2">相关文档：Context Engineering 概述</div>
+
+    <!-- Row 4: Agent Skills → arrow → snippet -->
+    <div class="s16-source" data-i="3">
+      <div class="s16-source-name">Agent Skills</div>
+      <div class="s16-source-method">条件脚本注入</div>
+    </div>
+    <div class="s16-arrow-line" data-i="3"><div class="s16-arrow-shaft"></div><div class="s16-arrow-head"></div></div>
+    <div class="s16-snippet" data-j="3">Skill: html-courseware-team</div>
+
+  </div><!-- /diagram -->
+
+  <!-- Right annotation -->
+  <div id="s16-win-note" style="text-align:center;margin-top:0.3rem;">仅加载相关的 3–5%</div>
+
+  <!-- bottom comparison stats -->
+  <div id="s16-stats">
+    <div class="s16-stat-card">
+      <div class="s16-stat-label">全量注入</div>
+      <div class="s16-stat-value">5,000 tokens</div>
+      <div class="s16-stat-sub">50 条记忆 全部塞入</div>
+    </div>
+    <div class="s16-vs-divider">vs</div>
+    <div class="s16-stat-card">
+      <div class="s16-stat-label">按需检索</div>
+      <div class="s16-stat-value">400 tokens</div>
+      <div class="s16-stat-sub">4 条记忆 精准匹配</div>
+    </div>
+    <div class="s16-vs-divider"></div>
+    <div class="s16-stat-card highlight">
+      <div class="s16-stat-label">节省</div>
+      <div class="s16-stat-value">92%</div>
+      <div class="s16-stat-sub">Token 消耗大幅下降</div>
+    </div>
+  </div>
+
+</div><!-- /outer -->
+
+<script>
+(function(){
+  // title
+  var title = document.getElementById('s16-title');
+  var subtitle = document.getElementById('s16-subtitle');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; }, 200);
+  setTimeout(function(){ subtitle.style.opacity='1'; }, 550);
+
+  // Row-by-row stagger: source → arrow → snippet
+  var sources = document.querySelectorAll('.s16-source');
+  var arrows = document.querySelectorAll('.s16-arrow-line');
+  var snippets = document.querySelectorAll('.s16-snippet');
+  var winNote = document.getElementById('s16-win-note');
+  var stats = document.getElementById('s16-stats');
+
+  sources.forEach(function(src) {
+    var i = parseInt(src.dataset.i);
+    var base = 800 + i * 300;
+    setTimeout(function() { src.classList.add('visible'); }, base);
+    if (arrows[i]) setTimeout(function() { arrows[i].classList.add('visible'); }, base + 150);
+    if (snippets[i]) setTimeout(function() { snippets[i].classList.add('visible'); }, base + 250);
+  });
+
+  var allDone = 800 + sources.length * 300 + 300;
+  setTimeout(function() { winNote.classList.add('visible'); }, allDone);
+  setTimeout(function() { stats.classList.add('visible'); }, allDone + 300);
+})();
+</script>

@@ -1,0 +1,9 @@
+{
+  "id": "should-not-trigger-3",
+  "category": "should-not-trigger",
+  "text": "这份文档里有没有提到人工智能的应用场景？",
+  "should_trigger": false,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

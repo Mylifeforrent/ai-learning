@@ -1,0 +1,21 @@
+{
+  "output_text": "现在我了解了文档摘要技能的使用方法。根据您的需求，您需要生成一个Markdown文档的摘要，包含主要章节和关键发现的报告。这是一个典型的文档摘要任务。\n\n为了帮您生成这样的摘要，我需要：\n\n1. **文档内容**：请提供您需要摘要的Markdown文档内容\n2. **文档类型**：了解文档的性质（技术文档、报告、研究论文、会议纪要等）\n3. **特定需求**：您提到的\"主要章节和关键发现\"已经明确了需求\n\n**请提供您的Markdown文档内容**，我将按照以下步骤为您生成结构化摘要：\n\n1. **文档解析**：分析文档结构和内容\n2. **章节提取**：识别主要章节和子章节\n3. **关键发现提取**：提取核心观点、结论、数据、发现\n4. **结构化摘要**：生成包含以下部分的结构化报告：\n   - **文档概述**：文档类型、目的、范围\n   - **主要章节摘要**：各章节核心内容\n   - **关键发现总结**：重要发现、数据、结论\n   - **核心要点**：3-5个最重要的要点\n   - **建议/行动项**（如适用）\n\n请粘贴您的Markdown文档内容，我将立即为您生成专业的摘要报告。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 15.82,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

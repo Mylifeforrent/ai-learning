@@ -1,0 +1,8 @@
+{
+  "id": "should-trigger-4",
+  "text": "请将这篇长文压缩成结构化摘要，我需要向领导汇报。",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

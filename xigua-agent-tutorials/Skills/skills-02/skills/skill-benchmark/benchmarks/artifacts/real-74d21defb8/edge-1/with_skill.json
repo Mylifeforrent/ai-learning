@@ -1,0 +1,21 @@
+{
+  "output_text": "根据文档总结器的技能定义，我可以帮您总结文档的核心内容。不过，我需要您提供要总结的文档内容。\n\n请提供您想要总结的文档内容（可以是PDF、DOCX、Markdown、TXT格式的文本），我会：\n1. 提取文档的核心信息\n2. 生成结构化的摘要\n3. 包含关键要点、主要结论等\n4. 保持信息中立，不进行分析或评估\n\n您可以：\n- 直接粘贴文档内容\n- 上传文档文件\n- 提供文档链接\n\n请提供您要总结的文档，我会为您生成一个清晰的结构化摘要。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 11.72,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

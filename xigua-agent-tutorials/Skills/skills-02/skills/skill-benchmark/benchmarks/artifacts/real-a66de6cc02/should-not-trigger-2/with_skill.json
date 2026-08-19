@@ -1,0 +1,21 @@
+{
+  "output_text": "我来帮您改写文字，让它更简洁流畅。不过我需要先了解一下您想要改写的具体内容。\n\n您可以提供需要改写的文字，我会帮您：\n1. 优化句子结构，使其更流畅\n2. 精简冗余表达，使其更简洁\n3. 调整用词，使其更准确\n4. 保持原意不变，只改进表达方式\n\n请提供您想要改写的文字内容，我会为您进行优化。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 5.43,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

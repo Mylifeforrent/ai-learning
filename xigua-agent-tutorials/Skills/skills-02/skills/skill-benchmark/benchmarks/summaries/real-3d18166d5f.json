@@ -1,0 +1,68 @@
+{
+  "run_id": "real-3d18166d5f",
+  "skill_targets": [
+    "/Users/mac/.claude/skills/switch-model"
+  ],
+  "models": [
+    "sonnet"
+  ],
+  "aggregate_scores": {
+    "trigger_accuracy": 1.0,
+    "routing_clarity": 0.5,
+    "output_signal_retention": 0.3333,
+    "task_completion": {
+      "baseline": 0.5,
+      "with_skill": 0.5,
+      "gain": 0.0
+    },
+    "outcome_quality": 0.5
+  },
+  "final_verdict": "not proven",
+  "per_run_details": [
+    {
+      "prompt_id": "switch-model-team-assertive-1",
+      "trigger_correct": true,
+      "route_correct": false,
+      "signals": [
+        {
+          "signal": "claim_decomposition",
+          "hit": false
+        },
+        {
+          "signal": "disagreement",
+          "hit": true
+        },
+        {
+          "signal": "arbitration",
+          "hit": true
+        }
+      ],
+      "baseline_completed": false,
+      "withskill_completed": true,
+      "outcome_score": 0.75
+    },
+    {
+      "prompt_id": "switch-model-team-assertive-2",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [
+        {
+          "signal": "claim_decomposition",
+          "hit": false
+        },
+        {
+          "signal": "disagreement",
+          "hit": false
+        },
+        {
+          "signal": "arbitration",
+          "hit": false
+        }
+      ],
+      "baseline_completed": true,
+      "withskill_completed": false,
+      "outcome_score": 0.0
+    }
+  ],
+  "timestamp": "2026-03-07T14:56:07Z"
+}

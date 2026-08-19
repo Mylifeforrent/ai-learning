@@ -1,0 +1,264 @@
+<!-- S007 System Prompt Layer - Yellow - code editor style prompt viewer -->
+<style>
+  #prompt-editor {
+    width: clamp(520px, 62vw, 800px);
+    border-radius: 0.8rem;
+    overflow: hidden;
+    border: 1.5px solid var(--card-border);
+    box-shadow: 0 8px 32px rgba(45,90,122,0.1);
+  }
+  #prompt-header {
+    background: var(--primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--font-heading);
+    font-size: 0.8rem;
+  }
+  #prompt-header .dots {
+    display: flex;
+    gap: 0.35rem;
+  }
+  #prompt-header .dots span {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    opacity: 0.7;
+  }
+  #prompt-body {
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+  }
+  .prompt-section {
+    padding: 0.5rem 0.9rem 0.5rem 1rem;
+    border-left: 3.5px solid transparent;
+    border-bottom: 1px solid rgba(45,90,122,0.06);
+    display: flex;
+    align-items: flex-start;
+    gap: 0.6rem;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.4s ease, transform 0.4s ease, background 0.25s ease;
+  }
+  .prompt-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .prompt-section:last-child { border-bottom: none; }
+  .prompt-section:hover {
+    background: rgba(45,90,122,0.04);
+  }
+  .prompt-section.active {
+    background: rgba(45,90,122,0.06);
+  }
+  .prompt-section .sec-content {
+    flex: 1;
+    min-width: 0;
+  }
+  .prompt-section .sec-heading {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: clamp(0.72rem, 1.1vw, 0.85rem);
+    font-weight: 700;
+    margin-bottom: 0.2rem;
+  }
+  .prompt-section .sec-lines {
+    font-family: 'Menlo', 'Consolas', monospace;
+    font-size: clamp(0.62rem, 0.95vw, 0.74rem);
+    color: var(--card-text);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .prompt-section .sec-token {
+    font-family: var(--font-heading);
+    font-size: 0.65rem;
+    color: var(--text-dim);
+    white-space: nowrap;
+    padding-top: 0.15rem;
+    flex-shrink: 0;
+  }
+  /* Detail bar */
+  #sec-detail {
+    width: clamp(520px, 62vw, 800px);
+    min-height: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.85rem, 1.3vw, 1rem);
+    color: var(--text-dim);
+    text-align: center;
+    line-height: 1.5;
+  }
+  /* Bottom stats */
+  #prompt-stats {
+    width: clamp(520px, 62vw, 800px);
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    font-size: clamp(0.72rem, 1vw, 0.85rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  #prompt-stats .stat-accent {
+    color: var(--accent);
+    font-weight: 600;
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第二章：六大功能模块</span>
+    <h1 class="slide-title" style="font-size:clamp(1.5rem,2.8vw,2.3rem);margin-top:0.5rem;">系统提示层：Agent 的操作系统</h1>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+
+    <div id="prompt-editor">
+      <!-- Title bar -->
+      <div id="prompt-header">
+        <div class="dots">
+          <span style="background:#ff5f57;"></span>
+          <span style="background:#febc2e;"></span>
+          <span style="background:#28c840;"></span>
+        </div>
+        <span>system_prompt</span>
+        <span id="total-badge" style="opacity:0;transition:opacity 0.4s ease;">~380 tokens</span>
+      </div>
+
+      <div id="prompt-body">
+
+        <div class="prompt-section" data-id="role" style="border-left-color:var(--primary);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--primary);">## 角色定义</div>
+            <div class="sec-lines">你是 DevAssist，一个专注于后端工程的 AI 编程助手。
+具备代码分析、架构设计、性能诊断和自动化部署能力。</div>
+          </div>
+          <div class="sec-token">~45</div>
+        </div>
+
+        <div class="prompt-section" data-id="boundary" style="border-left-color:var(--accent);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--accent);">## 行为边界</div>
+            <div class="sec-lines">- 简洁专业，优先用代码示例说明问题
+- 不确定时主动说明，不编造 API 或参数
+- 不可逆操作必须先确认再执行</div>
+          </div>
+          <div class="sec-token">~60</div>
+        </div>
+
+        <div class="prompt-section" data-id="user" style="border-left-color:var(--secondary);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--secondary);">## 用户画像</div>
+            <div class="sec-lines">- Python 高级开发者，5 年后端经验
+- FastAPI + SQLAlchemy + Redis + Docker
+- 偏好：函数式风格、类型注解、pytest</div>
+          </div>
+          <div class="sec-token">~50</div>
+        </div>
+
+        <div class="prompt-section" data-id="protocol" style="border-left-color:var(--primary);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--primary);">## 操作协议</div>
+            <div class="sec-lines">1. 修改前先读取文件，理解上下文再动手
+2. 每次修改附带 diff 说明和影响范围
+3. 架构决策给出 2-3 个方案并标注推荐</div>
+          </div>
+          <div class="sec-token">~55</div>
+        </div>
+
+        <div class="prompt-section" data-id="memory" style="border-left-color:var(--accent);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--accent);">## 记忆使用规范</div>
+            <div class="sec-lines">- save_user_memory: 用户背景和偏好
+- save_project_memory: 架构和技术决策
+- search_*: 回答前先检索相关记忆</div>
+          </div>
+          <div class="sec-token">~70</div>
+        </div>
+
+        <div class="prompt-section" data-id="tools" style="border-left-color:var(--secondary);">
+          <div class="sec-content">
+            <div class="sec-heading" style="color:var(--secondary);">## 可用工具</div>
+            <div class="sec-lines">read_file · write_file · search_codebase
+run_tests · deploy_staging · save/search_memory</div>
+          </div>
+          <div class="sec-token">~100</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Detail bar -->
+    <div id="sec-detail">
+      <span id="sec-detail-text" style="opacity:0.5;">hover 任意模块查看教学要点</span>
+    </div>
+
+    <!-- Bottom stats -->
+    <div id="prompt-stats">
+      <span>总计 <span class="stat-accent">~380 tokens</span></span>
+      <span>占 200K 窗口 <span class="stat-accent">0.19%</span></span>
+      <span>静态前缀 → <span class="stat-accent">Prompt Caching 首选</span></span>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var sections = document.querySelectorAll('.prompt-section');
+  var detailText = document.getElementById('sec-detail-text');
+  var totalBadge = document.getElementById('total-badge');
+  var stats = document.getElementById('prompt-stats');
+
+  var details = {
+    role:     'Soul + Identity \u5c42\uff1a\u5b9a\u4e49 Agent \u201c\u662f\u8c01\u201d\u548c\u201c\u80fd\u505a\u4ec0\u4e48\u201d\uff0c\u4fe1\u606f\u5bc6\u5ea6\u51b3\u5b9a Agent \u8d28\u91cf\u4e0a\u9650',
+    boundary: '\u5b89\u5168\u5c42\uff1a\u9632\u6b62\u5e7b\u89c9\u3001\u9650\u5236\u7834\u574f\u6027\u64cd\u4f5c\u3002\u751f\u4ea7\u7ea7 Agent \u5fc5\u5907\uff0c\u7f3a\u5931\u5219\u201c\u88f8\u5954\u201d',
+    user:     '\u8ba9 Agent \u201c\u8ba4\u8bc6\u201d\u7528\u6237\uff0c\u56de\u590d\u98ce\u683c\u81ea\u52a8\u9002\u914d\u3002\u8ddf mem0 \u7684 user \u7c7b\u578b\u8bb0\u5fc6\u8054\u52a8',
+    protocol: '\u6267\u884c\u5c42\uff1a\u89c4\u5b9a\u201c\u600e\u4e48\u505a\u4e8b\u201d\u7684 SOP\u3002\u8fb9\u754c\u662f\u201c\u4e0d\u80fd\u505a\u4ec0\u4e48\u201d\uff0c\u534f\u8bae\u662f\u201c\u5e94\u8be5\u600e\u4e48\u505a\u201d',
+    memory:   '\u8fde\u63a5\u8bb0\u5fc6\u7ba1\u7406\u5c42\u7684\u63a5\u53e3\u5b9a\u4e49\u3002\u544a\u8bc9 Agent \u201c\u4f55\u65f6\u5b58\u3001\u600e\u4e48\u53d6\u201d\uff0c\u662f\u4e0a\u8282\u8bfe MM \u5c42\u7684\u6d88\u8d39\u5165\u53e3',
+    tools:    '\u5de5\u5177\u6e05\u5355\u5360\u7a97\u53e3\u6700\u5927\uff0c100 \u4e2a\u5de5\u5177\u53ef\u8fbe 30-40%\u3002\u8fd9\u91cc\u53ea\u6709 8 \u4e2a\uff0c\u751f\u4ea7\u7ea7\u5f80\u5f80 50+'
+  };
+
+  // Entrance animation
+  sections.forEach(function(sec, i) {
+    setTimeout(function() { sec.classList.add('visible'); }, 400 + i * 200);
+  });
+  setTimeout(function() { totalBadge.style.opacity = '1'; }, 400 + 6 * 200 + 300);
+  setTimeout(function() { stats.style.opacity = '1'; }, 400 + 6 * 200 + 600);
+
+  // Hover & Click
+  var activeId = null;
+  sections.forEach(function(sec) {
+    sec.addEventListener('mouseenter', function() {
+      var id = sec.dataset.id;
+      if (details[id]) {
+        detailText.textContent = details[id];
+        detailText.style.opacity = '1';
+      }
+    });
+    sec.addEventListener('mouseleave', function() {
+      if (!activeId) {
+        detailText.textContent = 'hover \u4efb\u610f\u6a21\u5757\u67e5\u770b\u6559\u5b66\u8981\u70b9';
+        detailText.style.opacity = '0.5';
+      } else {
+        detailText.textContent = details[activeId];
+        detailText.style.opacity = '1';
+      }
+    });
+    sec.addEventListener('click', function() {
+      activeId = sec.dataset.id;
+      sections.forEach(function(s) { s.classList.remove('active'); });
+      sec.classList.add('active');
+      detailText.textContent = details[activeId];
+      detailText.style.opacity = '1';
+    });
+  });
+})();
+</script>

@@ -1,0 +1,21 @@
+{
+  "output_text": "我注意到您想要询问关于文档的问题，但我需要先了解您具体想要询问哪篇文档以及具体的问题内容。\n\n目前我可以使用文档总结器技能来帮助您处理文档，但首先需要知道：\n\n1. **您想要询问的文档是什么？** 是PDF、DOCX、Markdown还是TXT格式的文档？\n2. **您具体有哪些问题？** 是关于文档内容的特定问题，还是需要我帮您总结文档的核心要点？\n\n如果您有具体的文档文件，我可以先读取文档总结器的技能定义，然后帮您处理文档并回答相关问题。\n\n请提供更多细节，这样我就能更好地帮助您了！",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 12.81,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

@@ -1,0 +1,271 @@
+{
+  "course_title": "Agent 上下文管理系统 -- Context Engineering 完整指南",
+  "total_slides": 20,
+  "chapters": [
+    {
+      "id": "ch1",
+      "title": "第一章：认知升维",
+      "slides": ["S001", "S004", "S005"]
+    },
+    {
+      "id": "ch2",
+      "title": "第二章：六大功能模块",
+      "slides": ["S006", "S007", "S008", "S009", "S010", "S011", "S012"]
+    },
+    {
+      "id": "ch3",
+      "title": "第三章：五策略框架",
+      "slides": ["S013", "S014", "S015", "S016", "S017"]
+    },
+    {
+      "id": "ch4",
+      "title": "第四章：决策内化",
+      "slides": ["S018", "S019", "S020", "S021", "S022"]
+    }
+  ],
+  "slides": [
+    {
+      "id": "S001",
+      "file": "S001-cover.html",
+      "title": "Agent 上下文管理系统",
+      "subtitle": "Context Engineering 完整指南",
+      "layout": "cover",
+      "pattern": "centered-hero",
+      "level": "green",
+      "ia_ref": "fade-in",
+      "assignee": "slide-writer",
+      "content_summary": "课程封面。标题+副标题+课程信息（90分钟/4章/22页）。背景柔和渐变，Sora字体大标题居中。底部前置要求：已完成Agent长短期记忆管理课程、熟悉mini-OpenClaw项目。"
+    },
+    {
+      "id": "S004",
+      "file": "S004-context-rot.html",
+      "title": "Context Rot：有效窗口的真相",
+      "layout": "suspense-reveal",
+      "pattern": "question-then-data",
+      "level": "yellow",
+      "ia_ref": "suspense-barchart",
+      "assignee": "slide-writer",
+      "content_summary": "悬念开场：'你买了1M窗口，能用多少？'停顿后揭示四组双柱图。Claude Opus 4.6(200K/1M→130-200K/600-700K)、GPT-5.4(272K/1M+→170-200K)、Gemini 3.1 Pro(1M→600-700K)、DeepSeek V3.2(128K→80-90K)。差距部分标红。底部结论+压缩启动点。hover弹tooltip。"
+    },
+    {
+      "id": "S005",
+      "file": "S005-layered-container.html",
+      "title": "分层容器模型：上下文窗口全景",
+      "layout": "layered-container",
+      "pattern": "stacked-layers",
+      "level": "yellow",
+      "ia_ref": "layer-stack-hover-click",
+      "assignee": "slide-writer",
+      "content_summary": "矩形容器内六个水平层按token占比分配层高：对话历史(20-40%最厚)/工具上下文(15-30%)/外部知识(10-20%)/系统提示(5-15%)/记忆注入(5-10%)/任务状态(5-10%)。推理引擎在中央。上方红色虚线=有效窗口上限。右侧五大策略连线预览(淡色)。悬停高亮+放大占比，点击展开简要说明。最后高亮对话历史+工具上下文='合计>50%'。"
+    },
+    {
+      "id": "S006",
+      "file": "S006-six-modules.html",
+      "title": "六模块全景探索器",
+      "layout": "interactive-explorer",
+      "pattern": "layered-container-explorer",
+      "level": "red",
+      "ia_ref": "layered-container-statemachine",
+      "assignee": "interactive-eng",
+      "content_summary": "复用S005分层容器布局，从预览转为逐模块深入探索。六层可点击，点击展开详情卡片（名称/隐喻/核心问题/token占比/典型工具）。全部点击后对话历史+工具上下文层加粗边框弹出'合计>50%'。hookFn状态机管理展开状态。六模块：系统提示(Agent操作系统/5-15%)/对话历史(短期记忆/20-40%)/记忆注入(供给侧接口/5-10%)/工具上下文(能力声明/15-30%)/任务状态(工作笔记本/5-10%)/外部知识(图书馆/10-20%)。"
+    },
+    {
+      "id": "S007",
+      "file": "S007-system-prompt.html",
+      "title": "系统提示层：Agent的操作系统",
+      "layout": "layer-detail",
+      "pattern": "layer-stack",
+      "level": "yellow",
+      "ia_ref": "layer-stack-accordion",
+      "assignee": "slide-writer",
+      "content_summary": "6层拼接可视化：垂直堆叠的6个色块(Skills Snapshot→Soul→Identity→User Profile→Agents Guide→长期记忆层)。点击每层展开详情（文件名/内容概述/token估算）。手风琴模式同时只展开一层。两个关键特征：静态前缀适合Prompt Caching、信息密度决定Agent质量上限。2K-10K token范围。底部Caching适配提示。"
+    },
+    {
+      "id": "S008",
+      "file": "S008-conversation-history.html",
+      "title": "对话历史管理层：三策略对比",
+      "layout": "tabbed-content",
+      "pattern": "strategy-tabs",
+      "level": "yellow",
+      "ia_ref": "strategy-tabs-crossfade",
+      "assignee": "slide-writer",
+      "content_summary": "三策略tab切换：截断(MAX_HISTORY=20,零成本但丢失信息)/压缩(LLM摘要,5:1-10:1压缩率,每次压缩追加拼接而非覆盖)/Compaction(Claude Code的95%阈值全量重启)。每个tab展示机制示意+适用场景+代码片段+优缺点。核心决策：系统提示放'你是谁'/messages放'聊了什么'。"
+    },
+    {
+      "id": "S009",
+      "file": "S009-memory-injection.html",
+      "title": "记忆检索注入层：Just-in-time",
+      "layout": "card-grid",
+      "pattern": "type-cards",
+      "level": "yellow",
+      "ia_ref": "type-cards-expand",
+      "assignee": "slide-writer",
+      "content_summary": "上方JIT流程条：query→mem0.search()→按类型分组→格式化→注入系统提示。下方四类型卡片：user(用户偏好)/feedback(行为规则)/project(项目上下文)/reference(参考资料)。点击展开示例内容和'何时注入'说明。手风琴模式。核心原则：Just-in-time按需加载，不是一股脑塞进去。"
+    },
+    {
+      "id": "S010",
+      "file": "S010-tool-context.html",
+      "title": "工具上下文管理层：密集度分级",
+      "layout": "scale-selector",
+      "pattern": "density-scale",
+      "level": "yellow",
+      "ia_ref": "density-scale-click",
+      "assignee": "slide-writer",
+      "content_summary": "顶部工具数量轴(0→100+)四个区间依次高亮。点击/hover区间展示策略详情：<10(全量静态加载)/10-30(按任务阶段动态加载)/30-100(Agent Skills条件注入)/100+(MCP动态发现)。核心数据：100个工具时30-40%窗口被工具描述占据。工具结果清除策略：零成本节省20-40%。"
+    },
+    {
+      "id": "S011",
+      "file": "S011-task-state.html",
+      "title": "任务状态层：Scratchpad对比",
+      "layout": "before-after",
+      "pattern": "split-comparison",
+      "level": "yellow",
+      "ia_ref": "split-hover-highlight",
+      "assignee": "slide-writer",
+      "content_summary": "左右分屏对比。左侧无Scratchpad(压缩后断片,只记得最后一步,红色标记断片处)。右侧有Scratchpad(完整回忆全部任务状态,绿色标记保住的信息)。Claude Code的CLAUDE.md/todo.md案例。Manus教训：反复重写浪费30% token。Write策略核心应用。"
+    },
+    {
+      "id": "S012",
+      "file": "S012-external-knowledge.html",
+      "title": "外部知识层：RAG vs 长上下文",
+      "layout": "comparison-table",
+      "pattern": "compare-highlight",
+      "level": "yellow",
+      "ia_ref": "compare-table-hover-tree",
+      "assignee": "slide-writer",
+      "content_summary": "对比表：成本($0.00008 vs $0.10,1250x差距)/延迟(1s vs 30-60s)/Token消耗(783 vs 数十万)/信息完整性/跨文档推理。hover行高亮，成本行和延迟行入场后脉冲高亮。底部决策树可展开三场景：何时用RAG/何时补充长上下文/最优组合。2025-2026行业共识：RAG默认+长上下文补充。"
+    },
+    {
+      "id": "S013",
+      "file": "S013-five-strategies.html",
+      "title": "五策略全景探索器",
+      "layout": "interactive-explorer",
+      "pattern": "pentagon-explorer",
+      "level": "red",
+      "ia_ref": "pentagon-statemachine",
+      "assignee": "interactive-eng",
+      "content_summary": "五个策略环形/五边形布局：Write(写入持久化)/Select(运行时检索)/Compress(上下文压缩)/Isolate(上下文隔离)/Cache(提示缓存)。节点间连线表示可组合。点击展开详情卡片(机制/典型实现/何时使用/优先级)。全部展开后中心自动播放优先级排序动画：Cache(1)→Compress工具清除(2)→Compress遮蔽/trim(3)→Isolate(4)→Write+Select(5)。底部五勾号：Claude Code全部使用。hookFn状态机。"
+    },
+    {
+      "id": "S014",
+      "file": "S014-compress-compare.html",
+      "title": "三种压缩技术对比",
+      "layout": "three-column",
+      "pattern": "triple-compare",
+      "level": "yellow",
+      "ia_ref": "triple-compare-hover",
+      "assignee": "slide-writer",
+      "content_summary": "三列并排对比：工具结果清除(成本节省20-40%/零延迟/所有场景通用)/观察遮蔽(52%/零延迟/SE Agent专用)/LLM摘要(50-60%/1-5s延迟/通用Agent)。hover任意维度行三列同时高亮。底部JetBrains NeurIPS 2025数据区：Qwen3-Coder 480B+观察遮蔽=解决率+2.6%成本-52%。process-notes Q2深度分析。"
+    },
+    {
+      "id": "S015",
+      "file": "S015-strategy-matrix.html",
+      "title": "策略-模块交叉矩阵",
+      "layout": "matrix",
+      "pattern": "heatmap-crosshair",
+      "level": "yellow",
+      "ia_ref": "heatmap-hover-crosshair",
+      "assignee": "slide-writer",
+      "content_summary": "5x6热力图矩阵(5策略行×6模块列)。颜色深浅编码应用频率/重要性。hover任意格子高亮整行+整列(十字线)，tooltip显示具体应用方式。热区标注：Compress×对话历史(最深)/Cache×系统提示(最深)。瀑布效果填充动画。矩阵数据来自lesson+concept-map策略-模块对应关系。"
+    },
+    {
+      "id": "S016",
+      "file": "S016-decision-priority.html",
+      "title": "五策略决策优先级",
+      "layout": "staircase",
+      "pattern": "stepped-priority",
+      "level": "yellow",
+      "ia_ref": "staircase-expand",
+      "assignee": "slide-writer",
+      "content_summary": "五级递进阶梯从左到右依次构建：第1级Cache(零成本/90%节省/首日启用)→第2级Compress工具清除(零延迟/20-40%)→第3级Compress遮蔽/trim(首周优化)→第4级Isolate(架构级/子Agent)→第5级Write+Select(按需引入)。点击每级展开详情面板：适用前提/实施成本/预期收益/典型案例。"
+    },
+    {
+      "id": "S017",
+      "file": "S017-failure-modes.html",
+      "title": "四种上下文失败模式",
+      "layout": "card-grid",
+      "pattern": "warning-cards",
+      "level": "yellow",
+      "ia_ref": "warning-cards-expand",
+      "assignee": "slide-writer",
+      "content_summary": "四张警告卡片(红色左边框)依次入场：Poisoning(幻觉/错误信息污染上下文)/Distraction(无关信息淹没关键信息)/Confusion(矛盾信息导致推理混乱)/Clash(多来源信息相互冲突)。点击展开：症状描述/触发条件/真实案例(mini-OpenClaw或Claude Code)/修复建议。"
+    },
+    {
+      "id": "S018",
+      "file": "S018-openclaw-modules.html",
+      "title": "mini-OpenClaw 六模块标注",
+      "layout": "dual-panel",
+      "pattern": "code-to-module-map",
+      "level": "yellow",
+      "ia_ref": "dual-panel-click-highlight",
+      "assignee": "slide-writer",
+      "content_summary": "左侧7个文件列表(prompt_builder.py/agent.py/session_manager.py/compression.py/mem0_manager.py/tools.py/config.yaml)。右侧六模块雷达图/标注。点击左侧文件→右侧对应模块高亮+弹出角色说明。逐一点击完成全景标注。映射：prompt_builder→系统提示/agent.py→调度/session_manager→对话历史/compression→对话历史/mem0_manager→记忆注入/tools→工具上下文。"
+    },
+    {
+      "id": "S019",
+      "file": "S019-openclaw-diagnosis.html",
+      "title": "mini-OpenClaw 五策略体检",
+      "layout": "traffic-light",
+      "pattern": "diagnosis-table",
+      "level": "yellow",
+      "ia_ref": "traffic-light-expand",
+      "assignee": "slide-writer",
+      "content_summary": "红绿灯体检表五行：Write(黄/部分实现:有session但无scratchpad)/Select(绿/已实现:mem0检索)/Compress(黄/部分:有截断无观察遮蔽)/Isolate(红/未实现:单Agent架构)/Cache(红/未实现:未启用Prompt Caching)。点击展开：当前状态/缺失原因/改进建议/预期token节省。"
+    },
+    {
+      "id": "S020",
+      "file": "S020-scenario-matrix.html",
+      "title": "场景-策略匹配矩阵",
+      "layout": "card-grid",
+      "pattern": "scenario-cards",
+      "level": "yellow",
+      "ia_ref": "scenario-cards-expand",
+      "assignee": "slide-writer",
+      "content_summary": "七张场景卡片网格：SE Agent(工具密集→观察遮蔽+Cache)/客服(对话密集→trim+摘要)/调研(知识密集→RAG+长上下文)/教学(结构化→Write+Cache)/多步骤(可并行→Isolate)/高频(成本敏感→Cache+Compress)/实时(延迟敏感→Cache+工具清除)。点击展开策略推荐组合(必用/推荐/不适用)+推荐理由。"
+    },
+    {
+      "id": "S021",
+      "file": "S021-token-economics.html",
+      "title": "Token 经济学与优化路线",
+      "layout": "waterfall-chart",
+      "pattern": "cost-waterfall",
+      "level": "yellow",
+      "ia_ref": "waterfall-hover-progress",
+      "assignee": "slide-writer",
+      "content_summary": "成本瀑布图从左到右逐级构建：Stage0无优化($100/天)→Stage1结构化提示(-10%)→Stage2 Prompt Caching(-45%)→Stage3工具结果清除(-20%)→Stage4观察遮蔽(-15%)→Stage5子Agent隔离(-5%)。累计节省可达90%+。hover台阶→tooltip显示实施方式和成本数据。底部六阶段进度条可点击查看操作清单。"
+    },
+    {
+      "id": "S022",
+      "file": "S022-knowledge-map.html",
+      "title": "全课总结与知识图谱",
+      "layout": "knowledge-graph",
+      "pattern": "node-graph-checklist",
+      "level": "green",
+      "ia_ref": "fade-in-sequence",
+      "assignee": "slide-writer",
+      "content_summary": "概念节点图：Context Rot(顶部约束)→六模块(中间坐标系)→五策略(底部操作)。节点依次出现并连线。三层结构对应三大章节。下方七项能力自检清单逐条fade-in：解释50-65%/画六模块图/列五策略/对比压缩技术/解释Caching/说明RAG协同/区分记忆vs上下文工程。无交互，CSS动画引导。"
+    }
+  ],
+  "slideFiles": [
+    "S001-cover.html",
+    "S004-context-rot.html",
+    "S005-layered-container.html",
+    "S006-six-modules.html",
+    "S007-system-prompt.html",
+    "S008-conversation-history.html",
+    "S009-memory-injection.html",
+    "S010-tool-context.html",
+    "S011-task-state.html",
+    "S012-external-knowledge.html",
+    "S013-five-strategies.html",
+    "S014-compress-compare.html",
+    "S015-strategy-matrix.html",
+    "S016-decision-priority.html",
+    "S017-failure-modes.html",
+    "S018-openclaw-modules.html",
+    "S019-openclaw-diagnosis.html",
+    "S020-scenario-matrix.html",
+    "S021-token-economics.html",
+    "S022-knowledge-map.html"
+  ]
+}

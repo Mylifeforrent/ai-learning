@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-3",
+  "category": "should-trigger",
+  "text": "我需要一个汇报摘要，请将这份长文档压缩成适合汇报的格式",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

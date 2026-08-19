@@ -1,0 +1,54 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">学习地图</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:16px;">
+            从会用到会做：四阶段学习路径
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="font-size:1rem;margin-bottom:24px;max-width:900px;">
+            这节主课只是入口。真正的成长路径，是从“先体验”一路走到“独立创造和持续优化”。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px;max-width:1180px;">
+            <div class="roadmap-card" data-phase="0"><div class="roadmap-card-top">阶段 1</div><h4>体验</h4><p>30 分钟内跑起来，建立初始认知</p></div>
+            <div class="roadmap-card" data-phase="1"><div class="roadmap-card-top">阶段 2</div><h4>理解</h4><p>看懂分类体系和生态工具</p></div>
+            <div class="roadmap-card" data-phase="2"><div class="roadmap-card-top">阶段 3</div><h4>设计</h4><p>理解三层结构和设计原理</p></div>
+            <div class="roadmap-card" data-phase="3"><div class="roadmap-card-top">阶段 4</div><h4>创造</h4><p>独立创建并持续优化 Skill</p></div>
+        </div>
+
+        <div class="animate-ready center-block content-left" data-delay="0.35" id="roadmap-detail" style="margin-top:22px;padding:20px 24px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-lg);max-width:1080px;">
+            <div id="roadmap-detail-title" style="font-size:1.04rem;font-weight:700;color:var(--text-primary);margin-bottom:10px;"></div>
+            <p id="roadmap-detail-desc" style="font-size:0.95rem;line-height:1.8;margin-bottom:10px;"></p>
+            <div id="roadmap-detail-check" class="badge"></div>
+        </div>
+    </div>
+</div>
+
+<style>
+.roadmap-card {
+    padding: 20px 18px;
+    border-radius: var(--radius-lg);
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.roadmap-card.active {
+    border-color: var(--teal);
+    background: var(--teal-pale);
+    box-shadow: var(--shadow-sm);
+}
+.roadmap-card-top {
+    font-size: 0.8rem;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+}
+.roadmap-card h4 { margin-bottom: 10px; }
+.roadmap-card p { font-size: 0.92rem; }
+</style>

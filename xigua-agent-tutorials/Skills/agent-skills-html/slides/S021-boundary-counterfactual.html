@@ -1,0 +1,40 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">反事实对比</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            设计对了和设计错了，差别在哪
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:22px;">
+            切换几个典型错误场景，你会更容易看懂 Skill 的边界其实出在哪一层。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:980px;margin-bottom:20px;">
+            <button class="boundary-mode-btn btn btn-primary" data-scene="vague">触发描述模糊</button>
+            <button class="boundary-mode-btn btn" data-scene="shallow" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">流程写得太浅</button>
+            <button class="boundary-mode-btn btn" data-scene="missing" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">支撑资源缺失</button>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1120px;">
+            <div class="card" style="border-left:4px solid var(--red);">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">设计错了</div>
+                <div id="bf-bad-title" style="font-size:1.04rem;font-weight:700;color:var(--text-primary);margin-bottom:12px;"></div>
+                <p id="bf-bad-desc" style="font-size:0.95rem;line-height:1.8;margin:0;"></p>
+            </div>
+            <div class="card" style="border-left:4px solid var(--teal);">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">设计对了</div>
+                <div id="bf-good-title" style="font-size:1.04rem;font-weight:700;color:var(--text-primary);margin-bottom:12px;"></div>
+                <p id="bf-good-desc" style="font-size:0.95rem;line-height:1.8;margin:0;"></p>
+            </div>
+        </div>
+
+        <div class="animate-ready center-block content-left" data-delay="0.35" style="max-width:1040px;margin-top:22px;padding:18px 22px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);">
+            <p id="bf-takeaway" style="margin:0;font-size:0.97rem;color:var(--text-primary);"></p>
+        </div>
+    </div>
+</div>

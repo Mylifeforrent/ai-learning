@@ -1,0 +1,21 @@
+{
+  "output_text": "现在我了解了文档总结技能的使用方法。根据技能定义，这个技能专门用于将长文档压缩成结构化摘要，提取核心内容而不进行分析或评估。\n\n我看到您的请求\"请概括一下这篇文章\"正好在技能的触发场景中。不过，我需要您提供具体的文档内容才能进行概括。\n\n请提供您想要概括的文章内容，可以是：\n1. 完整的文档文本\n2. 文档的关键部分\n3. 或者告诉我文档的格式和大致内容\n\n一旦您提供了文档内容，我将按照以下步骤为您生成结构化摘要：\n1. 提取文档核心信息\n2. 结构化组织（概述、关键要点、结论等）\n3. 控制摘要长度在原文的10-20%\n4. 保持信息中立性，不添加分析或评估\n\n请分享您想要概括的文章内容吧！",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 18.26,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

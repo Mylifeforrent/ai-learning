@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Skills 从入门到精通实战课</title>
+    <link rel="stylesheet" href="css/main.css?v=20260620-cover-v2">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+</head>
+<body>
+    <canvas id="pen-trail-canvas"></canvas>
+    <div id="slide-container"></div>
+
+    <button class="nav-btn prev-btn" onclick="prevSlide()" aria-label="上一页">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="15 18 9 12 15 6"></polyline>
+        </svg>
+    </button>
+    <button class="nav-btn next-btn" onclick="nextSlide()" aria-label="下一页">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="9 18 15 12 9 6"></polyline>
+        </svg>
+    </button>
+
+    <div class="progress-bar">
+        <div class="progress-fill" id="progressFill"></div>
+    </div>
+
+    <div class="page-indicator" id="pageIndicator">1 / 27</div>
+
+    <div class="keyboard-hint">
+        <span>← → 翻页</span>
+        <span>F 全屏</span>
+        <span>M 菜单</span>
+        <span>T 画笔</span>
+    </div>
+
+    <div class="menu-overlay" id="menuOverlay" onclick="closeMenu()"></div>
+    <div class="sidebar-menu" id="sidebarMenu">
+        <div class="menu-header">
+            <span class="menu-title">Agent Skills 主课 v2</span>
+            <button class="menu-close" onclick="closeMenu()" aria-label="关闭菜单">✕</button>
+        </div>
+        <div class="menu-items" id="menuItems"></div>
+    </div>
+
+    <button class="menu-trigger" onclick="toggleMenu()" aria-label="打开菜单">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+        </svg>
+    </button>
+
+    <script src="js/main.js?v=20260620-rm-slides-2"></script>
+    <script src="js/interactive.js?v=20260311-v2-explorable-2"></script>
+</body>
+</html>

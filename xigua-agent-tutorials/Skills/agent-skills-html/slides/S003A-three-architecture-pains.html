@@ -1,0 +1,352 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <!-- 标题区 -->
+        <div class="animate-ready" data-delay="0">
+            <span class="badge" style="background:rgba(239,68,68,0.15);border-color:rgba(239,68,68,0.3);color:#ef4444;">技术深度</span>
+        </div>
+
+        <h2 class="animate-ready" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;color:var(--warning-red);font-size:clamp(1.8rem,3vw,2.5rem);font-weight:bold;">
+            三大架构痛点：为什么传统Prompt驱动会失效
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:24px;font-size:1.05rem;color:var(--text-secondary);">
+            从技术架构层面深入理解：为什么"更长的Prompt"不是解决方案
+        </p>
+
+        <!-- 痛点导航条 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;gap:12px;margin-bottom:28px;align-items:center;">
+            <div class="pain-nav-dot active" data-pain="1" onclick="switchPain(1)" style="cursor:pointer;">
+                <div class="dot-inner"></div>
+                <span class="dot-label">痛点一</span>
+            </div>
+            <div class="pain-nav-line"></div>
+            <div class="pain-nav-dot" data-pain="2" onclick="switchPain(2)" style="cursor:pointer;">
+                <div class="dot-inner"></div>
+                <span class="dot-label">痛点二</span>
+            </div>
+            <div class="pain-nav-line"></div>
+            <div class="pain-nav-dot" data-pain="3" onclick="switchPain(3)" style="cursor:pointer;">
+                <div class="dot-inner"></div>
+                <span class="dot-label">痛点三</span>
+            </div>
+        </div>
+
+        <!-- 主展示区 -->
+        <div class="animate-ready center-block" data-delay="0.3" style="max-width:1100px;width:100%;position:relative;min-height:42vh;">
+            <!-- 痛点一：巨型提示词灾难 -->
+            <div class="pain-card" id="pain-1" style="display:block;">
+                <div class="pain-header">
+                    <span class="pain-icon" style="font-size:2em;">💥</span>
+                    <h3 style="margin:0 0 8px 0;font-size:1.4em;color:#ef4444;">痛点一：巨型提示词灾难</h3>
+                    <p style="margin:0;font-size:0.95em;color:var(--text-secondary);">Mega-Prompt Problem</p>
+                </div>
+
+                <div class="pain-content">
+                    <div class="pain-desc">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:var(--text-primary);">问题描述</h4>
+                        <p style="font-size:1rem;line-height:1.7;color:var(--text-secondary);">
+                            当所有业务规则、边界条件、操作流程都硬编码进System Prompt时，上下文窗口急剧膨胀
+                        </p>
+                    </div>
+
+                    <!-- Token对比可视化 -->
+                    <div class="token-comparison" style="display:flex;gap:3vw;margin:24px 0;align-items:center;justify-content:center;">
+                        <div class="token-bar-container">
+                            <div class="token-label">传统方式</div>
+                            <div class="token-bar" style="background:linear-gradient(135deg,#ef4444,#dc2626);">
+                                <div class="token-bar-fill" id="token-old" style="width:0%;height:100%;"></div>
+                            </div>
+                            <div class="token-value" id="token-old-value">5000 tokens</div>
+                            <div class="token-note">全量注入</div>
+                        </div>
+
+                        <div style="font-size:2em;color:var(--text-dim);">→</div>
+
+                        <div class="token-bar-container">
+                            <div class="token-label">Skill方式</div>
+                            <div class="token-bar" style="background:linear-gradient(135deg,#22c55e,#16a34a);">
+                                <div class="token-bar-fill" id="token-new" style="width:0%;height:100%;"></div>
+                            </div>
+                            <div class="token-value" id="token-new-value">500 tokens</div>
+                            <div class="token-note">按需加载</div>
+                        </div>
+                    </div>
+
+                    <div class="pain-consequence">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:#ef4444;">后果说明</h4>
+                        <div style="display:grid;gap:10px;">
+                            <div class="consequence-item">→ 推理成本↑ 响应延迟↑</div>
+                            <div class="consequence-item">→ 注意力丢失（Lost in the Middle）</div>
+                            <div class="consequence-item">→ 指令遵循能力断崖式下降</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 痛点二：执行域与专业知识域的割裂 -->
+            <div class="pain-card" id="pain-2" style="display:none;">
+                <div class="pain-header">
+                    <span class="pain-icon" style="font-size:2em;">🔧</span>
+                    <h3 style="margin:0 0 8px 0;font-size:1.4em;color:#f97316;">痛点二：执行域与专业知识域的割裂</h3>
+                    <p style="margin:0;font-size:0.95em;color:var(--text-secondary);">拥有工具 ≠ 知道如何专业地使用工具</p>
+                </div>
+
+                <div class="pain-content">
+                    <div class="pain-desc">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:var(--text-primary);">核心矛盾</h4>
+                        <p style="font-size:1rem;line-height:1.7;color:var(--text-secondary);margin-bottom:20px;">
+                            工具提供"手脚"，但缺少"操作智慧"
+                        </p>
+                    </div>
+
+                    <div class="example-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:20px;margin:24px 0;">
+                        <div class="example-card">
+                            <div style="font-size:1.5em;margin-bottom:10px;">🗄️</div>
+                            <div style="font-size:0.95em;color:var(--text-secondary);line-height:1.6;">
+                                有SQL查询工具 <span style="color:#ef4444;">≠</span> 知道如何针对海量数据表进行多步查询
+                            </div>
+                        </div>
+                        <div class="example-card">
+                            <div style="font-size:1.5em;margin-bottom:10px;">🔍</div>
+                            <div style="font-size:0.95em;color:var(--text-secondary);line-height:1.6;">
+                                有代码分析工具 <span style="color:#ef4444;">≠</span> 知道如何系统化地进行代码审查
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="pain-consequence">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:#f97316;">后果说明</h4>
+                        <div class="consequence-item">→ Agent只能执行简单操作，无法处理复杂业务场景</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 痛点三：复用性、约束力、稳定性需求 -->
+            <div class="pain-card" id="pain-3" style="display:none;">
+                <div class="pain-header">
+                    <span class="pain-icon" style="font-size:2em;">⚙️</span>
+                    <h3 style="margin:0 0 8px 0;font-size:1.4em;color:#dc2626;">痛点三：复用性、约束力、稳定性需求</h3>
+                    <p style="margin:0;font-size:0.95em;color:var(--text-secondary);">企业级应用需要确定性和高可靠性</p>
+                </div>
+
+                <div class="pain-content">
+                    <div class="pain-desc">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:var(--text-primary);">核心矛盾</h4>
+                        <div style="display:grid;gap:12px;margin-bottom:20px;">
+                            <div style="padding:12px 16px;background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;border-radius:8px;">
+                                <span style="color:#ef4444;font-weight:600;">动态上下文生成</span> → 随机性输出
+                            </div>
+                            <div style="padding:12px 16px;background:rgba(239,68,68,0.1);border-left:3px solid #ef4444;border-radius:8px;">
+                                <span style="color:#ef4444;font-weight:600;">临时短提示词</span> → 不稳定行为
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="requirement-box" style="background:rgba(var(--primary-rgb),0.08);border:1px solid rgba(var(--primary-rgb),0.2);border-radius:12px;padding:20px;margin:20px 0;">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:var(--primary);">需求说明</h4>
+                        <div style="display:grid;gap:10px;font-size:0.95em;color:var(--text-secondary);">
+                            <div>✓ 同一任务需要在不同时间、不同用户下高频触发</div>
+                            <div>✓ 系统行为必须可预测、可复用</div>
+                            <div>✓ 需要将"隐性知识"转化为"标准操作流程"</div>
+                        </div>
+                    </div>
+
+                    <div class="pain-consequence">
+                        <h4 style="font-size:1.1em;margin-bottom:12px;color:#dc2626;">后果说明</h4>
+                        <div class="consequence-item">→ 无法满足工程化系统的确定性要求</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部关键洞察 -->
+        <div class="key-insight" id="key-insight" style="opacity:0;max-width:1000px;margin-top:28px;padding:20px 30px;background:linear-gradient(135deg,rgba(239,68,68,0.15),rgba(249,115,22,0.1));border:1px solid rgba(239,68,68,0.3);border-radius:16px;text-align:center;">
+            <div style="font-size:1.5em;margin-bottom:8px;">💡</div>
+            <p style="margin:0;font-size:1.05rem;line-height:1.7;color:var(--text-primary);">
+                <strong style="color:#ef4444;">这三个痛点的共同本质：</strong>传统架构缺乏"可插拔的领域专家大脑"机制，而这正是Agent Skills要解决的核心问题。
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --warning-red: #ef4444;
+    --warning-orange: #f97316;
+    --warning-deep-red: #dc2626;
+}
+
+/* 痛点导航点 */
+.pain-nav-dot {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:8px;
+    transition:all 0.3s ease;
+}
+.dot-inner {
+    width:14px;
+    height:14px;
+    border-radius:50%;
+    border:2px solid rgba(239,68,68,0.3);
+    background:rgba(239,68,68,0.1);
+    transition:all 0.3s ease;
+}
+.pain-nav-dot.active .dot-inner {
+    width:18px;
+    height:18px;
+    border-color:var(--warning-red);
+    background:var(--warning-red);
+    box-shadow:0 0 12px rgba(239,68,68,0.5);
+}
+.dot-label {
+    font-size:0.85em;
+    color:var(--text-dim);
+    transition:color 0.3s ease;
+}
+.pain-nav-dot.active .dot-label {
+    color:var(--warning-red);
+    font-weight:600;
+}
+.pain-nav-line {
+    width:60px;
+    height:2px;
+    background:rgba(239,68,68,0.2);
+}
+
+/* 痛点卡片 */
+.pain-card {
+    background:var(--card-bg);
+    border:1px solid rgba(239,68,68,0.2);
+    border-radius:20px;
+    padding:30px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 32px rgba(239,68,68,0.15);
+    position:absolute;
+    width:100%;
+    top:0;
+    left:0;
+}
+.pain-header {
+    text-align:center;
+    margin-bottom:24px;
+    padding-bottom:20px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+}
+.pain-content {
+    display:grid;
+    gap:20px;
+}
+.pain-desc {
+    padding:16px 20px;
+    background:rgba(255,255,255,0.03);
+    border-radius:12px;
+}
+.pain-consequence {
+    padding:16px 20px;
+    background:rgba(239,68,68,0.08);
+    border-radius:12px;
+}
+.consequence-item {
+    padding:10px 14px;
+    background:rgba(255,255,255,0.05);
+    border-radius:8px;
+    font-size:0.95em;
+    color:var(--text-secondary);
+}
+
+/* Token对比可视化 */
+.token-bar-container {
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:10px;
+    flex:1;
+}
+.token-label {
+    font-size:0.9em;
+    color:var(--text-secondary);
+    font-weight:600;
+}
+.token-bar {
+    width:100%;
+    height:60px;
+    border-radius:12px;
+    overflow:hidden;
+    position:relative;
+    box-shadow:inset 0 2px 8px rgba(0,0,0,0.2);
+}
+.token-bar-fill {
+    background:rgba(255,255,255,0.2);
+    transition:width 1.5s cubic-bezier(0.4,0,0.2,1);
+}
+.token-value {
+    font-size:1.3em;
+    font-weight:700;
+    font-family:'Monaco',monospace;
+}
+.token-note {
+    font-size:0.85em;
+    color:var(--text-dim);
+}
+
+/* 示例卡片 */
+.example-card {
+    padding:20px;
+    background:rgba(255,255,255,0.05);
+    border:1px solid rgba(249,115,22,0.2);
+    border-radius:12px;
+    text-align:center;
+}
+
+/* 响应式 */
+@media (max-width:768px) {
+    .pain-nav-dot {
+        gap:6px;
+    }
+    .dot-label {
+        font-size:0.75em;
+    }
+    .pain-nav-line {
+        width:40px;
+    }
+    .pain-card {
+        padding:20px;
+    }
+    .pain-header h3 {
+        font-size:1.2em !important;
+    }
+    .token-comparison {
+        flex-direction:column;
+        gap:20px !important;
+    }
+    .token-bar {
+        height:50px !important;
+    }
+    .token-value {
+        font-size:1.1em !important;
+    }
+    .example-grid {
+        grid-template-columns:1fr !important;
+    }
+}
+
+@media (max-width:480px) {
+    .pain-card {
+        padding:16px;
+    }
+    .pain-header {
+        margin-bottom:16px;
+        padding-bottom:16px;
+    }
+    .pain-icon {
+        font-size:1.5em !important;
+    }
+}
+</style>
+
+<script>
+// 此脚本会被 slideHooks 调用，不要在这里写
+</script>

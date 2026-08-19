@@ -1,0 +1,109 @@
+<!-- S006 Chapter 2 Transition - Green - chapter opening -->
+<style>
+  #ch2-number {
+    font-family: var(--font-heading);
+    font-size: clamp(5rem, 12vw, 9rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0.45;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: opacity 0.8s ease;
+  }
+  #ch2-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #ch2-subtitle {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .ch2-module-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+  .ch2-tag {
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    color: var(--card-text);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+  }
+  .ch2-tag.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .ch2-tag:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(193,127,89,0.15);
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+
+    <!-- Big chapter number -->
+    <div id="ch2-number">02</div>
+
+    <!-- Chapter title -->
+    <div id="ch2-title">六大功能模块</div>
+
+    <!-- Subtitle -->
+    <div id="ch2-subtitle" style="margin-top:0.5rem;">逐层拆解上下文窗口中的每一个模块</div>
+
+    <!-- Module preview tags -->
+    <div class="ch2-module-tags">
+      <span class="ch2-tag" data-i="0">系统提示</span>
+      <span class="ch2-tag" data-i="1">对话历史</span>
+      <span class="ch2-tag" data-i="2">记忆注入</span>
+      <span class="ch2-tag" data-i="3">工具上下文</span>
+      <span class="ch2-tag" data-i="4">任务状态</span>
+      <span class="ch2-tag" data-i="5">外部知识</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var num = document.getElementById('ch2-number');
+  var title = document.getElementById('ch2-title');
+  var subtitle = document.getElementById('ch2-subtitle');
+  var tags = document.querySelectorAll('.ch2-tag');
+
+  // Stage 1: number appears
+  setTimeout(function(){ num.style.opacity = '0.45'; }, 100);
+
+  // Stage 2: title slides up
+  setTimeout(function(){
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(0)';
+  }, 500);
+
+  // Stage 3: subtitle
+  setTimeout(function(){ subtitle.style.opacity = '1'; }, 900);
+
+  // Stage 4: tags stagger in
+  tags.forEach(function(tag) {
+    var i = parseInt(tag.dataset.i);
+    setTimeout(function(){ tag.classList.add('visible'); }, 1200 + i * 150);
+  });
+})();
+</script>

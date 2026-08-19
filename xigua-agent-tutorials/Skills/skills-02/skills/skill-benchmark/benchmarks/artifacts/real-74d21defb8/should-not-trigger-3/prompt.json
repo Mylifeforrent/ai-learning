@@ -1,0 +1,9 @@
+{
+  "id": "should-not-trigger-3",
+  "category": "should-not-trigger",
+  "text": "分析这篇文档的论证逻辑并提出改进建议。",
+  "should_trigger": false,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-1",
+  "category": "should-trigger",
+  "text": "请帮我总结这份项目报告文档，提取核心内容",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

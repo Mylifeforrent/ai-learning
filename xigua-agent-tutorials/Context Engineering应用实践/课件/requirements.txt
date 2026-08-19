@@ -1,0 +1,26 @@
+# AI Agent 上下文工程管理基础入门 - 依赖包清单
+
+# 核心依赖
+transformers==5.5.0         # DeepSeek tokenizer 和模型加载
+langchain-deepseek==1.0.1   # LangChain DeepSeek 集成
+langchain==1.2.15           # LangChain 核心框架（create_agent、SummarizationMiddleware）
+langchain-core==1.2.27      # LangChain 核心类型（messages、tools、trim_messages）
+langgraph==1.1.6            # LangGraph 核心库
+langgraph-checkpoint==4.0.1 # LangGraph 检查点（InMemorySaver）
+langgraph-prebuilt==1.0.9   # LangGraph 预建组件（create_react_agent）
+deepagents==0.5.1           # SubAgentMiddleware（子 Agent 上下文隔离中间件）
+python-dotenv==1.2.2        # 环境变量管理
+pandas==3.0.1               # 数据展示（工具结果对比表、成本计算器）
+sqlalchemy==2.0.48          # SQLite 缓存后端（LangChain SQLiteCache 演示）
+pydantic==2.12.5            # 数据验证（BaseModel、Field）
+
+# 记忆系统依赖（Write 策略演示需要）
+mem0ai==1.0.9               # 长期记忆管理（mem0.add 选择性提取演示）
+
+# RAG 混合检索依赖（Select 策略演示需要）
+llama-index-core==0.14.18            # LlamaIndex 核心（VectorStoreIndex、SentenceSplitter）
+llama-index-embeddings-openai==0.6.0 # OpenAI Embedding 集成
+llama-index-embeddings-dashscope==0.5.0 # DashScope Embedding 集成（阿里云通义千问）
+llama-index-retrievers-bm25==0.7.1  # BM25 关键词检索（中文需 skip_stemming + token_pattern）
+bm25s==0.3.3                        # BM25Retriever 底层引擎
+dashscope==1.22.2                   # DashScope SDK（DashScopeEmbedding 底层依赖）

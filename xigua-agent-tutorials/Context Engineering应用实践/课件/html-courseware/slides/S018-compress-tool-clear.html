@@ -1,0 +1,219 @@
+<!-- S017 Compress - Tool Result Clearing - show actual text before/after -->
+<style>
+  .tcl-msgs {
+    width: clamp(500px, 62vw, 760px);
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+  }
+  .tcl-msg {
+    display: flex;
+    gap: 0.5rem;
+    border-radius: 0.5rem;
+    padding: 0.4rem 0.7rem;
+    font-size: clamp(0.82rem, 1.2vw, 0.98rem);
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    align-items: flex-start;
+  }
+  .tcl-msg.visible { opacity: 1; }
+  .tcl-role {
+    font-family: 'Menlo','Consolas',monospace;
+    font-weight: 700;
+    font-size: clamp(0.75rem, 1.08vw, 0.88rem);
+    flex-shrink: 0;
+    width: 5rem;
+    text-align: right;
+    padding-top: 0.1rem;
+  }
+  .tcl-content {
+    flex: 1;
+    font-family: 'Menlo','Consolas',monospace;
+    font-size: clamp(0.75rem, 1.08vw, 0.88rem);
+    line-height: 1.5;
+    color: var(--card-text);
+    min-width: 0;
+  }
+  .tcl-tok {
+    font-family: var(--font-heading);
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    flex-shrink: 0;
+    white-space: nowrap;
+    padding-top: 0.1rem;
+  }
+  .tcl-msg.tool-msg {
+    background: rgba(231,76,60,0.06);
+    border-left: 3px solid rgba(231,76,60,0.5);
+  }
+  .tcl-msg.tool-msg .tcl-content {
+    max-height: 3.6rem;
+    overflow: hidden;
+    color: rgba(231,76,60,0.8);
+  }
+  .tcl-msg.tool-msg.cleared {
+    background: rgba(39,174,96,0.06);
+    border-left-color: rgba(39,174,96,0.5);
+  }
+  .tcl-msg.tool-msg.cleared .tcl-content {
+    max-height: none;
+    color: #27ae60;
+    font-weight: 600;
+  }
+  .tcl-msg.other-msg {
+    background: rgba(45,90,122,0.04);
+    border-left: 3px solid rgba(45,90,122,0.2);
+  }
+  .tcl-right {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.8rem;
+    min-width: clamp(90px, 12vw, 140px);
+  }
+  #tcl-counter {
+    font-family: var(--font-heading);
+    font-size: clamp(1.3rem, 2.5vw, 2rem);
+    font-weight: 700;
+    color: var(--primary);
+    transition: color 0.5s ease;
+  }
+  #tcl-btn {
+    font-family: var(--font-heading);
+    font-size: clamp(0.9rem, 1.3vw, 1.05rem);
+    font-weight: 600;
+    color: white;
+    background: var(--accent);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.45rem 1.4rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    opacity: 0;
+    transition: opacity 0.4s ease, transform 0.2s ease;
+  }
+  #tcl-btn.visible { opacity: 1; }
+  #tcl-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(193,127,89,0.3); }
+  #tcl-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第三章：五策略框架</span>
+    <h1 class="slide-title" style="font-size:clamp(1.7rem,3vw,2.5rem);margin-top:0.5rem;">Compress：工具结果清除</h1>
+    <p class="text-dim" style="font-size:clamp(0.92rem,1.3vw,1.08rem);">调用完成后丢弃原始返回，仅保留一行结论</p>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+
+    <div class="tcl-msgs" id="tcl-msgs">
+      <!-- user message -->
+      <div class="tcl-msg other-msg" data-i="0">
+        <span class="tcl-role" style="color:var(--text-dim);">user</span>
+        <div class="tcl-content">帮我检查 config.py 的配置是否正确</div>
+        <span class="tcl-tok">50 tok</span>
+      </div>
+      <!-- assistant calls tool -->
+      <div class="tcl-msg other-msg" data-i="1">
+        <span class="tcl-role" style="color:var(--primary);">assistant</span>
+        <div class="tcl-content">好的，让我读取文件并检查。<br>→ call: read_file("config.py")</div>
+        <span class="tcl-tok">100 tok</span>
+      </div>
+      <!-- tool result 1 (big!) -->
+      <div class="tcl-msg tool-msg" data-i="2" data-clear="[已处理] 包含 ConfigManager 类，87行，DB配置正确">
+        <span class="tcl-role" style="color:#e74c3c;">tool</span>
+        <div class="tcl-content">class ConfigManager:<br>&nbsp;&nbsp;def __init__(self):<br>&nbsp;&nbsp;&nbsp;&nbsp;self.db_host = 'localhost'<br>&nbsp;&nbsp;&nbsp;&nbsp;self.db_port = 5432<br>&nbsp;&nbsp;&nbsp;&nbsp;self.redis_url = 'redis://...'<br>... (共 87 行完整源码)</div>
+        <span class="tcl-tok" style="color:#e74c3c;font-weight:600;">5,000 tok</span>
+      </div>
+      <!-- assistant analyzes -->
+      <div class="tcl-msg other-msg" data-i="3">
+        <span class="tcl-role" style="color:var(--primary);">assistant</span>
+        <div class="tcl-content">配置正确。接下来搜索引用位置。<br>→ call: search_codebase("ConfigManager")</div>
+        <span class="tcl-tok">80 tok</span>
+      </div>
+      <!-- tool result 2 -->
+      <div class="tcl-msg tool-msg" data-i="4" data-clear="[已处理] 找到 3 处引用：api.py:42, routes.py:15, test.py:8">
+        <span class="tcl-role" style="color:#e74c3c;">tool</span>
+        <div class="tcl-content">匹配 15 个结果：<br>api.py:42 &nbsp;from config import ConfigManager<br>api.py:58 &nbsp;cfg = ConfigManager()<br>routes.py:15 &nbsp;import ConfigManager<br>... (共 15 条完整匹配结果)</div>
+        <span class="tcl-tok" style="color:#e74c3c;font-weight:600;">3,000 tok</span>
+      </div>
+      <!-- assistant runs tests -->
+      <div class="tcl-msg other-msg" data-i="5">
+        <span class="tcl-role" style="color:var(--primary);">assistant</span>
+        <div class="tcl-content">引用正常，运行测试验证。<br>→ call: run_tests()</div>
+        <span class="tcl-tok">70 tok</span>
+      </div>
+      <!-- tool result 3 -->
+      <div class="tcl-msg tool-msg" data-i="6" data-clear="[已处理] 12/12 测试通过，0 失败">
+        <span class="tcl-role" style="color:#e74c3c;">tool</span>
+        <div class="tcl-content">===== test session starts =====<br>test_config.py::test_db ... PASSED<br>test_config.py::test_redis ... PASSED<br>... (共 12 条测试日志)</div>
+        <span class="tcl-tok" style="color:#e74c3c;font-weight:600;">2,000 tok</span>
+      </div>
+    </div>
+
+    <!-- Bottom control row (centered) -->
+    <div style="display:flex;align-items:center;justify-content:center;gap:1.5rem;flex-wrap:wrap;">
+      <div style="text-align:center;">
+        <span id="tcl-counter" style="font-family:var(--font-heading);font-size:clamp(1.6rem,2.8vw,2.3rem);font-weight:700;color:var(--primary);transition:color 0.5s ease;">12,300</span>
+        <span style="font-size:clamp(0.85rem,1.2vw,0.98rem);color:var(--text-dim);"> tokens</span>
+      </div>
+      <button id="tcl-btn">清除工具结果</button>
+      <div id="tcl-save" style="opacity:0;transition:opacity 0.5s ease;text-align:center;">
+        <span style="font-family:var(--font-heading);font-size:clamp(1.5rem,2.5vw,1.9rem);font-weight:700;color:#27ae60;">-81%</span>
+        <span style="font-size:clamp(0.85rem,1.2vw,0.98rem);color:var(--text-dim);margin-left:0.4rem;">10,000 → 55 tokens</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var msgs = document.querySelectorAll('.tcl-msg');
+  var toolMsgs = document.querySelectorAll('.tcl-msg.tool-msg');
+  var counter = document.getElementById('tcl-counter');
+  var btn = document.getElementById('tcl-btn');
+  var save = document.getElementById('tcl-save');
+
+  msgs.forEach(function(m, i) {
+    setTimeout(function() { m.classList.add('visible'); }, 200 + i * 150);
+  });
+  setTimeout(function() { btn.classList.add('visible'); }, 200 + msgs.length * 150 + 200);
+
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = '已清除';
+    btn.style.background = '#27ae60';
+
+    toolMsgs.forEach(function(m, i) {
+      setTimeout(function() {
+        var content = m.querySelector('.tcl-content');
+        var tok = m.querySelector('.tcl-tok');
+        var role = m.querySelector('.tcl-role');
+        content.textContent = m.dataset.clear;
+        content.style.maxHeight = 'none';
+        tok.textContent = i === 0 ? '20 tok' : i === 1 ? '30 tok' : '5 tok';
+        tok.style.color = '#27ae60';
+        tok.style.fontWeight = '600';
+        role.style.color = '#27ae60';
+        m.classList.add('cleared');
+      }, i * 500);
+    });
+
+    setTimeout(function() {
+      var start = 12300;
+      var end = 2355;
+      var dur = 800;
+      var t0 = null;
+      function anim(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        counter.textContent = Math.round(start + (end - start) * p).toLocaleString();
+        if (p < 1) requestAnimationFrame(anim);
+        else { counter.style.color = '#27ae60'; save.style.opacity = '1'; }
+      }
+      requestAnimationFrame(anim);
+    }, toolMsgs.length * 500 + 200);
+  });
+})();
+</script>

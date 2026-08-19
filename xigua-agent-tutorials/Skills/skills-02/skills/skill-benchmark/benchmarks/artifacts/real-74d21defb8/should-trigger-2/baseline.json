@@ -1,0 +1,21 @@
+{
+  "output_text": "好的，请提供您需要压缩的技术报告原文。我将为您提炼核心内容，生成一份结构清晰、重点突出的执行摘要，以便于向上级或团队进行高效汇报。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 3.97,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

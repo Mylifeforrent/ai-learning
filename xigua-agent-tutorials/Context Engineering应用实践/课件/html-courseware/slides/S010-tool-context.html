@@ -1,0 +1,349 @@
+<!-- S010 Tool Context - density tiers + code panel for 100+ -->
+<style>
+  .s10-fill-wrap {
+    width: clamp(420px, 54vw, 680px);
+    height: 2.4rem;
+    border-radius: 0.5rem;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    overflow: hidden;
+    position: relative;
+  }
+  .s10-fill-inner {
+    height: 100%;
+    width: 0%;
+    border-radius: 0.4rem 0 0 0.4rem;
+    transition: width 1.2s ease, background 0.5s ease;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding-right: 0.6rem;
+    font-family: var(--font-heading);
+    font-size: clamp(0.7rem, 1vw, 0.85rem);
+    font-weight: 700;
+    color: white;
+  }
+  .s10-fill-label {
+    font-family: var(--font-heading);
+    font-size: clamp(0.72rem, 1.05vw, 0.85rem);
+    font-weight: 600;
+    text-align: center;
+    margin-top: 0.3rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    min-height: 1.3rem;
+  }
+  .s10-tier-row {
+    display: flex;
+    justify-content: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+  }
+  .s10-tier {
+    flex: 1;
+    min-width: clamp(110px, 13vw, 145px);
+    max-width: 160px;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1.5px solid var(--card-border);
+    border-radius: 0.6rem;
+    padding: 0.45rem 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .s10-tier.visible { opacity: 1; transform: translateY(0); }
+  .s10-tier:hover, .s10-tier.s10-active {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(193,127,89,0.15);
+  }
+  .s10-tier-range {
+    font-family: var(--font-heading);
+    font-size: clamp(0.9rem, 1.4vw, 1.15rem);
+    font-weight: 700;
+  }
+  .s10-tier-name {
+    font-size: clamp(0.6rem, 0.88vw, 0.72rem);
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+  }
+  .s10-tier-sub {
+    font-size: clamp(0.5rem, 0.75vw, 0.6rem);
+    color: var(--text-dim);
+    margin-top: 0.1rem;
+  }
+
+  /* bottom panel: detail text OR code */
+  .s10-bottom {
+    width: 100%;
+    max-width: 720px;
+    min-height: clamp(80px, 14vh, 130px);
+    position: relative;
+  }
+  .s10-detail-text {
+    font-size: clamp(0.68rem, 1vw, 0.82rem);
+    color: var(--text-dim);
+    text-align: center;
+    padding: 0.4rem 0.5rem;
+    transition: opacity 0.3s ease;
+  }
+
+  /* code panel */
+  .s10-code-panel {
+    background: #1e293b;
+    border-radius: 10px;
+    border: 1.5px solid rgba(193,127,89,0.3);
+    padding: 0.5rem 0.7rem;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+    position: relative;
+  }
+  .s10-code-panel.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .s10-code-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.35rem;
+  }
+  .s10-code-title {
+    font-family: var(--font-heading);
+    font-size: clamp(0.6rem, 0.9vw, 0.72rem);
+    font-weight: 700;
+    color: #c17f59;
+  }
+  .s10-code-badge {
+    font-size: clamp(0.48rem, 0.7vw, 0.58rem);
+    color: #94a3b8;
+    background: rgba(148,163,184,0.15);
+    padding: 0.1rem 0.4rem;
+    border-radius: 999px;
+  }
+  .s10-code-body {
+    font-family: 'Menlo','Consolas','Monaco',monospace;
+    font-size: clamp(0.55rem, 0.82vw, 0.68rem);
+    line-height: 1.65;
+    color: #e2e8f0;
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .s10-code-body .s10-cmt { color: #64748b; }
+  .s10-code-body .s10-kw  { color: #c084fc; }
+  .s10-code-body .s10-str { color: #86efac; }
+  .s10-code-body .s10-fn  { color: #7dd3fc; }
+  .s10-code-body .s10-num { color: #fbbf24; }
+  .s10-code-body .s10-hi  { color: #c17f59; font-weight: 700; }
+
+  /* conclusion (overlaid on code or shown below detail) */
+  .s10-conclusion {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: rgba(193,127,89,0.1);
+    border: 1px solid rgba(193,127,89,0.3);
+    border-radius: 0.5rem;
+    padding: 0.35rem 1rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .s10-conclusion-main {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    color: var(--accent);
+    font-size: clamp(0.72rem, 1.1vw, 0.88rem);
+  }
+  .s10-conclusion-sub {
+    font-size: clamp(0.6rem, 0.88vw, 0.72rem);
+    color: var(--text-dim);
+  }
+</style>
+
+<div style="width:100%;max-width:920px;">
+
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第二章：六大功能模块</span>
+    <h1 class="slide-title" style="font-size:clamp(1.4rem,2.6vw,2.2rem);margin-top:0.4rem;">工具上下文管理层：密集度分级</h1>
+    <p class="text-dim" style="font-size:clamp(0.72rem,1.1vw,0.88rem);">100 个工具 = 还没对话，窗口已缩水 40%</p>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.6rem;">
+
+    <!-- Progress bar -->
+    <div id="s10-fill-area" style="cursor:pointer;">
+      <div class="s10-fill-wrap">
+        <div class="s10-fill-inner" id="s10-bar" style="background:rgba(39,174,96,0.7);">
+          <span id="s10-pct"></span>
+        </div>
+      </div>
+      <div class="s10-fill-label" id="s10-label">点击进度条，逐步加载工具</div>
+    </div>
+
+    <!-- Four tier cards -->
+    <div class="s10-tier-row">
+      <div class="s10-tier" data-tier="0">
+        <div class="s10-tier-range" style="color:#27ae60;">&lt;10</div>
+        <div class="s10-tier-name">全量静态加载</div>
+        <div class="s10-tier-sub">全部写入 &middot; ~500 tok</div>
+      </div>
+      <div class="s10-tier" data-tier="1">
+        <div class="s10-tier-range" style="color:var(--accent);">10-30</div>
+        <div class="s10-tier-name">按阶段动态加载</div>
+        <div class="s10-tier-sub">每次选 8-15 个</div>
+      </div>
+      <div class="s10-tier" data-tier="2">
+        <div class="s10-tier-range" style="color:#e67e22;">30-100</div>
+        <div class="s10-tier-name">条件触发注入</div>
+        <div class="s10-tier-sub">匹配时才注入 3-8 个</div>
+      </div>
+      <div class="s10-tier" data-tier="3">
+        <div class="s10-tier-range" style="color:#e74c3c;">100+</div>
+        <div class="s10-tier-name">按需发现加载</div>
+        <div class="s10-tier-sub">两阶段：索引 + 按需拉取</div>
+      </div>
+    </div>
+
+    <!-- Bottom panel: switches between detail text and code -->
+    <div class="s10-bottom" id="s10-bottom">
+      <div class="s10-detail-text" id="s10-detail" style="opacity:0.5;">hover 分级卡片查看策略详情</div>
+      <div class="s10-code-panel" id="s10-code" style="display:none;">
+        <div class="s10-code-header">
+          <span class="s10-code-title">100+ 工具：按需发现加载</span>
+          <span class="s10-code-badge">伪代码</span>
+        </div>
+        <div class="s10-code-body"><span class="s10-cmt"># 阶段一：注册 — 只存名称索引，不存完整 schema</span>
+<span class="s10-kw">tool_index</span> = [<span class="s10-str">"search_web"</span>, <span class="s10-str">"read_file"</span>, <span class="s10-str">"run_sql"</span>, ...]  <span class="s10-cmt"># 100+ 名称</span>
+<span class="s10-cmt"># 常驻占用：100 个名称 ≈ <span class="s10-num">200</span> tok（vs 全量 schema <span class="s10-num">40,000</span> tok）</span>
+
+<span class="s10-cmt"># 阶段二：调用 — 意图匹配 → 按需拉取 → 注入执行</span>
+<span class="s10-kw">matched</span> = <span class="s10-fn">match_intent</span>(user_query, tool_index)   <span class="s10-cmt"># <span class="s10-hi">匹配 2-3 个</span></span>
+<span class="s10-kw">schemas</span> = <span class="s10-fn">load_schemas</span>(matched)                  <span class="s10-cmt"># <span class="s10-hi">才加载完整描述</span></span>
+<span class="s10-kw">result</span>  = <span class="s10-fn">execute</span>(schemas, user_query)             <span class="s10-cmt"># 注入上下文 + 调用</span>
+<span class="s10-cmt"># 实际注入：3 个 schema ≈ <span class="s10-num">150</span> tok   节省 <span class="s10-hi">99.6%</span></span></div>
+      </div>
+    </div>
+
+    <!-- Conclusion -->
+    <div style="text-align:center;">
+      <div class="s10-conclusion" id="s10-conclusion">
+        <span class="s10-conclusion-main">工具结果清除：零成本节省 20-40%</span>
+        <span class="s10-conclusion-sub">5 次调用可省 25,000+ tokens</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var bar = document.getElementById('s10-bar');
+  var pct = document.getElementById('s10-pct');
+  var label = document.getElementById('s10-label');
+  var tiers = document.querySelectorAll('.s10-tier');
+  var detail = document.getElementById('s10-detail');
+  var codePanel = document.getElementById('s10-code');
+  var conclusion = document.getElementById('s10-conclusion');
+  var bottom = document.getElementById('s10-bottom');
+
+  var stages = [
+    { w: '5%',  bg: 'rgba(39,174,96,0.7)',  txt: '~5%',  msg: '10 个工具：绿灯，安全区' },
+    { w: '15%', bg: 'rgba(241,196,15,0.75)', txt: '~15%', msg: '30 个工具：黄灯，需要动态管理' },
+    { w: '40%', bg: 'rgba(231,76,60,0.75)',  txt: '~40%', msg: '100 个工具：红灯！窗口已缩水近一半' }
+  ];
+
+  var tierDetails = [
+    '工具少且固定，全部 name + description 写入系统提示，每个工具约 50 token',
+    '按任务阶段选择工具子集：开发阶段加载代码工具，部署阶段切换为运维工具',
+    '工具描述平时不在窗口中，只有触发条件满足时才注入对应的 3-8 个工具',
+    null  // 100+ uses code panel instead
+  ];
+
+  // cards visible from start
+  tiers.forEach(function(t) { t.classList.add('visible'); });
+
+  // click-driven progress bar
+  var stageIdx = 0;
+  var fillArea = document.getElementById('s10-fill-area');
+  label.style.opacity = '1';
+  label.style.color = 'var(--text-dim)';
+
+  function highlightTier(idx) {
+    tiers.forEach(function(t) {
+      t.classList.remove('s10-active');
+    });
+    if (idx >= 0 && idx < tiers.length) {
+      tiers[idx].classList.add('s10-active');
+    }
+  }
+
+  function nextStage() {
+    if (stageIdx < stages.length) {
+      var s = stages[stageIdx];
+      bar.style.width = s.w;
+      bar.style.background = s.bg;
+      pct.textContent = s.txt;
+      label.textContent = s.msg;
+      highlightTier(stageIdx);
+      if (stageIdx === 2) {
+        label.style.color = 'var(--accent)';
+        label.style.fontWeight = '700';
+      } else {
+        label.style.color = 'var(--text-dim)';
+        label.style.fontWeight = '400';
+      }
+      stageIdx++;
+    } else if (stageIdx === 3) {
+      highlightTier(3);
+      showCodePanel();
+      conclusion.style.opacity = '1';
+      label.textContent = '';
+      fillArea.style.cursor = 'default';
+      stageIdx++;
+    }
+  }
+
+  fillArea.addEventListener('click', nextStage);
+
+  // show/hide code panel
+  function showCodePanel() {
+    detail.style.display = 'none';
+    codePanel.style.display = 'block';
+    setTimeout(function() { codePanel.classList.add('visible'); }, 50);
+  }
+
+  function hideCodePanel() {
+    codePanel.classList.remove('visible');
+    codePanel.style.display = 'none';
+    detail.style.display = 'block';
+  }
+
+  // hover on tier cards
+  tiers.forEach(function(tier) {
+    tier.addEventListener('mouseenter', function() {
+      var idx = parseInt(tier.dataset.tier);
+      highlightTier(idx);
+      if (idx === 3) {
+        showCodePanel();
+      } else {
+        hideCodePanel();
+        detail.textContent = tierDetails[idx];
+        detail.style.opacity = '1';
+      }
+    });
+    tier.addEventListener('mouseleave', function() {
+      // only reset if not in "clicked stage 3" state
+      if (stageIdx <= 3) {
+        hideCodePanel();
+        detail.textContent = 'hover 分级卡片查看策略详情';
+        detail.style.opacity = '0.5';
+        highlightTier(-1);
+      }
+    });
+  });
+})();
+</script>

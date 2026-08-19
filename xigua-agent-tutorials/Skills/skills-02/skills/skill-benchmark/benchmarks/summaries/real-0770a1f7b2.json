@@ -1,0 +1,46 @@
+{
+  "run_id": "real-0770a1f7b2",
+  "skill_targets": [
+    "/Users/mac/.claude/skills/switch-model"
+  ],
+  "models": [
+    "sonnet"
+  ],
+  "aggregate_scores": {
+    "trigger_accuracy": 1.0,
+    "routing_clarity": 1.0,
+    "output_signal_retention": 0.6667,
+    "task_completion": {
+      "baseline": 1.0,
+      "with_skill": 1.0,
+      "gain": 0.0
+    },
+    "outcome_quality": 1.0
+  },
+  "final_verdict": "effective",
+  "per_run_details": [
+    {
+      "prompt_id": "switch-model-team-intensive-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [
+        {
+          "signal": "claim_decomposition",
+          "hit": false
+        },
+        {
+          "signal": "disagreement",
+          "hit": true
+        },
+        {
+          "signal": "arbitration",
+          "hit": true
+        }
+      ],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 0.75
+    }
+  ],
+  "timestamp": "2026-03-07T17:11:58Z"
+}

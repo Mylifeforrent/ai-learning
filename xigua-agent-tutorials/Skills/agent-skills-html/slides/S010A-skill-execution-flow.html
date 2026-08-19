@@ -1,0 +1,190 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered" style="padding-top:40px;">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">深度演示</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:4px;margin-bottom:6px;">
+            Agent Skills 完整运行逻辑：从触发到输出的五个阶段
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:920px;margin-bottom:12px;font-size:0.85rem;">
+            以 test-driven-development 为例，看 Skill 如何从用户输入到最终输出，完整演示动态加载与流程编排机制。
+        </p>
+
+        <!-- 进度时间轴 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="max-width:1100px;margin-bottom:12px;">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:8px;">
+                <!-- 阶段1 -->
+                <div class="stage-indicator" data-stage="1" style="flex:1;text-align:center;">
+                    <div class="stage-circle" style="width:40px;height:40px;border-radius:50%;background:var(--bg-cool);border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-tertiary);transition:all 0.3s;">
+                        1
+                    </div>
+                    <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);">触发匹配</div>
+                </div>
+
+                <div style="flex:0 0 24px;color:var(--border);font-size:1.1rem;">→</div>
+
+                <!-- 阶段2 -->
+                <div class="stage-indicator" data-stage="2" style="flex:1;text-align:center;">
+                    <div class="stage-circle" style="width:40px;height:40px;border-radius:50%;background:var(--bg-cool);border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-tertiary);transition:all 0.3s;">
+                        2
+                    </div>
+                    <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);">加载解析</div>
+                </div>
+
+                <div style="flex:0 0 24px;color:var(--border);font-size:1.1rem;">→</div>
+
+                <!-- 阶段3 -->
+                <div class="stage-indicator" data-stage="3" style="flex:1;text-align:center;">
+                    <div class="stage-circle" style="width:40px;height:40px;border-radius:50%;background:var(--bg-cool);border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-tertiary);transition:all 0.3s;">
+                        3
+                    </div>
+                    <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);">上下文注入</div>
+                </div>
+
+                <div style="flex:0 0 24px;color:var(--border);font-size:1.1rem;">→</div>
+
+                <!-- 阶段4 -->
+                <div class="stage-indicator" data-stage="4" style="flex:1;text-align:center;">
+                    <div class="stage-circle" style="width:40px;height:40px;border-radius:50%;background:var(--bg-cool);border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-tertiary);transition:all 0.3s;">
+                        4
+                    </div>
+                    <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);">执行编排</div>
+                </div>
+
+                <div style="flex:0 0 24px;color:var(--border);font-size:1.1rem;">→</div>
+
+                <!-- 阶段5 -->
+                <div class="stage-indicator" data-stage="5" style="flex:1;text-align:center;">
+                    <div class="stage-circle" style="width:40px;height:40px;border-radius:50%;background:var(--bg-cool);border:2px solid var(--border);margin:0 auto 4px;display:flex;align-items:center;justify-content:center;font-weight:700;color:var(--text-tertiary);transition:all 0.3s;">
+                        5
+                    </div>
+                    <div style="font-size:0.75rem;font-weight:600;color:var(--text-secondary);">输出返回</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 详情展示区 -->
+        <div class="animate-ready center-block" data-delay="0.3" style="max-width:1100px;margin-bottom:10px;">
+            <div class="card" style="padding:16px;min-height:auto;">
+                <div id="stage-content">
+                    <p style="margin:0;color:var(--text-tertiary);text-align:center;padding:20px 0;font-size:0.85rem;">
+                        👇 点击下方"开始演示"按钮，查看 Skill 完整运行流程
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 控制按钮 -->
+        <div class="animate-ready center-block" data-delay="0.35" style="max-width:600px;display:flex;gap:10px;justify-content:center;">
+            <button id="prev-btn" class="btn" disabled style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);opacity:0.5;cursor:not-allowed;">
+                ◀ 上一步
+            </button>
+            <button id="next-btn" class="btn" style="background:var(--teal);color:var(--text-white);border:none;cursor:pointer;">
+                开始演示 ▶
+            </button>
+            <button id="auto-btn" class="btn" disabled style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);opacity:0.5;cursor:not-allowed;">
+                ⏩ 自动播放
+            </button>
+            <button id="reset-btn" class="btn" disabled style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);opacity:0.5;cursor:not-allowed;">
+                🔄 重置
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* 阶段指示器激活状态 */
+.stage-indicator.active .stage-circle {
+    background: var(--teal) !important;
+    border-color: var(--teal) !important;
+    color: var(--text-white) !important;
+    box-shadow: 0 0 0 4px var(--teal-pale);
+}
+
+.stage-indicator.completed .stage-circle {
+    background: var(--teal-pale) !important;
+    border-color: var(--teal) !important;
+    color: var(--teal) !important;
+}
+
+/* 按钮启用状态 */
+.btn:not(:disabled) {
+    opacity: 1 !important;
+    cursor: pointer !important;
+}
+
+.btn:not(:disabled):hover {
+    background: var(--teal-pale) !important;
+    border-color: var(--teal) !important;
+    color: var(--teal) !important;
+}
+
+/* 打字机效果 */
+.typewriter-text {
+    display: inline;
+    border-right: 2px solid var(--teal);
+    animation: blink 0.7s step-end infinite;
+}
+
+@keyframes blink {
+    50% { border-color: transparent; }
+}
+
+/* 工作流步骤样式 */
+.workflow-step {
+    padding: 8px 12px;
+    margin-bottom: 6px;
+    border-radius: var(--radius-sm);
+    background: var(--bg-cool);
+    border-left: 3px solid var(--border);
+    transition: all 0.3s;
+    font-size: 0.85rem;
+}
+
+.workflow-step.active {
+    background: var(--teal-pale);
+    border-left-color: var(--teal);
+    box-shadow: 0 0 0 3px var(--teal-pale);
+}
+
+.workflow-step.completed {
+    background: var(--bg-white);
+    border-left-color: var(--amber);
+}
+
+.workflow-step.completed::before {
+    content: '✓ ';
+    color: var(--amber);
+    font-weight: 700;
+}
+
+/* 已完成步骤的详情保持可见，提高文字对比度 */
+.workflow-step.completed .step-detail {
+    opacity: 1;
+    background: var(--bg-cool) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Token 对比柱状图 */
+.token-bar {
+    height: 32px;
+    background: linear-gradient(90deg, var(--teal), var(--teal-light));
+    border-radius: var(--radius-sm);
+    transition: width 1s ease-out;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-white);
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.token-bar.old {
+    background: linear-gradient(90deg, var(--red), #EF4444);
+}
+</style>

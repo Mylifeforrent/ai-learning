@@ -1,0 +1,27 @@
+{
+  "skill_version": "2.1",
+  "courseware_name": "html-courseware",
+  "source_type": "material",
+  "phase_completed": "done",
+  "phase_0_75_completed": true,
+  "phase_0_5_completed": true,
+  "last_agent": "quality-guard",
+  "next_agent": null,
+  "quality_guard_passes": 1,
+  "redo_count": 0,
+  "total_slides": 31,
+  "slides_completed": [
+    "S001-cover.html","S002-supply-demand.html","S003-context-rot.html",
+    "S004-effective-window.html","S005-model-comparison.html","S006-compression-trigger.html",
+    "S007-ch1-summary.html","S008-six-modules.html","S009-system-prompt.html",
+    "S010-conversation-history.html","S011-memory-injection.html","S012-tool-context.html",
+    "S013-task-state.html","S014-external-knowledge.html","S015-token-budget.html",
+    "S016-module-interaction.html","S017-ch2-summary.html","S018-five-strategies.html",
+    "S019-write.html","S020-select.html","S021-compress.html","S022-isolate.html",
+    "S023-cache.html","S024-strategy-combo.html","S025-ch3-summary.html",
+    "S026-rag-vs-long.html","S027-token-economics.html","S028-caching-cost.html",
+    "S029-checklist.html","S030-knowledge-map.html","S031-ending.html"
+  ],
+  "interactive_eng_slides": ["S008", "S018"],
+  "last_updated": "2026-04-07T20:30:00"
+}

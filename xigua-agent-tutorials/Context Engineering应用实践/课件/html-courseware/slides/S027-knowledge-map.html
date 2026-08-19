@@ -1,0 +1,373 @@
+<!-- S026 Knowledge Map - course summary with dual-column relation graph -->
+<style>
+  .s26-wrap {
+    width: 100%; max-width: 920px; margin: 0 auto;
+    display: flex; flex-direction: column; gap: 0; height: 100%;
+  }
+
+  /* ── header ── */
+  .s26-header { text-align: center; padding: 0.4rem 0 0.2rem; flex-shrink: 0; }
+  .s26-badge {
+    display: inline-block; background: var(--primary); color: #fff;
+    font-size: clamp(0.55rem,1vw,0.7rem); padding: 0.18rem 0.65rem;
+    border-radius: 999px; letter-spacing: 0.05em;
+  }
+  .s26-header h1 {
+    font-family: var(--font-heading); font-size: clamp(1.2rem,2.4vw,1.8rem);
+    color: var(--primary); margin: 0.15rem 0 0;
+  }
+
+  /* ── timeline (4 chapters) ── */
+  .s26-timeline {
+    display: flex; align-items: center; justify-content: center;
+    gap: 0; padding: 0.4rem 1rem; flex-shrink: 0;
+  }
+  .s26-ch-node {
+    display: flex; flex-direction: column; align-items: center; gap: 0.1rem;
+    opacity: 0; transition: opacity 0.4s ease;
+  }
+  .s26-ch-dot {
+    width: clamp(8px,1.2vw,11px); height: clamp(8px,1.2vw,11px);
+    border-radius: 50%; border: 2px solid var(--primary); background: var(--bg);
+    transition: background 0.3s;
+  }
+  .s26-ch-node.done .s26-ch-dot { background: var(--primary); }
+  .s26-ch-title {
+    font-family: var(--font-heading); font-size: clamp(0.55rem,0.85vw,0.68rem);
+    font-weight: 700; color: var(--primary); white-space: nowrap;
+  }
+  .s26-ch-sub {
+    font-size: clamp(0.45rem,0.7vw,0.55rem); color: var(--text-dim);
+    white-space: nowrap;
+  }
+  .s26-ch-line {
+    flex: 0 0 clamp(30px,5vw,60px); height: 2px;
+    background: linear-gradient(90deg, var(--primary), var(--accent));
+    opacity: 0.35; margin: 0 0.15rem;
+  }
+
+  /* ── relation graph area ── */
+  .s26-graph {
+    flex: 1; display: flex; align-items: stretch; gap: 0;
+    padding: 0.3rem 0.8rem; min-height: 0; position: relative;
+  }
+
+  /* left / right columns */
+  .s26-col {
+    display: flex; flex-direction: column; justify-content: space-around;
+    gap: 0.2rem; z-index: 2; width: clamp(130px,18vw,180px); flex-shrink: 0;
+  }
+  .s26-mod-card, .s26-str-card {
+    padding: 0.3rem 0.5rem; border-radius: 8px;
+    border: 1.5px solid var(--card-border); background: var(--card-bg);
+    backdrop-filter: var(--glass-blur); cursor: pointer;
+    transition: border-color 0.25s, box-shadow 0.25s, opacity 0.25s;
+    opacity: 0;
+  }
+  .s26-mod-card:hover, .s26-str-card:hover,
+  .s26-mod-card.s26-hl, .s26-str-card.s26-hl {
+    border-color: var(--accent); box-shadow: 0 3px 12px rgba(193,127,89,0.15);
+  }
+  .s26-mod-card.s26-dim, .s26-str-card.s26-dim { opacity: 0.25; }
+  .s26-card-name {
+    font-family: var(--font-heading); font-size: clamp(0.6rem,0.95vw,0.75rem);
+    font-weight: 700; color: var(--primary);
+  }
+  .s26-card-tag {
+    font-size: clamp(0.45rem,0.7vw,0.55rem); color: var(--text-dim);
+  }
+  .s26-str-card .s26-card-name { color: var(--accent); }
+
+  /* SVG connector area */
+  .s26-svg-wrap {
+    flex: 1; position: relative; min-width: 60px; z-index: 1;
+  }
+  .s26-svg-wrap svg {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    pointer-events: none;
+  }
+  .s26-link {
+    stroke: var(--card-border); stroke-width: 1.5; fill: none;
+    opacity: 0.3; transition: stroke 0.3s, opacity 0.3s, stroke-width 0.3s;
+  }
+  .s26-link.s26-link-hl {
+    stroke: var(--accent); opacity: 0.85; stroke-width: 2.5;
+  }
+  .s26-link.s26-link-dim { opacity: 0.08; }
+
+  /* ── bottom conclusions ── */
+  .s26-conclusions {
+    display: flex; gap: 0.5rem; padding: 0.35rem 0.8rem 0.5rem;
+    flex-shrink: 0;
+  }
+  .s26-concl {
+    flex: 1; padding: 0.35rem 0.5rem; border-radius: 8px;
+    border: 1.5px solid var(--card-border); background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    font-size: clamp(0.52rem,0.82vw,0.65rem); color: var(--card-text);
+    line-height: 1.5; opacity: 0; transition: opacity 0.5s ease;
+  }
+  .s26-concl-num {
+    font-family: var(--font-heading); font-weight: 700;
+    color: var(--accent); font-size: clamp(0.6rem,0.95vw,0.75rem);
+    margin-right: 0.2rem;
+  }
+  .s26-concl strong { color: var(--primary); }
+</style>
+
+<div class="s26-wrap">
+
+  <!-- header -->
+  <div class="s26-header">
+    <span class="s26-badge">全课总结</span>
+    <h1>全课总结与知识图谱</h1>
+  </div>
+
+  <!-- timeline -->
+  <div class="s26-timeline" id="s26-tl">
+    <div class="s26-ch-node done" data-ch="0">
+      <div class="s26-ch-dot"></div>
+      <div class="s26-ch-title">认知升维</div>
+      <div class="s26-ch-sub">为什么要管理</div>
+    </div>
+    <div class="s26-ch-line"></div>
+    <div class="s26-ch-node done" data-ch="1">
+      <div class="s26-ch-dot"></div>
+      <div class="s26-ch-title">六大模块</div>
+      <div class="s26-ch-sub">里面有什么</div>
+    </div>
+    <div class="s26-ch-line"></div>
+    <div class="s26-ch-node done" data-ch="2">
+      <div class="s26-ch-dot"></div>
+      <div class="s26-ch-title">五策略框架</div>
+      <div class="s26-ch-sub">怎么去管理</div>
+    </div>
+    <div class="s26-ch-line"></div>
+    <div class="s26-ch-node done" data-ch="3">
+      <div class="s26-ch-dot"></div>
+      <div class="s26-ch-title">决策内化</div>
+      <div class="s26-ch-sub">按场景选择</div>
+    </div>
+  </div>
+
+  <!-- relation graph -->
+  <div class="s26-graph" id="s26-graph">
+
+    <!-- left: 6 modules -->
+    <div class="s26-col" id="s26-left">
+      <div class="s26-mod-card" data-mod="0">
+        <div class="s26-card-name">系统提示层</div>
+        <div class="s26-card-tag">System Prompt &middot; 15-25%</div>
+      </div>
+      <div class="s26-mod-card" data-mod="1">
+        <div class="s26-card-name">对话历史层</div>
+        <div class="s26-card-tag">Conversation &middot; 20-40%</div>
+      </div>
+      <div class="s26-mod-card" data-mod="2">
+        <div class="s26-card-name">记忆注入层</div>
+        <div class="s26-card-tag">Memory &middot; 5-15%</div>
+      </div>
+      <div class="s26-mod-card" data-mod="3">
+        <div class="s26-card-name">工具上下文层</div>
+        <div class="s26-card-tag">Tools &middot; 15-30%</div>
+      </div>
+      <div class="s26-mod-card" data-mod="4">
+        <div class="s26-card-name">任务状态层</div>
+        <div class="s26-card-tag">Task State &middot; 5-10%</div>
+      </div>
+      <div class="s26-mod-card" data-mod="5">
+        <div class="s26-card-name">外部知识层</div>
+        <div class="s26-card-tag">External &middot; 10-25%</div>
+      </div>
+    </div>
+
+    <!-- center SVG -->
+    <div class="s26-svg-wrap" id="s26-svg-wrap">
+      <svg id="s26-svg" xmlns="http://www.w3.org/2000/svg"></svg>
+    </div>
+
+    <!-- right: 5 strategies -->
+    <div class="s26-col" id="s26-right">
+      <div class="s26-str-card" data-str="0">
+        <div class="s26-card-name">Write</div>
+        <div class="s26-card-tag">写入持久化存储</div>
+      </div>
+      <div class="s26-str-card" data-str="1">
+        <div class="s26-card-name">Select</div>
+        <div class="s26-card-tag">运行时按需检索</div>
+      </div>
+      <div class="s26-str-card" data-str="2">
+        <div class="s26-card-name">Compress</div>
+        <div class="s26-card-tag">压缩减少 Token</div>
+      </div>
+      <div class="s26-str-card" data-str="3">
+        <div class="s26-card-name">Isolate</div>
+        <div class="s26-card-tag">子 Agent 隔离窗口</div>
+      </div>
+      <div class="s26-str-card" data-str="4">
+        <div class="s26-card-name">Cache</div>
+        <div class="s26-card-tag">缓存降低重复成本</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- bottom conclusions -->
+  <div class="s26-conclusions" id="s26-concls">
+    <div class="s26-concl">
+      <span class="s26-concl-num">1</span>
+      <strong>Context Rot</strong> 是第一性约束 -- 有效窗口只有 50-65%，必须主动管理
+    </div>
+    <div class="s26-concl">
+      <span class="s26-concl-num">2</span>
+      <strong>六模块</strong>定位问题，<strong>五策略</strong>解决问题 -- 两个维度交叉决策
+    </div>
+    <div class="s26-concl">
+      <span class="s26-concl-num">3</span>
+      优化路线：<strong>Cache 先行</strong>(-50%)，<strong>Compress 跟进</strong>(-30%)，<strong>Isolate</strong> 架构级收尾
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  /* ── relation mapping ──
+     modules:    0=系统提示 1=对话历史 2=记忆注入 3=工具上下文 4=任务状态 5=外部知识
+     strategies: 0=Write    1=Select   2=Compress 3=Isolate    4=Cache
+     edges: [modIdx, strIdx]
+  */
+  var EDGES = [
+    [0, 4],  // 系统提示 ↔ Cache
+    [1, 2],  // 对话历史 ↔ Compress
+    [1, 0],  // 对话历史 ↔ Write
+    [2, 1],  // 记忆注入 ↔ Select
+    [2, 0],  // 记忆注入 ↔ Write
+    [3, 2],  // 工具上下文 ↔ Compress
+    [3, 4],  // 工具上下文 ↔ Cache
+    [4, 0],  // 任务状态 ↔ Write
+    [4, 3],  // 任务状态 ↔ Isolate
+    [5, 1],  // 外部知识 ↔ Select
+    [5, 4],  // 外部知识 ↔ Cache
+    [3, 3]   // 工具上下文 ↔ Isolate
+  ];
+
+  // entrance animations
+  var tlNodes = document.querySelectorAll('.s26-ch-node');
+  var modCards = document.querySelectorAll('.s26-mod-card');
+  var strCards = document.querySelectorAll('.s26-str-card');
+  var concls = document.querySelectorAll('.s26-concl');
+
+  tlNodes.forEach(function(n, i) {
+    setTimeout(function(){ n.style.opacity = '1'; }, 200 + i * 150);
+  });
+  modCards.forEach(function(c, i) {
+    setTimeout(function(){ c.style.opacity = '1'; }, 800 + i * 100);
+  });
+  strCards.forEach(function(c, i) {
+    setTimeout(function(){ c.style.opacity = '1'; }, 900 + i * 100);
+  });
+  concls.forEach(function(c, i) {
+    setTimeout(function(){ c.style.opacity = '1'; }, 1800 + i * 200);
+  });
+
+  // draw SVG lines after layout settles
+  var svg = document.getElementById('s26-svg');
+  var svgWrap = document.getElementById('s26-svg-wrap');
+  var linkEls = [];
+
+  function drawLines() {
+    var wrapRect = svgWrap.getBoundingClientRect();
+    svg.innerHTML = '';
+    linkEls = [];
+
+    for (var i = 0; i < EDGES.length; i++) {
+      var modIdx = EDGES[i][0];
+      var strIdx = EDGES[i][1];
+      var modCard = modCards[modIdx];
+      var strCard = strCards[strIdx];
+      if (!modCard || !strCard) continue;
+
+      var mRect = modCard.getBoundingClientRect();
+      var sRect = strCard.getBoundingClientRect();
+
+      var x1 = mRect.right - wrapRect.left;
+      var y1 = mRect.top + mRect.height / 2 - wrapRect.top;
+      var x2 = sRect.left - wrapRect.left;
+      var y2 = sRect.top + sRect.height / 2 - wrapRect.top;
+
+      var cx1 = x1 + (x2 - x1) * 0.4;
+      var cx2 = x1 + (x2 - x1) * 0.6;
+
+      var path = document.createElementNS('http://www.w3.org/2000/svg', 'path');
+      path.setAttribute('d', 'M' + x1 + ',' + y1 + ' C' + cx1 + ',' + y1 + ' ' + cx2 + ',' + y2 + ' ' + x2 + ',' + y2);
+      path.setAttribute('class', 's26-link');
+      path.dataset.mod = modIdx;
+      path.dataset.str = strIdx;
+      svg.appendChild(path);
+      linkEls.push(path);
+    }
+  }
+
+  setTimeout(drawLines, 300);
+  window.addEventListener('resize', drawLines);
+
+  // highlight logic
+  function highlightMod(modIdx) {
+    var relStrs = {};
+    for (var i = 0; i < EDGES.length; i++) {
+      if (EDGES[i][0] === modIdx) relStrs[EDGES[i][1]] = true;
+    }
+    modCards.forEach(function(c, j) {
+      c.classList.toggle('s26-hl', j === modIdx);
+      c.classList.toggle('s26-dim', j !== modIdx);
+    });
+    strCards.forEach(function(c, j) {
+      c.classList.toggle('s26-hl', !!relStrs[j]);
+      c.classList.toggle('s26-dim', !relStrs[j]);
+    });
+    linkEls.forEach(function(p) {
+      var isRel = parseInt(p.dataset.mod) === modIdx;
+      p.classList.toggle('s26-link-hl', isRel);
+      p.classList.toggle('s26-link-dim', !isRel);
+    });
+  }
+
+  function highlightStr(strIdx) {
+    var relMods = {};
+    for (var i = 0; i < EDGES.length; i++) {
+      if (EDGES[i][1] === strIdx) relMods[EDGES[i][0]] = true;
+    }
+    strCards.forEach(function(c, j) {
+      c.classList.toggle('s26-hl', j === strIdx);
+      c.classList.toggle('s26-dim', j !== strIdx);
+    });
+    modCards.forEach(function(c, j) {
+      c.classList.toggle('s26-hl', !!relMods[j]);
+      c.classList.toggle('s26-dim', !relMods[j]);
+    });
+    linkEls.forEach(function(p) {
+      var isRel = parseInt(p.dataset.str) === strIdx;
+      p.classList.toggle('s26-link-hl', isRel);
+      p.classList.toggle('s26-link-dim', !isRel);
+    });
+  }
+
+  function clearHighlight() {
+    modCards.forEach(function(c) { c.classList.remove('s26-hl', 's26-dim'); });
+    strCards.forEach(function(c) { c.classList.remove('s26-hl', 's26-dim'); });
+    linkEls.forEach(function(p) { p.classList.remove('s26-link-hl', 's26-link-dim'); });
+  }
+
+  modCards.forEach(function(c) {
+    var idx = parseInt(c.dataset.mod);
+    c.addEventListener('mouseenter', function() { highlightMod(idx); });
+    c.addEventListener('mouseleave', clearHighlight);
+  });
+  strCards.forEach(function(c) {
+    var idx = parseInt(c.dataset.str);
+    c.addEventListener('mouseenter', function() { highlightStr(idx); });
+    c.addEventListener('mouseleave', clearHighlight);
+  });
+})();
+</script>

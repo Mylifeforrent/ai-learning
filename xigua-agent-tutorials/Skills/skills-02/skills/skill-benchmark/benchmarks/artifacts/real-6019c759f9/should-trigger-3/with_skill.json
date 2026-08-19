@@ -1,0 +1,21 @@
+{
+  "output_text": "根据技能定义，我了解到这个技能专门用于提取文档核心内容并生成结构化摘要。不过，我需要您提供具体的PDF文档内容才能进行处理。\n\n请提供以下任一方式：\n1. **直接粘贴PDF文档内容** - 将PDF中的文本内容复制粘贴过来\n2. **上传文档** - 如果您能上传PDF文件，我可以读取其中的文本内容\n3. **提供文档链接** - 如果文档在可访问的URL上\n\n一旦您提供了文档内容，我将按照以下步骤为您生成简洁的要点列表：\n1. 解析文档结构\n2. 提取核心信息和关键要点\n3. 生成结构化摘要（包括概述、关键要点、结论等）\n4. 控制摘要长度在原文的10-20%之间\n5. 确保摘要保持信息中立性，不添加分析或评估\n\n请提供PDF文档内容，我将立即为您生成简洁的要点列表。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 13.48,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

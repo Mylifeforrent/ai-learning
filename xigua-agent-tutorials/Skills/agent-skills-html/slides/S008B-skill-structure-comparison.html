@@ -1,0 +1,311 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <!-- 标题区 -->
+        <div class="animate-ready" data-delay="0">
+            <span class="badge" style="background:rgba(var(--skill-simple-rgb),0.15);border-color:rgba(var(--skill-simple-rgb),0.3);color:var(--skill-simple-color);">设计哲学</span>
+        </div>
+
+        <h2 class="animate-ready" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;color:var(--primary);font-size:clamp(1.8rem,3vw,2.5rem);font-weight:bold;">
+            三种Skill结构：按需复杂的设计哲学
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:24px;font-size:1.05rem;color:var(--text-secondary);">
+            Skill的复杂度应该匹配任务复杂度——简单任务用简单结构，复杂任务用复杂结构
+        </p>
+
+        <!-- 对比维度切换 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;gap:10px;margin-bottom:28px;flex-wrap:wrap;justify-content:center;">
+            <button class="dimension-btn active" data-dimension="structure" onclick="switchDimension('structure')">文件结构</button>
+            <button class="dimension-btn" data-dimension="complexity" onclick="switchDimension('complexity')">复杂度</button>
+            <button class="dimension-btn" data-dimension="dependency" onclick="switchDimension('dependency')">依赖</button>
+            <button class="dimension-btn" data-dimension="scenario" onclick="switchDimension('scenario')">场景</button>
+            <button class="dimension-btn" data-dimension="cost" onclick="switchDimension('cost')">成本</button>
+            <button class="dimension-btn" data-dimension="value" onclick="switchDimension('value')">价值</button>
+        </div>
+
+        <!-- 三栏对比卡片 -->
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px;max-width:1200px;width:100%;margin-bottom:24px;">
+            <!-- 简单技能 -->
+            <div class="skill-card skill-simple">
+                <div class="skill-header">
+                    <div class="skill-icon" style="font-size:2.5em;">📄</div>
+                    <h3 style="margin:12px 0 8px 0;font-size:1.3em;color:var(--skill-simple-color);">简单技能</h3>
+                    <p style="margin:0;font-size:0.9em;color:var(--text-dim);">Simple Skill</p>
+                </div>
+                <div class="skill-content" id="content-simple">
+                    <!-- 内容由JS动态填充 -->
+                </div>
+                <button class="view-example-btn" onclick="showExample('simple')">查看示例</button>
+            </div>
+
+            <!-- 多步骤工作流 -->
+            <div class="skill-card skill-workflow">
+                <div class="skill-header">
+                    <div class="skill-icon" style="font-size:2.5em;">🔄</div>
+                    <h3 style="margin:12px 0 8px 0;font-size:1.3em;color:var(--skill-workflow-color);">多步骤工作流</h3>
+                    <p style="margin:0;font-size:0.9em;color:var(--text-dim);">Multi-Step Workflow</p>
+                </div>
+                <div class="skill-content" id="content-workflow">
+                    <!-- 内容由JS动态填充 -->
+                </div>
+                <button class="view-example-btn" onclick="showExample('workflow')">查看示例</button>
+            </div>
+
+            <!-- 资源依赖型 -->
+            <div class="skill-card skill-resource">
+                <div class="skill-header">
+                    <div class="skill-icon" style="font-size:2.5em;">📁</div>
+                    <h3 style="margin:12px 0 8px 0;font-size:1.3em;color:var(--skill-resource-color);">资源依赖型</h3>
+                    <p style="margin:0;font-size:0.9em;color:var(--text-dim);">Resource-Dependent</p>
+                </div>
+                <div class="skill-content" id="content-resource">
+                    <!-- 内容由JS动态填充 -->
+                </div>
+                <button class="view-example-btn" onclick="showExample('resource')">查看示例</button>
+            </div>
+        </div>
+
+        <!-- 展开区 -->
+        <div class="example-detail" id="example-detail" style="display:none;max-width:1200px;width:100%;margin-bottom:24px;">
+            <div class="example-detail-content">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;">
+                    <h3 id="example-title" style="margin:0;font-size:1.3em;color:var(--primary);">示例详情</h3>
+                    <button class="close-btn" onclick="closeExample()" style="background:none;border:none;color:var(--text-dim);font-size:1.5em;cursor:pointer;padding:0;line-height:1;">&times;</button>
+                </div>
+                <div id="example-content">
+                    <!-- 示例内容由JS动态填充 -->
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部总结 -->
+        <div class="animate-ready center-block" data-delay="0.35" style="max-width:1000px;padding:20px 30px;background:rgba(var(--primary-rgb),0.1);border:1px solid rgba(var(--primary-rgb),0.2);border-radius:16px;text-align:center;">
+            <div style="font-size:1.5em;margin-bottom:8px;">💡</div>
+            <p style="margin:0;font-size:1.05rem;line-height:1.7;color:var(--text-primary);">
+                <strong style="color:var(--primary);">选择原则：</strong>简单任务用简单结构，复杂任务用复杂结构——不要为了"显得专业"而过度设计
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+:root {
+    --skill-simple-color: #22c55e;
+    --skill-simple-rgb: 34, 197, 94;
+    --skill-workflow-color: #3b82f6;
+    --skill-workflow-rgb: 59, 130, 246;
+    --skill-resource-color: #8b5cf6;
+    --skill-resource-rgb: 139, 92, 246;
+}
+
+/* 维度切换按钮 */
+.dimension-btn {
+    padding:8px 18px;
+    background:rgba(var(--primary-rgb),0.1);
+    border:1px solid rgba(var(--primary-rgb),0.2);
+    border-radius:20px;
+    color:var(--text-secondary);
+    font-size:0.9em;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+.dimension-btn:hover {
+    background:rgba(var(--primary-rgb),0.15);
+    border-color:rgba(var(--primary-rgb),0.3);
+}
+.dimension-btn.active {
+    background:var(--primary);
+    border-color:var(--primary);
+    color:#fff;
+    font-weight:600;
+}
+
+/* Skill卡片 */
+.skill-card {
+    background:var(--card-bg);
+    border:1px solid rgba(var(--primary-rgb),0.2);
+    border-radius:20px;
+    padding:24px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.1);
+    display:flex;
+    flex-direction:column;
+    transition:all 0.3s ease;
+}
+.skill-card:hover {
+    transform:translateY(-5px);
+    box-shadow:0 12px 40px rgba(0,0,0,0.15);
+}
+.skill-simple {
+    border-color:rgba(var(--skill-simple-rgb),0.3);
+}
+.skill-simple:hover {
+    border-color:rgba(var(--skill-simple-rgb),0.5);
+    box-shadow:0 12px 40px rgba(var(--skill-simple-rgb),0.15);
+}
+.skill-workflow {
+    border-color:rgba(var(--skill-workflow-rgb),0.3);
+}
+.skill-workflow:hover {
+    border-color:rgba(var(--skill-workflow-rgb),0.5);
+    box-shadow:0 12px 40px rgba(var(--skill-workflow-rgb),0.15);
+}
+.skill-resource {
+    border-color:rgba(var(--skill-resource-rgb),0.3);
+}
+.skill-resource:hover {
+    border-color:rgba(var(--skill-resource-rgb),0.5);
+    box-shadow:0 12px 40px rgba(var(--skill-resource-rgb),0.15);
+}
+
+.skill-header {
+    text-align:center;
+    padding-bottom:16px;
+    border-bottom:1px solid rgba(255,255,255,0.1);
+    margin-bottom:16px;
+}
+
+.skill-content {
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    margin-bottom:16px;
+    min-height:180px;
+}
+
+.content-item {
+    padding:12px 16px;
+    background:rgba(255,255,255,0.05);
+    border-radius:10px;
+    font-size:0.95em;
+    line-height:1.6;
+    color:var(--text-secondary);
+}
+
+.view-example-btn {
+    padding:10px 20px;
+    background:rgba(var(--primary-rgb),0.15);
+    border:1px solid rgba(var(--primary-rgb),0.3);
+    border-radius:12px;
+    color:var(--primary);
+    font-size:0.9em;
+    font-weight:600;
+    cursor:pointer;
+    transition:all 0.3s ease;
+}
+.view-example-btn:hover {
+    background:var(--primary);
+    color:#fff;
+}
+
+/* 展开区 */
+.example-detail {
+    background:var(--card-bg);
+    border:1px solid rgba(var(--primary-rgb),0.3);
+    border-radius:20px;
+    padding:30px;
+    backdrop-filter:blur(10px);
+    box-shadow:0 8px 32px rgba(0,0,0,0.2);
+}
+
+.example-section {
+    margin-bottom:24px;
+}
+.example-section:last-child {
+    margin-bottom:0;
+}
+.example-section h4 {
+    margin:0 0 12px 0;
+    font-size:1.1em;
+    color:var(--primary);
+}
+
+.code-block {
+    background:rgba(0,0,0,0.3);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:16px;
+    font-family:'Monaco','Fira Code',monospace;
+    font-size:0.85em;
+    line-height:1.6;
+    color:#e2e8f0;
+    overflow-x:auto;
+}
+
+.file-tree {
+    background:rgba(0,0,0,0.2);
+    border:1px solid rgba(255,255,255,0.1);
+    border-radius:12px;
+    padding:16px;
+    font-family:'Monaco','Fira Code',monospace;
+    font-size:0.9em;
+    line-height:1.8;
+    color:var(--text-secondary);
+}
+
+.scenario-list {
+    display:grid;
+    gap:10px;
+}
+.scenario-item {
+    padding:10px 14px;
+    background:rgba(var(--primary-rgb),0.1);
+    border-left:3px solid var(--primary);
+    border-radius:8px;
+    font-size:0.95em;
+    color:var(--text-secondary);
+}
+
+/* 响应式 */
+@media (max-width:1024px) {
+    .slide .content {
+        grid-template-columns:1fr !important;
+    }
+}
+
+@media (max-width:768px) {
+    .dimension-btn {
+        padding:6px 14px;
+        font-size:0.85em;
+    }
+    .skill-card {
+        padding:20px;
+    }
+    .skill-content {
+        min-height:150px;
+    }
+    .example-detail {
+        padding:20px;
+    }
+}
+
+@media (max-width:480px) {
+    .dimension-btn {
+        padding:5px 12px;
+        font-size:0.8em;
+    }
+    .skill-card {
+        padding:16px;
+    }
+    .skill-header h3 {
+        font-size:1.1em !important;
+    }
+    .skill-content {
+        min-height:120px;
+    }
+    .example-detail {
+        padding:16px;
+    }
+    .code-block, .file-tree {
+        font-size:0.75em;
+        padding:12px;
+    }
+}
+</style>
+
+<script>
+// 此脚本会被 slideHooks 调用，不要在这里写
+</script>

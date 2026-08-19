@@ -1,0 +1,54 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">误区纠正</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:16px;">
+            Skill 不是长 Prompt，也不只是工具换个名字
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:880px;margin-bottom:24px;">
+            切换下面这几个视角，看看 Skill 真正多出来的是什么。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:18px;max-width:1160px;">
+            <div class="card">
+                <div style="font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--purple);">长 Prompt</div>
+                <ul style="padding-left:18px;line-height:1.8;color:var(--text-secondary);">
+                    <li>一次性塞很多指令</li>
+                    <li>高度依赖当前上下文</li>
+                    <li>跨场景复用弱</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div style="font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--amber);">工具 / 插件</div>
+                <ul style="padding-left:18px;line-height:1.8;color:var(--text-secondary);">
+                    <li>强调执行动作</li>
+                    <li>不一定天然可发现</li>
+                    <li>往往缺教学式描述层</li>
+                </ul>
+            </div>
+            <div class="card">
+                <div style="font-size:1rem;font-weight:700;margin-bottom:12px;color:var(--teal);">Skill</div>
+                <ul style="padding-left:18px;line-height:1.8;color:var(--text-secondary);">
+                    <li>描述能力边界</li>
+                    <li>告诉 Agent 什么时候该用</li>
+                    <li>还能被治理、复用和组合</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="animate-ready center-block" data-delay="0.35" style="display:flex;flex-wrap:wrap;justify-content:center;gap:10px;max-width:980px;margin-top:24px;">
+            <button class="lens-btn btn btn-primary" data-lens="discover">可发现</button>
+            <button class="lens-btn btn" data-lens="reuse" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">可复用</button>
+            <button class="lens-btn btn" data-lens="compose" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">可组合</button>
+            <button class="lens-btn btn" data-lens="govern" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">可治理</button>
+        </div>
+
+        <div class="animate-ready center-block content-left" data-delay="0.4" id="lens-explainer" style="max-width:980px;margin-top:18px;padding:18px 22px;background:var(--purple-pale);border-left:4px solid var(--purple);border-radius:var(--radius-md);"></div>
+    </div>
+</div>

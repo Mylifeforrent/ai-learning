@@ -1,0 +1,430 @@
+<!-- S015 Write Strategy - Write 写入持久化 -->
+<style>
+  #s15-title {
+    font-family: var(--font-heading);
+    font-size: clamp(1.6rem, 3.2vw, 2.4rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(-12px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #s15-subtitle {
+    font-size: clamp(0.82rem, 1.4vw, 1rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+
+  /* 主舞台布局 */
+  #s15-stage {
+    display: grid;
+    grid-template-columns: 1fr 220px 1fr;
+    grid-template-rows: auto auto auto;
+    align-items: center;
+    gap: 0.5rem 0.6rem;
+    margin-top: 0.8rem;
+  }
+
+  /* 上下文窗口 */
+  #s15-window {
+    grid-column: 2;
+    grid-row: 1 / 4;
+    border: 2px solid var(--primary);
+    border-radius: 10px;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    padding: 0.7rem 0.6rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.38rem;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+    position: relative;
+  }
+  #s15-window-label {
+    font-family: var(--font-heading);
+    font-size: clamp(0.62rem, 1vw, 0.72rem);
+    font-weight: 700;
+    color: var(--primary);
+    text-align: center;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.2rem;
+    border-bottom: 1px solid var(--card-border);
+    padding-bottom: 0.3rem;
+  }
+
+  /* 窗口内信息块 */
+  .s15-info-block {
+    border-radius: 5px;
+    padding: 0.28rem 0.5rem;
+    font-family: var(--font-heading);
+    font-size: clamp(0.6rem, 0.9vw, 0.7rem);
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.3rem;
+    transition: opacity 0.5s ease, transform 0.4s ease;
+    opacity: 0;
+    transform: translateX(-6px);
+  }
+  .s15-info-block.visible {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  .s15-info-block.dimmed {
+    opacity: 0.6;
+    border: 1.5px dashed currentColor;
+  }
+  .s15-info-block .blk-label {
+    flex: 1;
+  }
+  .s15-info-block .blk-bar {
+    height: 5px;
+    border-radius: 3px;
+    background: currentColor;
+    opacity: 0.35;
+    transition: width 0.6s ease;
+    flex-shrink: 0;
+  }
+
+  .s15-blk-history  { background: rgba(99,102,241,0.13); color: #6366f1; }
+  .s15-blk-task     { background: rgba(34,197,94,0.13);  color: #22c55e; }
+  .s15-blk-memory   { background: rgba(249,115,22,0.13); color: #f97316; }
+  .s15-blk-knowledge{ background: rgba(20,184,166,0.13); color: #14b8a6; }
+  .s15-blk-config   { background: rgba(168,85,247,0.13); color: #a855f7; }
+
+  /* 左列（上/下） */
+  .s15-left-top  { grid-column: 1; grid-row: 1; justify-self: end; }
+  .s15-left-bot  { grid-column: 1; grid-row: 3; justify-self: end; }
+  /* 右列（上/下） */
+  .s15-right-top { grid-column: 3; grid-row: 1; justify-self: start; }
+  .s15-right-bot { grid-column: 3; grid-row: 3; justify-self: start; }
+  /* 底部（中下） */
+  .s15-bottom-mid {
+    grid-column: 2;
+    grid-row: 4;
+    justify-self: center;
+    margin-top: 0.2rem;
+  }
+
+  /* 外部存储卡片 */
+  .s15-ext-card {
+    border: 1.5px solid var(--card-border);
+    border-radius: 8px;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    padding: 0.5rem 0.65rem;
+    width: 172px;
+    opacity: 0;
+    transform: scale(0.93);
+    transition: opacity 0.45s ease, transform 0.45s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+  }
+  .s15-ext-card.visible {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .s15-ext-card:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(193,127,89,0.18);
+  }
+  .s15-ext-card .card-icon {
+    font-size: 1rem;
+    margin-bottom: 0.15rem;
+  }
+  .s15-ext-card .card-name {
+    font-family: var(--font-heading);
+    font-size: clamp(0.65rem, 1vw, 0.75rem);
+    font-weight: 700;
+    color: var(--card-text);
+    margin-bottom: 0.1rem;
+  }
+  .s15-ext-card .card-desc {
+    font-size: clamp(0.58rem, 0.85vw, 0.65rem);
+    color: var(--text-dim);
+    line-height: 1.35;
+  }
+  .s15-ext-card .card-token {
+    margin-top: 0.2rem;
+    font-family: var(--font-heading);
+    font-size: clamp(0.55rem, 0.8vw, 0.62rem);
+    font-weight: 600;
+    padding: 0.12rem 0.38rem;
+    border-radius: 3px;
+    display: inline-block;
+  }
+
+  /* 连接箭头 */
+  .s15-arrow-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .s15-arrow-row.visible { opacity: 1; }
+  .s15-arrow-line {
+    height: 1.5px;
+    background: var(--card-border);
+    flex: 1;
+  }
+  .s15-arrow-head {
+    font-size: 0.75rem;
+    color: var(--text-dim);
+    line-height: 1;
+  }
+
+  /* 箭头行容器（左右各一列 -> window 方向/window -> 外侧） */
+  .s15-arr-left-top  { grid-column: 1; grid-row: 1; justify-self: end; display: flex; align-items: center; }
+  .s15-arr-left-bot  { grid-column: 1; grid-row: 3; justify-self: end; display: flex; align-items: center; }
+  .s15-arr-right-top { grid-column: 3; grid-row: 1; justify-self: start; display: flex; align-items: center; }
+  .s15-arr-right-bot { grid-column: 3; grid-row: 3; justify-self: start; display: flex; align-items: center; }
+
+  /* 底部结论 */
+  #s15-conclusion {
+    margin-top: 1rem;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  #s15-conclusion .concl-text {
+    display: inline-block;
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 1.3vw, 0.92rem);
+    font-weight: 600;
+    color: var(--primary);
+    padding: 0.45rem 1.2rem;
+    border: 1.5px solid var(--primary);
+    border-radius: 2rem;
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+  }
+  #s15-conclusion .concl-sub {
+    font-size: clamp(0.65rem, 1vw, 0.75rem);
+    color: var(--text-dim);
+    margin-top: 0.35rem;
+  }
+
+  /* 底部中间到底部卡片的竖向箭头 */
+  #s15-down-arrow {
+    grid-column: 2;
+    grid-row: 3;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+    padding: 0.1rem 0;
+  }
+  #s15-down-arrow.visible { opacity: 1; }
+  #s15-down-arrow .v-line {
+    width: 1.5px;
+    height: 20px;
+    background: var(--card-border);
+  }
+  #s15-down-arrow .v-tip {
+    font-size: 0.7rem;
+    color: var(--text-dim);
+    line-height: 1;
+    margin-top: -1px;
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <!-- 标题 -->
+  <div style="text-align:center;margin-bottom:0.3rem;">
+    <div id="s15-title">Write：写入持久化</div>
+    <div id="s15-subtitle" style="margin-top:0.25rem;">把信息搬到窗口外面，释放上下文空间</div>
+  </div>
+
+  <!-- 主舞台 -->
+  <div id="s15-stage">
+
+    <!-- 左上卡片：对话历史 -->
+    <div class="s15-left-top" style="display:flex;align-items:center;gap:0.3rem;">
+      <div class="s15-ext-card" id="s15-card-session" data-idx="0">
+        <div class="card-icon">📄</div>
+        <div class="card-name">session JSON</div>
+        <div class="card-desc">对话历史持久化<br>多轮后可重载恢复</div>
+        <span class="card-token" style="background:rgba(99,102,241,0.12);color:#6366f1;">~500 tok/轮</span>
+      </div>
+      <div id="s15-arr-lt" class="s15-arrow-row" style="width:32px;">
+        <div class="s15-arrow-line"></div>
+        <div class="s15-arrow-head">→</div>
+      </div>
+    </div>
+
+    <!-- 右上卡片：记忆 -->
+    <div class="s15-right-top" style="display:flex;align-items:center;gap:0.3rem;">
+      <div id="s15-arr-rt" class="s15-arrow-row" style="width:32px;">
+        <div class="s15-arrow-head">←</div>
+        <div class="s15-arrow-line"></div>
+      </div>
+      <div class="s15-ext-card" id="s15-card-mem" data-idx="2">
+        <div class="card-icon">🧠</div>
+        <div class="card-name">mem0 向量库</div>
+        <div class="card-desc">语义记忆持久化<br>按需召回相关片段</div>
+        <span class="card-token" style="background:rgba(249,115,22,0.12);color:#f97316;">长期存储</span>
+      </div>
+    </div>
+
+    <!-- 中间：上下文窗口 -->
+    <div id="s15-window">
+      <div id="s15-window-label">上下文窗口</div>
+      <!-- 对话历史 -->
+      <div class="s15-info-block s15-blk-history" id="s15-blk-0" data-bar="80">
+        <span class="blk-label">对话历史</span>
+        <div class="blk-bar" style="width:52px;"></div>
+      </div>
+      <!-- 任务状态 -->
+      <div class="s15-info-block s15-blk-task" id="s15-blk-1" data-bar="50">
+        <span class="blk-label">任务状态</span>
+        <div class="blk-bar" style="width:34px;"></div>
+      </div>
+      <!-- 记忆数据 -->
+      <div class="s15-info-block s15-blk-memory" id="s15-blk-2" data-bar="40">
+        <span class="blk-label">记忆数据</span>
+        <div class="blk-bar" style="width:28px;"></div>
+      </div>
+      <!-- 知识索引 -->
+      <div class="s15-info-block s15-blk-knowledge" id="s15-blk-3" data-bar="35">
+        <span class="blk-label">知识索引</span>
+        <div class="blk-bar" style="width:24px;"></div>
+      </div>
+      <!-- 系统配置 -->
+      <div class="s15-info-block s15-blk-config" id="s15-blk-4" data-bar="25">
+        <span class="blk-label">系统配置</span>
+        <div class="blk-bar" style="width:18px;"></div>
+      </div>
+    </div>
+
+    <!-- 左下卡片：任务状态 -->
+    <div class="s15-left-bot" style="display:flex;align-items:center;gap:0.3rem;">
+      <div class="s15-ext-card" id="s15-card-task" data-idx="1">
+        <div class="card-icon">📝</div>
+        <div class="card-name">Scratchpad / todo.md</div>
+        <div class="card-desc">任务状态落盘<br>中断后可继续执行</div>
+        <span class="card-token" style="background:rgba(34,197,94,0.12);color:#22c55e;">断点续跑</span>
+      </div>
+      <div id="s15-arr-lb" class="s15-arrow-row" style="width:32px;">
+        <div class="s15-arrow-line"></div>
+        <div class="s15-arrow-head">→</div>
+      </div>
+    </div>
+
+    <!-- 右下卡片：知识 -->
+    <div class="s15-right-bot" style="display:flex;align-items:center;gap:0.3rem;">
+      <div id="s15-arr-rb" class="s15-arrow-row" style="width:32px;">
+        <div class="s15-arrow-head">←</div>
+        <div class="s15-arrow-line"></div>
+      </div>
+      <div class="s15-ext-card" id="s15-card-know" data-idx="3">
+        <div class="card-icon">📚</div>
+        <div class="card-name">知识库索引</div>
+        <div class="card-desc">结构化知识落盘<br>下次 Select 直接召回</div>
+        <span class="card-token" style="background:rgba(20,184,166,0.12);color:#14b8a6;">永久复用</span>
+      </div>
+    </div>
+
+    <!-- 向下箭头（窗口底部 → 底部卡片） -->
+    <div id="s15-down-arrow">
+      <div class="v-line"></div>
+      <div class="v-tip">↓</div>
+    </div>
+
+    <!-- 底部中间卡片：配置 -->
+    <div class="s15-bottom-mid">
+      <div class="s15-ext-card" id="s15-card-cfg" data-idx="4" style="width:190px;">
+        <div style="display:flex;align-items:center;gap:0.5rem;">
+          <div class="card-icon" style="margin-bottom:0;">⚙️</div>
+          <div>
+            <div class="card-name">workspace 文件</div>
+            <div class="card-desc">系统配置 / Prompt 模板持久化，跨 Session 复用</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- 底部结论 -->
+  <div id="s15-conclusion">
+    <div class="concl-text">Write 是基础设施 — 其他四策略都依赖持久化存储</div>
+    <div class="concl-sub">Select 读取它 · Compress 压缩后写入它 · Isolate 隔离后各自写 · Cache 缓存也需落盘</div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title      = document.getElementById('s15-title');
+  var subtitle   = document.getElementById('s15-subtitle');
+  var win        = document.getElementById('s15-window');
+  var conclusion = document.getElementById('s15-conclusion');
+  var downArrow  = document.getElementById('s15-down-arrow');
+
+  var blks = [
+    document.getElementById('s15-blk-0'),
+    document.getElementById('s15-blk-1'),
+    document.getElementById('s15-blk-2'),
+    document.getElementById('s15-blk-3'),
+    document.getElementById('s15-blk-4')
+  ];
+
+  var cards = [
+    { el: document.getElementById('s15-card-session'), arr: document.getElementById('s15-arr-lt') },
+    { el: document.getElementById('s15-card-task'),    arr: document.getElementById('s15-arr-lb') },
+    { el: document.getElementById('s15-card-mem'),     arr: document.getElementById('s15-arr-rt') },
+    { el: document.getElementById('s15-card-know'),    arr: document.getElementById('s15-arr-rb') },
+    { el: document.getElementById('s15-card-cfg'),     arr: downArrow }
+  ];
+
+  // Phase 1: 标题
+  setTimeout(function(){
+    title.style.opacity = '1';
+    title.style.transform = 'translateY(0)';
+  }, 200);
+  setTimeout(function(){
+    subtitle.style.opacity = '1';
+  }, 500);
+
+  // Phase 2: 窗口出现
+  setTimeout(function(){
+    win.style.opacity = '1';
+  }, 800);
+
+  // Phase 3: 信息块逐个出现
+  blks.forEach(function(blk, i){
+    setTimeout(function(){
+      blk.classList.add('visible');
+    }, 1100 + i * 160);
+  });
+
+  // Phase 4: 每个块 → 箭头 → 卡片 → 块变淡
+  var flyDelay = 2050;
+  cards.forEach(function(pair, i){
+    var d = flyDelay + i * 380;
+    // 箭头
+    setTimeout(function(){
+      pair.arr.classList.add('visible');
+    }, d);
+    // 卡片
+    setTimeout(function(){
+      pair.el.classList.add('visible');
+    }, d + 160);
+    // 对应窗口块变淡
+    setTimeout(function(){
+      if (blks[i]) blks[i].classList.add('dimmed');
+    }, d + 280);
+  });
+
+  // Phase 5: 结论
+  var concluDelay = flyDelay + cards.length * 380 + 300;
+  setTimeout(function(){
+    conclusion.style.opacity = '1';
+    conclusion.style.transform = 'translateY(0)';
+  }, concluDelay);
+})();
+</script>

@@ -1,0 +1,21 @@
+{
+  "output_text": "我来帮您改写文字，让它更流畅。不过我需要先了解您想要改写的具体内容。\n\n您可以提供需要改写的文字内容吗？比如：\n1. 您想要改写的具体文字段落\n2. 您希望达到什么样的效果（更正式、更口语化、更简洁等）\n3. 这段文字的用途（工作报告、学术论文、邮件、社交媒体等）\n\n这样我就能根据您的具体需求，为您提供更精准的改写建议了。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 5.61,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

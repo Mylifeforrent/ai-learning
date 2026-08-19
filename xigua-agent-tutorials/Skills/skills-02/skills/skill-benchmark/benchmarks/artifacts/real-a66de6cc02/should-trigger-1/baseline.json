@@ -1,0 +1,21 @@
+{
+  "output_text": "好的，请提供您需要总结的**长文档内容**。我可以为您生成一个结构清晰、包含关键要点的摘要报告。\n\n**请您将文档粘贴或输入到对话框中。** 收到文档后，我将按照以下结构为您生成报告：\n\n---\n\n### **文档摘要报告**\n\n**1. 文档概览**\n*   **文档标题/主题：** [待填充]\n*   **核心议题/目标：** [待填充]\n*   **文档类型：** [例如：研究报告、商业计划、会议纪要、项目提案等]\n\n**2. 核心背景与问题陈述**\n*   [简要说明文档产生的背景、需要解决的核心问题或面临的现状。]\n\n**3. 主要发现/关键论点**\n*   [分点列出文档中最重要的发现、结论或核心论点。]\n    *   要点一：[具体内容]\n    *   要点二：[具体内容]\n    *   要点三：[具体内容]\n\n**4. 重要数据与支撑信息**\n*   [列出关键的数据、事实、案例或证据，用于支撑主要发现。]\n\n**5. 提出的建议、方案或行动计划**\n*   [如果文档包含建议或计划，在此分条列出。]\n    *   建议/步骤一：[具体内容]\n    *   建议/步骤二：[具体内容]\n\n**6. 结论与展望**\n*   [总结文档的最终结论，以及对未来的预期或下一步的展望。]\n\n---\n\n**请提供您的文档，我将立即开始处理。**",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 13.17,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

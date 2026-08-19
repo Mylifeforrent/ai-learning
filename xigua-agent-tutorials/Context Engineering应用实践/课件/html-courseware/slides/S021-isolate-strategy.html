@@ -1,0 +1,477 @@
+<style>
+  #s019-isolate-strategy * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  #s019-isolate-strategy {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    color: var(--card-text, #e2e8f0);
+    padding: 24px 28px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  #s019-isolate-strategy .s019-header {
+    text-align: center;
+  }
+
+  #s019-isolate-strategy .s019-title {
+    font-family: var(--font-heading, 'Inter', sans-serif);
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    font-weight: 700;
+    color: var(--primary, #7c3aed);
+    letter-spacing: -0.02em;
+  }
+
+  #s019-isolate-strategy .s019-subtitle {
+    font-size: clamp(0.8rem, 1.6vw, 1rem);
+    color: var(--text-dim, #94a3b8);
+    margin-top: 4px;
+  }
+
+  #s019-isolate-strategy .s019-compare-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex: 1;
+  }
+
+  /* ===== LEFT: Before ===== */
+  #s019-isolate-strategy .s019-before-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #s019-isolate-strategy .s019-panel-label {
+    font-size: clamp(0.65rem, 1.2vw, 0.8rem);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    text-align: center;
+    color: var(--text-dim, #94a3b8);
+  }
+
+  #s019-isolate-strategy .s019-window {
+    background: var(--card-bg, rgba(30, 27, 60, 0.85));
+    border: 1.5px solid var(--card-border, rgba(124, 58, 237, 0.25));
+    border-radius: 10px;
+    padding: 10px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  #s019-isolate-strategy .s019-window-titlebar {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 8px;
+  }
+
+  #s019-isolate-strategy .s019-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+  }
+
+  #s019-isolate-strategy .s019-dot-r { background: #ff5f57; }
+  #s019-isolate-strategy .s019-dot-y { background: #ffbd2e; }
+  #s019-isolate-strategy .s019-dot-g { background: #28ca41; }
+
+  #s019-isolate-strategy .s019-window-title-text {
+    font-size: 0.62rem;
+    color: var(--text-dim, #94a3b8);
+    margin-left: 4px;
+    opacity: 0.7;
+  }
+
+  /* Chaos blocks */
+  #s019-isolate-strategy .s019-chaos-area {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    min-height: 120px;
+    padding: 4px;
+  }
+
+  #s019-isolate-strategy .s019-block {
+    border-radius: 4px;
+    opacity: 0.85;
+  }
+
+  #s019-isolate-strategy .s019-block-blue { background: #3b82f6; }
+  #s019-isolate-strategy .s019-block-orange { background: #f97316; }
+  #s019-isolate-strategy .s019-block-green { background: #22c55e; }
+
+  #s019-isolate-strategy .s019-chaos-note {
+    font-size: clamp(0.6rem, 1.1vw, 0.72rem);
+    color: var(--text-dim, #94a3b8);
+    text-align: center;
+    margin-top: 4px;
+    line-height: 1.4;
+    opacity: 0.9;
+  }
+
+  #s019-isolate-strategy .s019-risk-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(239, 68, 68, 0.15);
+    border: 1px solid rgba(239, 68, 68, 0.4);
+    color: #f87171;
+    font-size: clamp(0.58rem, 1vw, 0.68rem);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin: 6px auto 0;
+    width: fit-content;
+  }
+
+  /* ===== ARROW ===== */
+  #s019-isolate-strategy .s019-arrow-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+
+  #s019-isolate-strategy .s019-arrow-label {
+    font-size: clamp(0.58rem, 1vw, 0.7rem);
+    font-weight: 600;
+    color: var(--secondary, #a78bfa);
+    text-align: center;
+    white-space: nowrap;
+  }
+
+  #s019-isolate-strategy .s019-arrow-svg {
+    width: 48px;
+    height: 28px;
+    opacity: 0;
+    animation: s019ArrowIn 0.5s ease forwards;
+    animation-delay: 1.2s;
+  }
+
+  /* ===== RIGHT: After ===== */
+  #s019-isolate-strategy .s019-after-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  #s019-isolate-strategy .s019-agent-cards {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+  }
+
+  #s019-isolate-strategy .s019-agent-card {
+    background: var(--card-bg, rgba(30, 27, 60, 0.85));
+    border-radius: 8px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+    overflow: hidden;
+    opacity: 0;
+  }
+
+  #s019-isolate-strategy .s019-agent-card::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    border-radius: 8px 0 0 8px;
+  }
+
+  #s019-isolate-strategy .s019-card-blue {
+    border: 1.5px solid rgba(59, 130, 246, 0.4);
+    animation: s019CardIn 0.4s ease forwards;
+    animation-delay: 1.6s;
+  }
+  #s019-isolate-strategy .s019-card-blue::before { background: #3b82f6; }
+
+  #s019-isolate-strategy .s019-card-orange {
+    border: 1.5px solid rgba(249, 115, 22, 0.4);
+    animation: s019CardIn 0.4s ease forwards;
+    animation-delay: 1.9s;
+  }
+  #s019-isolate-strategy .s019-card-orange::before { background: #f97316; }
+
+  #s019-isolate-strategy .s019-card-green {
+    border: 1.5px solid rgba(34, 197, 94, 0.4);
+    animation: s019CardIn 0.4s ease forwards;
+    animation-delay: 2.2s;
+  }
+  #s019-isolate-strategy .s019-card-green::before { background: #22c55e; }
+
+  #s019-isolate-strategy .s019-agent-icon {
+    font-size: 1.1rem;
+    flex-shrink: 0;
+  }
+
+  #s019-isolate-strategy .s019-agent-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  #s019-isolate-strategy .s019-agent-name {
+    font-size: clamp(0.65rem, 1.2vw, 0.78rem);
+    font-weight: 700;
+    line-height: 1.2;
+  }
+
+  #s019-isolate-strategy .s019-agent-name-blue { color: #60a5fa; }
+  #s019-isolate-strategy .s019-agent-name-orange { color: #fb923c; }
+  #s019-isolate-strategy .s019-agent-name-green { color: #4ade80; }
+
+  #s019-isolate-strategy .s019-agent-blocks {
+    display: flex;
+    gap: 3px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+
+  #s019-isolate-strategy .s019-mini-block {
+    border-radius: 3px;
+    opacity: 0.8;
+  }
+
+  #s019-isolate-strategy .s019-isolated-tag {
+    font-size: 0.55rem;
+    font-weight: 600;
+    padding: 2px 5px;
+    border-radius: 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  #s019-isolate-strategy .s019-tag-blue {
+    background: rgba(59, 130, 246, 0.15);
+    color: #93c5fd;
+  }
+  #s019-isolate-strategy .s019-tag-orange {
+    background: rgba(249, 115, 22, 0.15);
+    color: #fdba74;
+  }
+  #s019-isolate-strategy .s019-tag-green {
+    background: rgba(34, 197, 94, 0.15);
+    color: #86efac;
+  }
+
+  #s019-isolate-strategy .s019-ok-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(21, 128, 61, 0.12);
+    border: 1px solid rgba(21, 128, 61, 0.4);
+    color: #15803d;
+    font-size: clamp(0.7rem, 1.05vw, 0.82rem);
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 20px;
+    margin: 2px auto 0;
+    width: fit-content;
+    opacity: 0;
+    animation: s019FadeIn 0.5s ease forwards;
+    animation-delay: 2.6s;
+  }
+
+  /* ===== BOTTOM CONCLUSION ===== */
+  #s019-isolate-strategy .s019-conclusion {
+    background: rgba(45,90,122,0.08);
+    border: 1px solid rgba(45,90,122,0.2);
+    border-radius: 8px;
+    padding: 9px 16px;
+    text-align: center;
+    font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+    color: var(--primary);
+    font-weight: 600;
+    line-height: 1.5;
+    opacity: 0;
+    animation: s019FadeIn 0.6s ease forwards;
+    animation-delay: 3.0s;
+  }
+
+  #s019-isolate-strategy .s019-conclusion code {
+    font-family: inherit;
+    background: none;
+    padding: 0;
+    border-radius: 0;
+    font-size: 0.9em;
+    color: #c4b5fd;
+  }
+
+  /* ===== ANIMATIONS ===== */
+  #s019-isolate-strategy .s019-chaos-area {
+    animation: s019ChaosIn 0.7s ease forwards;
+  }
+
+  @keyframes s019ChaosIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  @keyframes s019ArrowIn {
+    from { opacity: 0; transform: translateX(-8px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes s019CardIn {
+    from { opacity: 0; transform: translateX(16px); }
+    to { opacity: 1; transform: translateX(0); }
+  }
+
+  @keyframes s019FadeIn {
+    from { opacity: 0; transform: translateY(6px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* Arrow label animation */
+  #s019-isolate-strategy .s019-arrow-label {
+    opacity: 0;
+    animation: s019FadeIn 0.4s ease forwards;
+    animation-delay: 1.3s;
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+<div id="s019-isolate-strategy">
+
+  <!-- Header -->
+  <div class="s019-header">
+    <div class="s019-title">Isolate：上下文隔离</div>
+    <div class="s019-subtitle">一个混乱窗口 → 多个专注的子 Agent</div>
+  </div>
+
+  <!-- Compare Row -->
+  <div class="s019-compare-row">
+
+    <!-- LEFT: Before (No Isolation) -->
+    <div class="s019-before-wrap">
+      <div class="s019-panel-label">无隔离</div>
+      <div class="s019-window">
+        <div class="s019-window-titlebar">
+          <div class="s019-dot s019-dot-r"></div>
+          <div class="s019-dot s019-dot-y"></div>
+          <div class="s019-dot s019-dot-g"></div>
+          <span class="s019-window-title-text">main-agent-context</span>
+        </div>
+        <!-- Chaos blocks: mixed colors in random sizes -->
+        <div class="s019-chaos-area">
+          <div class="s019-block s019-block-blue" style="width:38px;height:18px;"></div>
+          <div class="s019-block s019-block-orange" style="width:28px;height:14px;"></div>
+          <div class="s019-block s019-block-green" style="width:44px;height:10px;"></div>
+          <div class="s019-block s019-block-blue" style="width:20px;height:22px;"></div>
+          <div class="s019-block s019-block-orange" style="width:50px;height:12px;"></div>
+          <div class="s019-block s019-block-green" style="width:22px;height:18px;"></div>
+          <div class="s019-block s019-block-blue" style="width:32px;height:14px;"></div>
+          <div class="s019-block s019-block-green" style="width:30px;height:20px;"></div>
+          <div class="s019-block s019-block-orange" style="width:18px;height:16px;"></div>
+          <div class="s019-block s019-block-blue" style="width:46px;height:12px;"></div>
+          <div class="s019-block s019-block-orange" style="width:24px;height:20px;"></div>
+          <div class="s019-block s019-block-green" style="width:36px;height:14px;"></div>
+          <div class="s019-block s019-block-blue" style="width:26px;height:16px;"></div>
+          <div class="s019-block s019-block-orange" style="width:40px;height:18px;"></div>
+          <div class="s019-block s019-block-green" style="width:28px;height:12px;"></div>
+          <div class="s019-block s019-block-blue" style="width:34px;height:20px;"></div>
+          <div class="s019-block s019-block-orange" style="width:22px;height:14px;"></div>
+          <div class="s019-block s019-block-green" style="width:42px;height:16px;"></div>
+        </div>
+      </div>
+      <div class="s019-chaos-note">三个任务混在一个窗口，互相干扰</div>
+      <div class="s019-risk-badge">⚠ Context Confusion 风险</div>
+    </div>
+
+    <!-- ARROW -->
+    <div class="s019-arrow-col">
+      <div class="s019-arrow-label">子Agent<br>架构</div>
+      <svg class="s019-arrow-svg" viewBox="0 0 48 28" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="s019ArrowGrad" x1="0" y1="14" x2="48" y2="14" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#7c3aed"/>
+            <stop offset="100%" stop-color="#a78bfa"/>
+          </linearGradient>
+        </defs>
+        <path d="M2 14 H36" stroke="url(#s019ArrowGrad)" stroke-width="2.5" stroke-linecap="round"/>
+        <path d="M30 6 L44 14 L30 22" stroke="url(#s019ArrowGrad)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+      </svg>
+    </div>
+
+    <!-- RIGHT: After (Isolated) -->
+    <div class="s019-after-wrap">
+      <div class="s019-panel-label">有隔离</div>
+      <div class="s019-agent-cards">
+
+        <!-- Agent 1: Code Analysis -->
+        <div class="s019-agent-card s019-card-blue">
+          <div class="s019-agent-icon">🔍</div>
+          <div class="s019-agent-info">
+            <div class="s019-agent-name s019-agent-name-blue">代码分析 Agent</div>
+            <div class="s019-agent-blocks">
+              <div class="s019-mini-block s019-block-blue" style="width:30px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-blue" style="width:22px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-blue" style="width:36px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-blue" style="width:18px;height:10px;"></div>
+            </div>
+          </div>
+          <div class="s019-isolated-tag s019-tag-blue">独立上下文</div>
+        </div>
+
+        <!-- Agent 2: Doc Generation -->
+        <div class="s019-agent-card s019-card-orange">
+          <div class="s019-agent-icon">📝</div>
+          <div class="s019-agent-info">
+            <div class="s019-agent-name s019-agent-name-orange">文档生成 Agent</div>
+            <div class="s019-agent-blocks">
+              <div class="s019-mini-block s019-block-orange" style="width:26px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-orange" style="width:38px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-orange" style="width:20px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-orange" style="width:32px;height:10px;"></div>
+            </div>
+          </div>
+          <div class="s019-isolated-tag s019-tag-orange">独立上下文</div>
+        </div>
+
+        <!-- Agent 3: Test Execution -->
+        <div class="s019-agent-card s019-card-green">
+          <div class="s019-agent-icon">🧪</div>
+          <div class="s019-agent-info">
+            <div class="s019-agent-name s019-agent-name-green">测试执行 Agent</div>
+            <div class="s019-agent-blocks">
+              <div class="s019-mini-block s019-block-green" style="width:34px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-green" style="width:24px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-green" style="width:40px;height:10px;"></div>
+              <div class="s019-mini-block s019-block-green" style="width:16px;height:10px;"></div>
+            </div>
+          </div>
+          <div class="s019-isolated-tag s019-tag-green">独立上下文</div>
+        </div>
+
+      </div>
+      <div class="s019-ok-badge">✓ 各管各的，推理质量↑</div>
+    </div>
+
+  </div>
+
+  <!-- Bottom Conclusion -->
+  <div class="s019-conclusion">
+    Claude Code：主 Agent 分派子任务给独立子 Agent · 各自独立窗口 · 并行处理互不干扰
+  </div>
+
+</div>
+</div>
+
+<script>
+(function() {
+  // IIFE wrapper — no global pollution
+  // Animation timing is handled entirely via CSS animation-delay
+  // This script is a placeholder for any future dynamic behavior
+})();
+</script>

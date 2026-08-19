@@ -1,0 +1,21 @@
+{
+  "output_text": "您好！请提供您希望分析的文档内容，我将为您梳理其论证逻辑（如论点、论据、结构等），并基于逻辑严密性、说服力等方面提出改进建议。  \n\n您可以直接粘贴文档内容或描述其核心观点，我会尽快给出分析。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 4.88,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

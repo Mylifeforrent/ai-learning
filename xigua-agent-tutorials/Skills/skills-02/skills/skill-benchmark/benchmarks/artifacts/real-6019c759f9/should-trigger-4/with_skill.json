@@ -1,0 +1,21 @@
+{
+  "output_text": "现在我已经了解了文档总结技能的使用方法。根据技能定义，我需要：\n\n1. **接收输入**：确认文档内容和格式\n2. **边界确认**：验证请求属于摘要任务范围\n3. **解析文档**：提取文本内容，识别结构\n4. **内容提取**：识别关键信息、主题、结论\n5. **摘要生成**：根据文档类型生成结构化摘要\n6. **质量验证**：检查摘要完整性、准确性、中立性\n7. **输出交付**：提供最终摘要\n\n我看到您需要将长文压缩成结构化摘要用于向领导汇报。这是一个典型的文档摘要任务，符合技能的使用场景。\n\n**现在请您提供需要总结的长文内容**（可以是文本内容或文档文件）。请提供：\n1. 文档内容（可以直接粘贴文本）\n2. 或者告诉我文档的格式和如何获取（如果是文件）\n3. 文档的大致主题或类型（如：技术报告、项目计划、会议纪要、市场分析等）\n\n一旦您提供文档内容，我将为您生成一个结构清晰、适合向领导汇报的摘要，包含：\n- 文档概述\n- 核心要点\n- 关键结论\n- 重要行动项（如有）\n- 摘要长度控制在原文的10-20%\n\n请提供您需要总结的文档内容。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 16.32,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

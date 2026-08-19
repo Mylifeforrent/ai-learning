@@ -1,0 +1,9 @@
+{
+  "id": "should-not-trigger-4",
+  "category": "should-not-trigger",
+  "text": "请分析这篇文档的论证结构，评估其逻辑严密性。",
+  "should_trigger": false,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

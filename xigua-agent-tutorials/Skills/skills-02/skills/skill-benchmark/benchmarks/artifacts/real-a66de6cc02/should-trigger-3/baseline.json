@@ -1,0 +1,21 @@
+{
+  "output_text": "当然可以帮您总结PDF文档！不过，我目前无法直接读取或访问您设备中的文件。请您将PDF中的关键内容或具体段落复制粘贴到对话框中，我会为您提炼核心要点和重要结论。如果文档较长，您可以分次发送，我会逐步整理总结。\n\n您也可以先告诉我文档的大致主题（如技术报告、学术论文、商业计划等），这样我能更针对性地进行分析。期待您的分享！ 📄✨",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 5.76,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

@@ -1,0 +1,421 @@
+<!-- S020 Compress - Compaction restart: context collapse + restart visualization -->
+<style>
+  /* ── layout ── */
+  .s20-wrap {
+    width: 100%; max-width: 900px; display: flex; flex-direction: column;
+    gap: 0; height: 100%;
+  }
+  .s20-header { text-align: center; padding: 0.3rem 0 0.2rem; flex-shrink: 0; }
+  .s20-header .s20-badge {
+    display: inline-block; background: var(--primary); color: #fff;
+    font-size: clamp(0.62rem,1.1vw,0.78rem); padding: 0.15rem 0.6rem;
+    border-radius: 999px; letter-spacing: 0.04em;
+  }
+  .s20-header h1 {
+    font-family: var(--font-heading); font-size: clamp(1.5rem,2.8vw,2.2rem);
+    color: var(--primary); margin: 0.15rem 0 0;
+  }
+  .s20-header .s20-sub {
+    font-size: clamp(0.78rem,1.2vw,0.95rem); color: var(--text-dim); margin-top: 0.1rem;
+  }
+
+  /* ── main area: context window simulation ── */
+  .s20-main {
+    flex: 1; display: flex; align-items: stretch; gap: 0.8rem;
+    padding: 0.3rem 0.8rem; min-height: 0;
+  }
+
+  /* context window panel */
+  .s20-ctx-panel {
+    flex: 1; display: flex; flex-direction: column; gap: 0;
+    border-radius: 10px; border: 1.5px solid var(--card-border);
+    background: var(--card-bg); backdrop-filter: var(--glass-blur);
+    overflow: hidden; position: relative;
+  }
+  .s20-ctx-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.3rem 0.6rem; border-bottom: 1px solid var(--card-border);
+    flex-shrink: 0;
+  }
+  .s20-ctx-title {
+    font-family: var(--font-heading); font-size: clamp(0.75rem,1.1vw,0.88rem);
+    font-weight: 700; color: var(--primary);
+  }
+  .s20-ctx-usage {
+    font-family: var(--font-heading); font-size: clamp(0.7rem,1vw,0.82rem);
+    font-weight: 700; transition: color 0.5s ease;
+  }
+  .s20-ctx-body {
+    flex: 1; display: flex; flex-direction: column; gap: 3px;
+    padding: 0.35rem 0.5rem; overflow: hidden; position: relative;
+  }
+  .s20-msg {
+    display: flex; align-items: center; gap: 0.35rem;
+    padding: 0.2rem 0.4rem; border-radius: 0.3rem;
+    font-size: clamp(0.65rem,0.95vw,0.78rem); line-height: 1.4;
+    transition: opacity 0.4s ease, transform 0.4s ease, max-height 0.5s ease;
+    max-height: 2.5rem; overflow: hidden; flex-shrink: 0;
+  }
+  .s20-msg-tag {
+    font-weight: 700; font-size: clamp(0.58rem,0.85vw,0.7rem);
+    padding: 0.05rem 0.25rem; border-radius: 0.2rem; color: white;
+    white-space: nowrap; flex-shrink: 0;
+  }
+  .s20-msg-text { color: var(--card-text); flex: 1; min-width: 0; }
+  .s20-msg-tok {
+    font-size: clamp(0.55rem,0.8vw,0.65rem); color: var(--text-dim);
+    flex-shrink: 0; white-space: nowrap;
+  }
+  .s20-msg.s20-user { background: rgba(45,90,122,0.06); }
+  .s20-msg.s20-user .s20-msg-tag { background: var(--primary); }
+  .s20-msg.s20-asst { background: rgba(39,174,96,0.06); }
+  .s20-msg.s20-asst .s20-msg-tag { background: #27ae60; }
+  .s20-msg.s20-tool { background: rgba(231,76,60,0.05); }
+  .s20-msg.s20-tool .s20-msg-tag { background: #e74c3c; }
+
+  /* compaction summary block */
+  .s20-summary-block {
+    display: none; padding: 0.4rem 0.5rem; border-radius: 0.4rem;
+    background: rgba(193,127,89,0.08); border: 1.5px solid var(--accent);
+    flex-shrink: 0;
+  }
+  .s20-summary-block.visible { display: block; }
+  .s20-summary-title {
+    font-family: var(--font-heading); font-size: clamp(0.72rem,1.05vw,0.85rem);
+    font-weight: 700; color: var(--accent); margin-bottom: 0.2rem;
+  }
+  .s20-summary-text {
+    font-size: clamp(0.65rem,0.95vw,0.78rem); color: var(--card-text);
+    line-height: 1.5;
+  }
+  .s20-fresh-space {
+    display: none; flex: 1; border: 1.5px dashed rgba(39,174,96,0.3);
+    border-radius: 0.3rem; align-items: center; justify-content: center;
+    font-size: clamp(0.65rem,0.95vw,0.78rem); color: #27ae60;
+    font-style: italic; min-height: 2rem;
+  }
+  .s20-fresh-space.visible { display: flex; }
+
+  /* progress bar along the side */
+  .s20-progress-wrap {
+    width: clamp(16px,2.5vw,24px); display: flex; flex-direction: column;
+    align-items: center; flex-shrink: 0; padding: 0.3rem 0;
+  }
+  .s20-prog-bar {
+    flex: 1; width: 100%; border-radius: 4px; background: rgba(0,0,0,0.06);
+    position: relative; overflow: hidden;
+  }
+  .s20-prog-fill {
+    position: absolute; bottom: 0; left: 0; width: 100%;
+    border-radius: 4px; transition: height 1.2s ease, background 0.5s ease;
+  }
+  .s20-prog-label {
+    font-family: var(--font-heading); font-size: clamp(0.58rem,0.85vw,0.68rem);
+    font-weight: 700; color: var(--text-dim); margin-top: 0.2rem;
+    transition: color 0.5s ease;
+  }
+
+  /* right side: button + stats */
+  .s20-side {
+    width: clamp(180px,24vw,240px); display: flex; flex-direction: column;
+    gap: 0.5rem; justify-content: center; flex-shrink: 0;
+  }
+  #s20-btn {
+    font-family: var(--font-heading); font-size: clamp(0.82rem,1.2vw,0.98rem);
+    font-weight: 600; color: white; background: #8b1a1a;
+    border: none; border-radius: 2rem; padding: 0.45rem 1rem;
+    cursor: pointer; transition: transform 0.2s, box-shadow 0.2s, opacity 0.4s;
+    opacity: 0;
+  }
+  #s20-btn.visible { opacity: 1; }
+  #s20-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(139,26,26,0.3); }
+  #s20-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+
+  /* stats cards */
+  .s20-stat {
+    padding: 0.35rem 0.5rem; border-radius: 8px;
+    border: 1px solid var(--card-border); background: var(--card-bg);
+    backdrop-filter: var(--glass-blur); opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .s20-stat.visible { opacity: 1; }
+  .s20-stat-label {
+    font-size: clamp(0.62rem,0.9vw,0.72rem); color: var(--text-dim);
+    font-weight: 600;
+  }
+  .s20-stat-value {
+    font-family: var(--font-heading); font-size: clamp(1rem,1.5vw,1.2rem);
+    font-weight: 700; color: var(--accent);
+  }
+  .s20-stat-detail {
+    font-size: clamp(0.58rem,0.85vw,0.68rem); color: var(--text-dim);
+  }
+
+  /* ── bottom: preserved vs lost ── */
+  .s20-bottom {
+    display: flex; gap: 0.5rem; padding: 0.3rem 0.8rem 0.4rem; flex-shrink: 0;
+  }
+  .s20-compare-card {
+    flex: 1; padding: 0.35rem 0.5rem; border-radius: 8px;
+    border: 1px solid var(--card-border); background: var(--card-bg);
+    backdrop-filter: var(--glass-blur); opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .s20-compare-card.visible { opacity: 1; }
+  .s20-cmp-title {
+    font-family: var(--font-heading); font-size: clamp(0.72rem,1.05vw,0.85rem);
+    font-weight: 700; margin-bottom: 0.15rem;
+  }
+  .s20-cmp-item {
+    font-size: clamp(0.65rem,0.95vw,0.78rem); color: var(--card-text);
+    line-height: 1.6; padding-left: 0.8rem; position: relative;
+  }
+  .s20-cmp-item::before {
+    position: absolute; left: 0; font-weight: 700;
+  }
+  .s20-keep .s20-cmp-title { color: #27ae60; }
+  .s20-keep .s20-cmp-item::before { content: '+ '; color: #27ae60; }
+  .s20-lose .s20-cmp-title { color: #e74c3c; }
+  .s20-lose .s20-cmp-item::before { content: '- '; color: #e74c3c; }
+</style>
+
+<div class="s20-wrap">
+
+  <!-- header -->
+  <div class="s20-header">
+    <span class="s20-badge">第三章：五策略框架</span>
+    <h1>Compress：Compaction 压缩重启</h1>
+    <p class="s20-sub">上下文触顶时的终极手段 -- 存档 + 新游戏+</p>
+  </div>
+
+  <!-- main area -->
+  <div class="s20-main">
+
+    <!-- progress bar -->
+    <div class="s20-progress-wrap">
+      <div class="s20-prog-bar">
+        <div class="s20-prog-fill" id="s20-prog" style="height:0%;background:#e74c3c;"></div>
+      </div>
+      <div class="s20-prog-label" id="s20-prog-label">0%</div>
+    </div>
+
+    <!-- context window -->
+    <div class="s20-ctx-panel">
+      <div class="s20-ctx-header">
+        <span class="s20-ctx-title">Context Window (200K)</span>
+        <span class="s20-ctx-usage" id="s20-usage" style="color:var(--text-dim);">0 / 200K tokens</span>
+      </div>
+      <div class="s20-ctx-body" id="s20-body">
+        <!-- messages injected by JS -->
+        <div class="s20-msg s20-user" data-i="0">
+          <span class="s20-msg-tag">user</span>
+          <span class="s20-msg-text">帮我重构 auth 模块，支持 OAuth2</span>
+          <span class="s20-msg-tok">800</span>
+        </div>
+        <div class="s20-msg s20-asst" data-i="1">
+          <span class="s20-msg-tag">asst</span>
+          <span class="s20-msg-text">好的，先读取当前代码结构 → call: read_file</span>
+          <span class="s20-msg-tok">1.2K</span>
+        </div>
+        <div class="s20-msg s20-tool" data-i="2">
+          <span class="s20-msg-tag">tool</span>
+          <span class="s20-msg-text">auth.py: 340行，含 BasicAuth 类...</span>
+          <span class="s20-msg-tok">8K</span>
+        </div>
+        <div class="s20-msg s20-asst" data-i="3">
+          <span class="s20-msg-tag">asst</span>
+          <span class="s20-msg-text">分析完成，开始编写 OAuth2Provider → call: edit_file</span>
+          <span class="s20-msg-tok">3.5K</span>
+        </div>
+        <div class="s20-msg s20-tool" data-i="4">
+          <span class="s20-msg-tag">tool</span>
+          <span class="s20-msg-text">文件已修改：+OAuth2Provider 类，+token 刷新逻辑</span>
+          <span class="s20-msg-tok">12K</span>
+        </div>
+        <div class="s20-msg s20-user" data-i="5">
+          <span class="s20-msg-tag">user</span>
+          <span class="s20-msg-text">再加上单元测试</span>
+          <span class="s20-msg-tok">500</span>
+        </div>
+        <div class="s20-msg s20-asst" data-i="6">
+          <span class="s20-msg-tag">asst</span>
+          <span class="s20-msg-text">编写测试 → call: write_file(test_auth.py)</span>
+          <span class="s20-msg-tok">6K</span>
+        </div>
+        <div class="s20-msg s20-tool" data-i="7">
+          <span class="s20-msg-tag">tool</span>
+          <span class="s20-msg-text">test_auth.py 创建成功，含 12 个测试用例</span>
+          <span class="s20-msg-tok">15K</span>
+        </div>
+        <div class="s20-msg s20-user" data-i="8">
+          <span class="s20-msg-tag">user</span>
+          <span class="s20-msg-text">运行测试看看结果</span>
+          <span class="s20-msg-tok">400</span>
+        </div>
+        <div class="s20-msg s20-asst" data-i="9">
+          <span class="s20-msg-tag">asst</span>
+          <span class="s20-msg-text">执行测试 → call: run_tests ... (更多对话轮次)</span>
+          <span class="s20-msg-tok">4K</span>
+        </div>
+        <div class="s20-msg s20-tool" data-i="10">
+          <span class="s20-msg-tag">tool</span>
+          <span class="s20-msg-text">... 还有 30+ 轮工具调用、代码审查、Bug修复 ...</span>
+          <span class="s20-msg-tok">128K</span>
+        </div>
+
+        <!-- compaction summary (hidden initially) -->
+        <div class="s20-summary-block" id="s20-summary">
+          <div class="s20-summary-title">Compaction Summary（12K tokens）</div>
+          <div class="s20-summary-text">
+            <strong>Task:</strong> 重构 auth 模块，支持 OAuth2 认证流程<br>
+            <strong>Files modified:</strong> auth.py（+OAuth2Provider, +token 刷新逻辑）, test_auth.py（12 个测试）<br>
+            <strong>Decisions:</strong> 采用 refresh_token 流程，token 存储于 Redis，增加速率限制<br>
+            <strong>Status:</strong> 11/12 测试通过，1 个 token 过期边界用例不稳定<br>
+            <strong>Next:</strong> 修复不稳定测试，补充 callback 端点集成测试
+          </div>
+        </div>
+        <div class="s20-fresh-space" id="s20-fresh">可继续对话 -- 窗口已释放 93%</div>
+      </div>
+    </div>
+
+    <!-- right side: button + stats -->
+    <div class="s20-side">
+      <button id="s20-btn">触发 Compaction</button>
+
+      <div class="s20-stat" id="s20-stat-before">
+        <div class="s20-stat-label">压缩前</div>
+        <div class="s20-stat-value" style="color:#e74c3c;">180K tokens</div>
+        <div class="s20-stat-detail">95% 窗口已满</div>
+      </div>
+
+      <div class="s20-stat" id="s20-stat-after" style="display:none;">
+        <div class="s20-stat-label">压缩后</div>
+        <div class="s20-stat-value" style="color:#27ae60;">12K tokens</div>
+        <div class="s20-stat-detail">6% 窗口占用 · 释放 93%</div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- bottom: preserved vs lost -->
+  <div class="s20-bottom" id="s20-bottom">
+    <div class="s20-compare-card s20-keep">
+      <div class="s20-cmp-title">保留</div>
+      <div class="s20-cmp-item">文件改动记录（哪些文件被修改了什么）</div>
+      <div class="s20-cmp-item">关键决策（选择了哪种技术方案及原因）</div>
+      <div class="s20-cmp-item">任务进度和下一步计划</div>
+      <div class="s20-cmp-item">未解决的问题和已知风险</div>
+    </div>
+    <div class="s20-compare-card s20-lose">
+      <div class="s20-cmp-title">丢失</div>
+      <div class="s20-cmp-item">完整对话历史和中间推理过程</div>
+      <div class="s20-cmp-item">工具返回的原始源码和日志</div>
+      <div class="s20-cmp-item">探索过但放弃的方案细节</div>
+      <div class="s20-cmp-item">具体的代码 diff 和行号引用</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var msgs = document.querySelectorAll('.s20-msg');
+  var prog = document.getElementById('s20-prog');
+  var progLabel = document.getElementById('s20-prog-label');
+  var usage = document.getElementById('s20-usage');
+  var btn = document.getElementById('s20-btn');
+  var summary = document.getElementById('s20-summary');
+  var fresh = document.getElementById('s20-fresh');
+  var statBefore = document.getElementById('s20-stat-before');
+  var statAfter = document.getElementById('s20-stat-after');
+  var compareCards = document.querySelectorAll('.s20-compare-card');
+
+  // entrance: messages appear one by one, progress fills up
+  var tokenSteps = [800, 2000, 10000, 13500, 25500, 26000, 32000, 47000, 47400, 51400, 180000];
+  var maxTok = 200000;
+
+  function updateProgress(tok) {
+    var pct = Math.min(tok / maxTok * 100, 100);
+    prog.style.height = pct + '%';
+    progLabel.textContent = Math.round(pct) + '%';
+    usage.textContent = (tok >= 1000 ? Math.round(tok/1000) + 'K' : tok) + ' / 200K';
+
+    if (pct > 80) {
+      prog.style.background = '#e74c3c';
+      progLabel.style.color = '#e74c3c';
+      usage.style.color = '#e74c3c';
+    } else if (pct > 50) {
+      prog.style.background = '#f39c12';
+      progLabel.style.color = '#f39c12';
+      usage.style.color = '#f39c12';
+    } else {
+      prog.style.background = '#27ae60';
+      progLabel.style.color = 'var(--text-dim)';
+      usage.style.color = 'var(--text-dim)';
+    }
+  }
+
+  // stagger messages + progress
+  msgs.forEach(function(m, i) {
+    setTimeout(function() {
+      m.style.opacity = '1';
+      updateProgress(tokenSteps[i]);
+    }, 300 + i * 180);
+  });
+
+  // show button after messages
+  setTimeout(function() { btn.classList.add('visible'); }, 300 + msgs.length * 180 + 300);
+  // show before stat
+  setTimeout(function() { statBefore.classList.add('visible'); }, 300 + msgs.length * 180 + 100);
+
+  // compaction animation
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = '压缩重启中...';
+
+    // collapse all messages
+    msgs.forEach(function(m, i) {
+      setTimeout(function() {
+        m.style.opacity = '0';
+        m.style.maxHeight = '0';
+        m.style.padding = '0';
+        m.style.margin = '0';
+      }, i * 60);
+    });
+
+    // after collapse, show summary
+    setTimeout(function() {
+      summary.classList.add('visible');
+      fresh.classList.add('visible');
+
+      // animate progress down
+      var startTok = 180000;
+      var endTok = 12000;
+      var dur = 1000;
+      var t0 = null;
+      function anim(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var curTok = Math.round(startTok + (endTok - startTok) * p);
+        updateProgress(curTok);
+        if (p < 1) requestAnimationFrame(anim);
+        else {
+          btn.textContent = '已完成重启';
+          btn.style.background = '#27ae60';
+
+          // show after stat
+          statBefore.style.display = 'none';
+          statAfter.style.display = 'block';
+          statAfter.classList.add('visible');
+
+          // show compare cards
+          compareCards.forEach(function(c, j) {
+            setTimeout(function() { c.classList.add('visible'); }, j * 200);
+          });
+        }
+      }
+      requestAnimationFrame(anim);
+    }, msgs.length * 60 + 400);
+  });
+})();
+</script>

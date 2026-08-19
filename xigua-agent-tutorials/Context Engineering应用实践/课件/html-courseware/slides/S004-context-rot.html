@@ -1,0 +1,128 @@
+<!-- S004 Context Rot - Yellow - suspense reveal + bar chart animation -->
+<div style="width:100%;max-width:900px;">
+
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第一章：认知升维</span>
+    <h1 class="slide-title" style="font-size:clamp(1.8rem,3.5vw,2.8rem);margin-top:0.5rem;">Context Rot：有效窗口的真相</h1>
+  </div>
+
+  <div class="slide-content" style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;">
+
+    <!-- Question (suspense) -->
+    <div id="question" style="font-family:var(--font-heading);font-size:clamp(1.4rem,3vw,2.2rem);font-weight:700;color:var(--primary);text-align:center;transition:all 0.8s ease;">
+      你买了 1M 窗口，能用多少？
+    </div>
+
+    <!-- Bar chart -->
+    <div id="chart-area" style="opacity:0;transition:opacity 0.6s ease;width:100%;max-width:900px;">
+      <div style="display:flex;justify-content:center;gap:clamp(2rem,5vw,4rem);height:clamp(220px,36vh,320px);padding-bottom:1rem;">
+
+        <!-- Claude -->
+        <div class="bar-group" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+          <div style="display:flex;gap:0.3rem;align-items:flex-end;flex:1;width:100%;position:relative;">
+            <div class="bar-adv" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--secondary);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease;position:relative;" data-target="90" data-label="1M"></div>
+            <div class="bar-eff" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--accent);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease 0.3s;position:relative;" data-target="58" data-label="600K"></div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--primary);margin-top:0.6rem;">Claude Opus 4.6</div>
+        </div>
+
+        <!-- GPT -->
+        <div class="bar-group" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+          <div style="display:flex;gap:0.3rem;align-items:flex-end;flex:1;width:100%;position:relative;">
+            <div class="bar-adv" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--secondary);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease;position:relative;" data-target="85" data-label="272K"></div>
+            <div class="bar-eff" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--accent);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease 0.3s;position:relative;" data-target="55" data-label="185K"></div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--primary);margin-top:0.6rem;">GPT-5.4</div>
+        </div>
+
+        <!-- Gemini -->
+        <div class="bar-group" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+          <div style="display:flex;gap:0.3rem;align-items:flex-end;flex:1;width:100%;position:relative;">
+            <div class="bar-adv" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--secondary);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease;position:relative;" data-target="90" data-label="1M"></div>
+            <div class="bar-eff" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--accent);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease 0.3s;position:relative;" data-target="63" data-label="650K"></div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--primary);margin-top:0.6rem;">Gemini 3.1 Pro</div>
+        </div>
+
+        <!-- DeepSeek -->
+        <div class="bar-group" style="text-align:center;display:flex;flex-direction:column;align-items:center;">
+          <div style="display:flex;gap:0.3rem;align-items:flex-end;flex:1;width:100%;position:relative;">
+            <div class="bar-adv" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--secondary);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease;position:relative;" data-target="50" data-label="128K"></div>
+            <div class="bar-eff" style="width:clamp(2.2rem,3.2vw,3.2rem);height:0%;background:var(--accent);border-radius:0.4rem 0.4rem 0 0;transition:height 1s ease 0.3s;position:relative;" data-target="32" data-label="85K"></div>
+          </div>
+          <div style="font-family:var(--font-heading);font-size:0.95rem;font-weight:600;color:var(--primary);margin-top:0.6rem;">DeepSeek V3.2</div>
+        </div>
+
+      </div>
+
+      <!-- Legend -->
+      <div style="display:flex;justify-content:center;gap:2rem;margin-top:0.8rem;font-size:0.9rem;">
+        <span><span style="display:inline-block;width:12px;height:12px;background:var(--secondary);border-radius:2px;vertical-align:middle;margin-right:0.3rem;"></span> 宣传窗口</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:var(--accent);border-radius:2px;vertical-align:middle;margin-right:0.3rem;"></span> 有效窗口</span>
+      </div>
+    </div>
+
+    <!-- Conclusion -->
+    <div id="conclusion" style="opacity:0;transition:opacity 0.6s ease;text-align:center;">
+      <div style="display:inline-block;background:rgba(193,127,89,0.1);border:1px solid rgba(193,127,89,0.3);border-radius:0.6rem;padding:0.6rem 1.5rem;">
+        <span style="font-family:var(--font-heading);font-weight:700;color:var(--accent);font-size:clamp(1rem,2vw,1.3rem);">
+          有效窗口 &approx; 宣传的 50-65%
+        </span>
+      </div>
+      <div style="font-size:0.8rem;color:var(--text-dim);margin-top:0.5rem;">
+        NVIDIA RULER benchmark &middot; 建议在有效窗口 80% 处启动压缩
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const question = document.getElementById('question');
+  const chartArea = document.getElementById('chart-area');
+  const conclusion = document.getElementById('conclusion');
+
+  // Step 1: After 1.5s suspense, shrink question and show chart
+  setTimeout(() => {
+    question.style.fontSize = 'clamp(1rem,2vw,1.4rem)';
+    question.style.marginBottom = '-0.5rem';
+  }, 1500);
+
+  setTimeout(() => {
+    chartArea.style.opacity = '1';
+    // Animate advertised bars
+    document.querySelectorAll('.bar-adv').forEach(b => { b.style.height = b.dataset.target + '%'; });
+    setTimeout(() => {
+      // Animate effective bars
+      document.querySelectorAll('.bar-eff').forEach(b => { b.style.height = b.dataset.target + '%'; });
+    }, 400);
+    // After bars finish growing, add top labels
+    setTimeout(() => {
+      document.querySelectorAll('.bar-adv, .bar-eff').forEach(b => {
+        if (!b.dataset.label) return;
+        var lbl = document.createElement('span');
+        lbl.textContent = b.dataset.label;
+        lbl.style.cssText = 'position:absolute;top:-1.4rem;left:50%;transform:translateX(-50%);font-size:0.85rem;font-weight:700;white-space:nowrap;opacity:0;transition:opacity 0.4s ease;';
+        lbl.style.color = b.classList.contains('bar-adv') ? 'var(--primary)' : 'var(--accent)';
+        b.appendChild(lbl);
+        setTimeout(() => { lbl.style.opacity = '1'; }, 50);
+      });
+    }, 1800);
+  }, 2000);
+
+  setTimeout(() => { conclusion.style.opacity = '1'; }, 4500);
+
+  // Hover tooltips on bar groups
+  const tooltipData = [
+    'Claude Opus 4.6\n宣传: 200K / 1M\n有效: 130-200K / 600-700K\n建议压缩点: 100K / 256K',
+    'GPT-5.4\n宣传: 272K / 1M+\n有效: ~170-200K\n建议压缩点: 150K',
+    'Gemini 3.1 Pro\n宣传: 1M\n有效: 600-700K\n建议压缩点: 256K',
+    'DeepSeek V3.2\n宣传: 128K\n有效: 80-90K\n建议压缩点: 60K'
+  ];
+  document.querySelectorAll('.bar-group').forEach((g, i) => {
+    g.style.cursor = 'pointer';
+    g.title = tooltipData[i];
+  });
+})();
+</script>

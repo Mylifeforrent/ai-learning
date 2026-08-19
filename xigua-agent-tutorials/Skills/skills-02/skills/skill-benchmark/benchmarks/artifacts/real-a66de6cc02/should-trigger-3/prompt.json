@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-3",
+  "category": "should-trigger",
+  "text": "请帮我总结这个PDF文档，提炼出核心要点和重要结论。",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

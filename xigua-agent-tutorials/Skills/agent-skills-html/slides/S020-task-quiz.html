@@ -1,0 +1,41 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">主动判断</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            这个需求会触发哪个 Skill？
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:880px;margin-bottom:24px;">
+            现在轮到你来判断。能开始区分任务类型，你才算真正进入“理解 Skill”的阶段。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1160px;">
+            <div class="card">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:12px;">任务卡</div>
+                <div id="quiz-task" style="padding:18px 20px;border-radius:var(--radius-md);background:var(--bg-cool);color:var(--text-primary);font-size:1rem;line-height:1.8;margin-bottom:18px;"></div>
+                <div style="display:grid;gap:10px;">
+                    <button class="quiz-option btn" data-answer="none" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">不一定需要 Skill</button>
+                    <button class="quiz-option btn" data-answer="general" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">需要通用 Skill</button>
+                    <button class="quiz-option btn" data-answer="platform" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">需要平台特定 Skill</button>
+                    <button class="quiz-option btn" data-answer="combo" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">需要多个 Skill 组合</button>
+                </div>
+                <div style="display:flex;gap:10px;margin-top:18px;">
+                    <button id="quiz-next-btn" class="btn btn-primary">下一题</button>
+                    <button id="quiz-reveal-btn" class="btn" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">揭示答案</button>
+                </div>
+            </div>
+            <div class="card">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">反馈面板</div>
+                <div id="quiz-result-title" style="font-size:1.08rem;font-weight:700;color:var(--text-primary);margin-bottom:12px;">准备开始</div>
+                <p id="quiz-result-desc" style="font-size:0.95rem;line-height:1.8;margin-bottom:16px;">先选一个答案，再点击“揭示答案”看推荐路径。</p>
+                <div id="quiz-result-tags" style="display:flex;flex-wrap:wrap;gap:10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,21 @@
+{
+  "output_text": "**结构化摘要**\n\n**1. 核心主题**  \n（用一句话概括全文的核心内容或主要结论）\n\n**2. 关键要点**  \n- **要点一**：（分项列出最重要的发现、数据或观点）  \n- **要点二**：（继续列举其他关键信息）  \n- **要点三**：（如有需要可继续扩展）  \n\n**3. 行动建议/后续步骤**  \n（基于内容提出建议、决策需求或待办事项）  \n\n**4. 潜在问题/风险提示**  \n（简要说明可能存在的挑战或需关注的风险）  \n\n**5. 补充说明**  \n（可选，如需补充背景或限定条件）  \n\n请提供原文内容，我将立即为您整理。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 8.07,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

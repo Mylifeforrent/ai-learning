@@ -1,0 +1,489 @@
+<style>
+.s25-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+/* ── 标题区 ── */
+.s25-header {
+  text-align: center;
+  padding: 0.6rem 0 0.4rem;
+  flex-shrink: 0;
+}
+.s25-header .s25-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: clamp(0.55rem, 1vw, 0.7rem);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.3rem;
+}
+.s25-header h1 {
+  font-family: var(--font-heading);
+  font-size: clamp(1.2rem, 2.4vw, 1.8rem);
+  color: var(--primary);
+  margin: 0.15rem 0 0.1rem;
+}
+.s25-header .s25-sub {
+  font-size: clamp(0.65rem, 1.2vw, 0.82rem);
+  color: var(--text-dim);
+}
+
+/* ── 瀑布图区 ── */
+.s25-chart-wrap {
+  flex-shrink: 0;
+  padding: 0.5rem 1rem 0;
+  position: relative;
+}
+.s25-chart {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+  height: clamp(110px, 20vh, 170px);
+  width: 100%;
+}
+.s25-bar-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 100%;
+  justify-content: flex-end;
+  cursor: pointer;
+  position: relative;
+}
+.s25-bar-pct {
+  font-size: clamp(0.55rem, 1vw, 0.72rem);
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 0.15rem;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+.s25-bar {
+  width: 100%;
+  border-radius: 0.35rem 0.35rem 0 0;
+  opacity: 0;
+  transition: opacity 0.5s ease, box-shadow 0.25s ease, transform 0.25s ease;
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 0.3rem;
+  box-sizing: border-box;
+}
+.s25-roi-badge {
+  position: absolute;
+  top: -1.3rem;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.5rem;
+  font-weight: 700;
+  padding: 0.1rem 0.35rem;
+  border-radius: 999px;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.s25-stage-labels {
+  display: flex;
+  width: 100%;
+  gap: 0.5rem;
+  padding: 0.25rem 1rem 0;
+}
+.s25-stage-lbl {
+  flex: 1;
+  text-align: center;
+  font-size: clamp(0.5rem, 0.85vw, 0.65rem);
+  color: var(--text-dim);
+  cursor: pointer;
+  padding: 0.1rem 0;
+  transition: color 0.2s;
+}
+
+/* ── 详情卡片区 ── */
+.s25-details-wrap {
+  flex: 1;
+  padding: 0.5rem 1rem 0.4rem;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+.s25-detail-card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.6rem;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  padding: 0.3rem 0.8rem;
+  overflow: hidden;
+}
+.s25-row {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.28rem 0;
+  border-bottom: 1px dashed var(--card-border);
+  cursor: pointer;
+  border-radius: 0.3rem;
+  transition: opacity 0.25s ease, background 0.2s ease;
+  opacity: 0;
+}
+.s25-row:last-child {
+  border-bottom: none;
+}
+.s25-dot {
+  width: clamp(8px, 1.2vw, 12px);
+  height: clamp(8px, 1.2vw, 12px);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.s25-row-name {
+  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-weight: 700;
+  color: var(--primary);
+  white-space: nowrap;
+  width: clamp(70px, 9vw, 110px);
+  flex-shrink: 0;
+}
+.s25-row-desc {
+  font-size: clamp(0.55rem, 0.9vw, 0.7rem);
+  color: var(--card-text);
+  flex: 1;
+  line-height: 1.4;
+}
+.s25-row-cost {
+  text-align: right;
+  flex-shrink: 0;
+  width: clamp(80px, 11vw, 130px);
+}
+.s25-cost-main {
+  font-size: clamp(0.6rem, 1vw, 0.75rem);
+  font-weight: 700;
+  color: var(--primary);
+  display: block;
+}
+.s25-cost-save {
+  font-size: clamp(0.5rem, 0.8vw, 0.62rem);
+  color: var(--text-dim);
+  display: block;
+}
+
+/* ── 底部补充说明 ── */
+.s25-tip {
+  padding: 0 1rem 0.3rem;
+  min-height: 1.4rem;
+  font-size: clamp(0.55rem, 0.9vw, 0.68rem);
+  color: var(--accent);
+  font-style: italic;
+  text-align: center;
+  flex-shrink: 0;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+.s25-tip.s25-tip-visible {
+  opacity: 1;
+}
+
+/* ── 右下角总结卡 ── */
+.s25-summary {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 0.6rem 0 0 0;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  padding: 0.35rem 0.6rem;
+  text-align: center;
+  pointer-events: none;
+}
+.s25-summary-row {
+  font-size: clamp(0.5rem, 0.85vw, 0.65rem);
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  justify-content: center;
+}
+.s25-summary-start { color: #e74c3c; font-weight: 700; }
+.s25-summary-end   { color: #27ae60; font-weight: 700; }
+.s25-summary-big {
+  font-size: clamp(0.75rem, 1.3vw, 1rem);
+  font-weight: 900;
+  color: var(--accent);
+  display: block;
+  margin-top: 0.1rem;
+}
+
+/* ── 高亮 / 淡出状态 ── */
+.s25-bar.s25-dim, .s25-bar-col.s25-dim .s25-bar-pct { opacity: 0.3; }
+.s25-bar.s25-active { box-shadow: 0 0 0 3px rgba(193,127,89,0.7); transform: scaleY(1.04); transform-origin: bottom; }
+.s25-row.s25-dim   { opacity: 0.25; }
+.s25-row.s25-row-active { background: rgba(193,127,89,0.08); }
+.s25-stage-lbl.s25-dim { opacity: 0.3; }
+</style>
+
+<div class="s25-wrap" style="position:relative;">
+
+  <!-- 标题 -->
+  <div class="s25-header">
+    <span class="s25-badge">第四章：决策内化</span>
+    <h1>Token 经济学与优化路线</h1>
+    <p class="s25-sub">六阶段递进优化，$3,000/月 &rarr; $600/月</p>
+  </div>
+
+  <!-- 瀑布图 -->
+  <div class="s25-chart-wrap">
+    <div class="s25-chart" id="s25-chart">
+      <!-- Stage 0: 100% -->
+      <div class="s25-bar-col" data-idx="0">
+        <div class="s25-bar-pct" id="s25-pct-0">100%</div>
+        <div class="s25-bar" id="s25-bar-0" style="height:100%;background:#e74c3c;"></div>
+      </div>
+      <!-- Stage 1: 90% -->
+      <div class="s25-bar-col" data-idx="1">
+        <div class="s25-bar-pct" id="s25-pct-1">90%</div>
+        <div class="s25-bar" id="s25-bar-1" style="height:90%;background:#f39c12;"></div>
+      </div>
+      <!-- Stage 2: 50% -->
+      <div class="s25-bar-col" data-idx="2">
+        <div class="s25-bar-pct" id="s25-pct-2">50%</div>
+        <div class="s25-bar" id="s25-bar-2" style="height:50%;background:#27ae60;position:relative;">
+          <span class="s25-roi-badge">最高 ROI</span>
+        </div>
+      </div>
+      <!-- Stage 3: 35% -->
+      <div class="s25-bar-col" data-idx="3">
+        <div class="s25-bar-pct" id="s25-pct-3">35%</div>
+        <div class="s25-bar" id="s25-bar-3" style="height:35%;background:#2980b9;"></div>
+      </div>
+      <!-- Stage 4: 23% -->
+      <div class="s25-bar-col" data-idx="4">
+        <div class="s25-bar-pct" id="s25-pct-4">23%</div>
+        <div class="s25-bar" id="s25-bar-4" style="height:23%;background:#8e44ad;"></div>
+      </div>
+      <!-- Stage 5: 20% -->
+      <div class="s25-bar-col" data-idx="5">
+        <div class="s25-bar-pct" id="s25-pct-5">20%</div>
+        <div class="s25-bar" id="s25-bar-5" style="height:20%;background:#34495e;"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Stage 标签 -->
+  <div class="s25-stage-labels" id="s25-stage-labels">
+    <span class="s25-stage-lbl" data-idx="0">Stage 0</span>
+    <span class="s25-stage-lbl" data-idx="1">Stage 1</span>
+    <span class="s25-stage-lbl" data-idx="2">Stage 2</span>
+    <span class="s25-stage-lbl" data-idx="3">Stage 3</span>
+    <span class="s25-stage-lbl" data-idx="4">Stage 4</span>
+    <span class="s25-stage-lbl" data-idx="5">Stage 5</span>
+  </div>
+
+  <!-- 详情卡片 -->
+  <div class="s25-details-wrap">
+    <div class="s25-detail-card">
+
+      <div class="s25-row" id="s25-row-0" data-idx="0">
+        <div class="s25-dot" style="background:#e74c3c;"></div>
+        <div class="s25-row-name">无优化（基线）</div>
+        <div class="s25-row-desc">每次请求 ~3K tokens，无任何优化措施，裸跑</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main" style="color:#e74c3c;">$3,000/月</span>
+          <span class="s25-cost-save">基线</span>
+        </div>
+      </div>
+
+      <div class="s25-row" id="s25-row-1" data-idx="1">
+        <div class="s25-dot" style="background:#f39c12;"></div>
+        <div class="s25-row-name">结构化提示</div>
+        <div class="s25-row-desc">固定前缀 + 动态后缀分离，减少重复 token 传输</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main">$2,700/月</span>
+          <span class="s25-cost-save">累计 -10%</span>
+        </div>
+      </div>
+
+      <div class="s25-row" id="s25-row-2" data-idx="2">
+        <div class="s25-dot" style="background:#27ae60;"></div>
+        <div class="s25-row-name">Prompt Caching</div>
+        <div class="s25-row-desc">缓存 system prompt + tools，命中率 80%+，单次优化最高 ROI</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main" style="color:#27ae60;">$1,500/月</span>
+          <span class="s25-cost-save">累计 -50%</span>
+        </div>
+      </div>
+
+      <div class="s25-row" id="s25-row-3" data-idx="3">
+        <div class="s25-dot" style="background:#2980b9;"></div>
+        <div class="s25-row-name">工具结果清除</div>
+        <div class="s25-row-desc">调用完成即丢弃原始返回，零额外延迟，零额外成本</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main">$1,050/月</span>
+          <span class="s25-cost-save">累计 -65%</span>
+        </div>
+      </div>
+
+      <div class="s25-row" id="s25-row-4" data-idx="4">
+        <div class="s25-dot" style="background:#8e44ad;"></div>
+        <div class="s25-row-name">观察遮蔽/trim</div>
+        <div class="s25-row-desc">SE Agent 用遮蔽（节省 52%），对话型用 trim_messages 滚动窗口</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main">$700/月</span>
+          <span class="s25-cost-save">累计 -77%</span>
+        </div>
+      </div>
+
+      <div class="s25-row" id="s25-row-5" data-idx="5">
+        <div class="s25-dot" style="background:#34495e;"></div>
+        <div class="s25-row-name">子 Agent 隔离</div>
+        <div class="s25-row-desc">按任务拆分独立上下文窗口，架构级改造，彻底断开历史负担</div>
+        <div class="s25-row-cost">
+          <span class="s25-cost-main" style="color:#27ae60;">$600/月</span>
+          <span class="s25-cost-save">累计 -80%</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- 补充说明 -->
+  <div class="s25-tip" id="s25-tip"></div>
+
+  <!-- 右下角总结 -->
+  <div class="s25-summary">
+    <div class="s25-summary-row">
+      <span class="s25-summary-start">$3,000/月</span>
+      <span style="color:var(--text-dim);">&rarr;</span>
+      <span class="s25-summary-end">$600/月</span>
+    </div>
+    <span class="s25-summary-big">累计节省 80%</span>
+  </div>
+
+</div>
+
+<script>
+(function(){
+  var COLORS = ['#e74c3c','#f39c12','#27ae60','#2980b9','#8e44ad','#34495e'];
+  var TIPS = [
+    'Stage 0：裸跑状态，每次请求约 3K input tokens，无任何压缩或复用手段。',
+    'Stage 1：结构化拆分成本低，但效果有限；主要价值是为 Caching 做铺垫。',
+    'Stage 2：Prompt Caching 是整条路线 ROI 最高的单一手段，优先实施。命中率达到 80% 后成本直接减半。',
+    'Stage 3：tool_result 清除属于"顺手"操作，零成本换来 15% 下降，不做等于白白烧钱。',
+    'Stage 4：遮蔽适合 SE Agent（上下文长、重复观察多）；trim_messages 适合对话型（滚动窗口保持近期相关性）。',
+    'Stage 5：子 Agent 隔离是架构级方案，需要拆分任务边界，改造成本高，但能锁定长期的 token 下限。'
+  ];
+
+  var selectedIdx = -1;
+
+  // 入场动画：柱子依次升起
+  var bars = document.querySelectorAll('.s25-bar');
+  var pcts = document.querySelectorAll('.s25-bar-pct');
+  for (var i = 0; i < bars.length; i++) {
+    (function(idx) {
+      setTimeout(function() {
+        bars[idx].style.opacity = '1';
+        pcts[idx].style.opacity = '1';
+      }, 300 + idx * 200);
+    })(i);
+  }
+
+  // 详情行依次淡入
+  var rows = document.querySelectorAll('.s25-row');
+  for (var j = 0; j < rows.length; j++) {
+    (function(idx) {
+      setTimeout(function() {
+        rows[idx].style.opacity = '1';
+      }, 600 + idx * 120);
+    })(j);
+  }
+
+  function applyHighlight(idx) {
+    // bars
+    for (var i = 0; i < 6; i++) {
+      var bar = document.getElementById('s25-bar-' + i);
+      var pct = document.getElementById('s25-pct-' + i);
+      var col = document.querySelectorAll('.s25-bar-col')[i];
+      var lbl = document.querySelectorAll('.s25-stage-lbl')[i];
+      var row = document.getElementById('s25-row-' + i);
+      if (i === idx) {
+        bar.className = 's25-bar s25-active';
+        pct.style.opacity = '1';
+        row.className = 's25-row s25-row-active';
+        lbl.className = 's25-stage-lbl';
+      } else {
+        bar.className = 's25-bar s25-dim';
+        pct.style.opacity = '0.3';
+        row.className = 's25-row s25-dim';
+        lbl.className = 's25-stage-lbl s25-dim';
+      }
+    }
+    var tip = document.getElementById('s25-tip');
+    tip.textContent = TIPS[idx];
+    tip.className = 's25-tip s25-tip-visible';
+  }
+
+  function clearHighlight() {
+    for (var i = 0; i < 6; i++) {
+      var bar = document.getElementById('s25-bar-' + i);
+      var pct = document.getElementById('s25-pct-' + i);
+      var lbl = document.querySelectorAll('.s25-stage-lbl')[i];
+      var row = document.getElementById('s25-row-' + i);
+      bar.className = 's25-bar';
+      pct.style.opacity = '1';
+      row.className = 's25-row';
+      lbl.className = 's25-stage-lbl';
+    }
+    var tip = document.getElementById('s25-tip');
+    tip.textContent = '';
+    tip.className = 's25-tip';
+  }
+
+  function handleClick(idx) {
+    if (selectedIdx === idx) {
+      selectedIdx = -1;
+      clearHighlight();
+    } else {
+      selectedIdx = idx;
+      applyHighlight(idx);
+    }
+  }
+
+  // 柱子点击
+  var cols = document.querySelectorAll('.s25-bar-col');
+  for (var k = 0; k < cols.length; k++) {
+    (function(idx) {
+      cols[idx].addEventListener('click', function() { handleClick(idx); });
+    })(k);
+  }
+
+  // Stage 标签点击
+  var lbls = document.querySelectorAll('.s25-stage-lbl');
+  for (var m = 0; m < lbls.length; m++) {
+    (function(idx) {
+      lbls[idx].addEventListener('click', function() { handleClick(idx); });
+    })(m);
+  }
+
+  // 详情行点击
+  for (var n = 0; n < rows.length; n++) {
+    (function(idx) {
+      rows[idx].addEventListener('click', function() { handleClick(idx); });
+    })(n);
+  }
+})();
+</script>

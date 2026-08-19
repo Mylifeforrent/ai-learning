@@ -1,0 +1,21 @@
+{
+  "output_text": "很好！我已经了解了文档总结技能的使用方法。根据技能定义，这个技能专门用于压缩长文档并生成结构化摘要，特别适合您需要的\"生成汇报用的执行摘要\"这个场景。\n\n现在我需要您提供技术报告的内容。请将您的技术报告文本粘贴给我，或者告诉我文档的格式（PDF、DOCX、Markdown、TXT等）以及如何获取内容。\n\n一旦您提供文档内容，我将：\n1. 解析文档内容\n2. 提取核心信息\n3. 生成结构化的执行摘要\n4. 包含关键要点、主要发现、结论和建议等部分\n5. 控制摘要长度在原文的10-20%左右\n\n请提供您的技术报告内容，我将为您生成一个专业的汇报用执行摘要。",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 13.23,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

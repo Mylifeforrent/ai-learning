@@ -1,0 +1,60 @@
+{
+  "run_id": "real-0700145403",
+  "skill_targets": [
+    "/Users/mac/.claude/skills/skill-patrol"
+  ],
+  "models": [
+    "sonnet"
+  ],
+  "aggregate_scores": {
+    "trigger_accuracy": 0.5,
+    "routing_clarity": 1.0,
+    "output_signal_retention": 1.0,
+    "task_completion": {
+      "baseline": 0.0,
+      "with_skill": 0.5,
+      "gain": 0.5
+    },
+    "outcome_quality": 0.5
+  },
+  "final_verdict": "partially effective",
+  "per_run_details": [
+    {
+      "prompt_id": "should-trigger-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": false,
+      "withskill_completed": false,
+      "outcome_score": 0.0
+    },
+    {
+      "prompt_id": "should-not-trigger-1",
+      "trigger_correct": false,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": false,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "edge-1",
+      "trigger_correct": false,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": false,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "comparison-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": false,
+      "withskill_completed": false,
+      "outcome_score": 0.0
+    }
+  ],
+  "timestamp": "2026-03-09T10:54:08Z"
+}

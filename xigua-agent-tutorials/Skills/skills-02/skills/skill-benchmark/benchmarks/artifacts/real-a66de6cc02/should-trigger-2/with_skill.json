@@ -1,0 +1,21 @@
+{
+  "output_text": "很好！我已经了解了文档总结技能的使用方法。根据您的需求，您需要压缩长文、提取关键信息并生成汇报用的执行摘要。这正是该技能的适用场景。\n\n现在，请您提供需要压缩的长文内容。您可以：\n1. 直接粘贴文档内容\n2. 提供文档文件（如果是文本格式）\n3. 或者告诉我文档的来源\n\n请提供文档内容后，我会：\n1. 解析文档结构\n2. 提取核心信息和关键要点\n3. 生成结构化的执行摘要\n4. 确保摘要适合汇报使用\n\n请分享您的文档内容吧！",
+  "trace_signals": {
+    "skill_attempted": true,
+    "skill_triggered": true,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 10.54,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

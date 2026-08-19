@@ -1,0 +1,84 @@
+<!-- S013 Chapter 3 Transition - Green - chapter opening -->
+<style>
+  #ch3-number {
+    font-family: var(--font-heading);
+    font-size: clamp(5rem, 12vw, 9rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0.45;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: opacity 0.8s ease;
+  }
+  #ch3-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  #ch3-subtitle {
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    color: var(--text-dim);
+    opacity: 0;
+    transition: opacity 0.6s ease;
+  }
+  .ch3-module-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+  .ch3-tag {
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    color: var(--card-text);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+  }
+  .ch3-tag.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .ch3-tag:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(193,127,89,0.15);
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+    <div id="ch3-number">03</div>
+    <div id="ch3-title">五策略框架</div>
+    <div id="ch3-subtitle" style="margin-top:0.5rem;">掌握上下文工程的五把利刃</div>
+    <div class="ch3-module-tags">
+      <span class="ch3-tag" data-i="0">Write 写入持久化</span>
+      <span class="ch3-tag" data-i="1">Select 运行时检索</span>
+      <span class="ch3-tag" data-i="2">Compress 上下文压缩</span>
+      <span class="ch3-tag" data-i="3">Isolate 上下文隔离</span>
+      <span class="ch3-tag" data-i="4">Cache 提示缓存</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title = document.getElementById('ch3-title');
+  var subtitle = document.getElementById('ch3-subtitle');
+  var tags = document.querySelectorAll('.ch3-tag');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; }, 500);
+  setTimeout(function(){ subtitle.style.opacity='1'; }, 900);
+  tags.forEach(function(tag){ var i=parseInt(tag.dataset.i); setTimeout(function(){ tag.classList.add('visible'); }, 1200+i*150); });
+})();
+</script>

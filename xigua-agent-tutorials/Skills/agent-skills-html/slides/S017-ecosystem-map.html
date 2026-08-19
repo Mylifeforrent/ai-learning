@@ -1,0 +1,66 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">生态认知</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            Skill 从哪来，怎么进入 Agent
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:24px;">
+            Skills 不是凭空出现的。它有来源，也有从“被发现”到“进入 Agent”的装配路径。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1.1fr 0.9fr;gap:22px;max-width:1160px;">
+            <div class="card" style="min-height:390px;">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:12px;">点击不同来源，查看它们进入 Agent 的方式</div>
+                <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px;">
+                    <button class="ecosystem-node" data-node="public">公开生态</button>
+                    <button class="ecosystem-node" data-node="local">本地私有</button>
+                    <button class="ecosystem-node" data-node="platform">平台专属</button>
+                    <button class="ecosystem-node" data-node="finder">发现工具</button>
+                </div>
+                <div style="display:flex;align-items:center;justify-content:center;gap:14px;flex-wrap:wrap;margin-top:42px;">
+                    <div class="eco-stage">发现</div>
+                    <div class="eco-arrow">→</div>
+                    <div class="eco-stage">接入</div>
+                    <div class="eco-arrow">→</div>
+                    <div class="eco-stage">调用</div>
+                    <div class="eco-arrow">→</div>
+                    <div class="eco-stage">管理</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">路径说明</div>
+                <div id="ecosystem-title" style="font-size:1.1rem;font-weight:700;color:var(--text-primary);margin-bottom:12px;"></div>
+                <p id="ecosystem-desc" style="font-size:0.95rem;line-height:1.8;margin-bottom:16px;"></p>
+                <div id="ecosystem-points" style="display:grid;gap:10px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.ecosystem-node {
+    padding: 18px 16px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-white);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+.eco-stage {
+    padding: 12px 16px;
+    border-radius: var(--radius-md);
+    background: var(--bg-cool);
+    border: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+.eco-arrow { color: var(--teal); font-weight: 700; }
+</style>

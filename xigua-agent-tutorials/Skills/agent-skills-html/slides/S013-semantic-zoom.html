@@ -1,0 +1,102 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">结构放大</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            从外面看 Skill，到里面看 Skill
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:24px;">
+            这是本节课最关键的桥：从使用者视角，切到创建者视角。
+        </p>
+
+        <!-- 灵活性提示框 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="max-width:900px;margin-bottom:20px;">
+            <div style="background:var(--amber-pale);border-left:4px solid var(--amber);padding:16px;border-radius:var(--radius-sm);">
+                <div style="display:flex;align-items:start;gap:12px;">
+                    <span style="font-size:1.3rem;">⚠️</span>
+                    <div>
+                        <div style="font-weight:600;margin-bottom:6px;color:var(--text-primary);">
+                            重要提示：目录结构非常灵活
+                        </div>
+                        <ul style="margin:0;padding-left:20px;font-size:0.9rem;line-height:1.7;color:var(--text-secondary);">
+                            <li><strong>SKILL.md 是唯一必需的文件</strong></li>
+                            <li>其他目录都是可选的，根据Skill需要添加</li>
+                            <li>不同Skill的目录结构差异很大（见下方案例）</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="skill-zoom-shell animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1.3fr 0.9fr;gap:24px;max-width:1180px;width:100%;">
+            <div class="card" style="min-height:430px;position:relative;overflow:hidden;">
+                <div id="zoom-view-overview" class="zoom-view">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:18px;">Level 1 · 使用者视角</div>
+                    <div style="display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:14px;height:320px;">
+                        <div class="zoom-node">用户请求</div>
+                        <div class="zoom-arrow">→</div>
+                        <div class="zoom-node">Agent</div>
+                        <div class="zoom-arrow">→</div>
+                        <button class="zoom-node zoom-focus" style="cursor:pointer;">Skill</button>
+                        <div class="zoom-arrow">→</div>
+                        <div class="zoom-node">结果</div>
+                    </div>
+                </div>
+
+                <div id="zoom-view-folder" class="zoom-view" style="display:none;">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:18px;">Level 2 · 文件夹视角</div>
+                    <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:24px;">
+                        <button class="zoom-folder-item" data-view="skillmd">SKILL.md</button>
+                        <button class="zoom-folder-item" data-view="references">references/</button>
+                        <button class="zoom-folder-item" data-view="scripts">scripts/</button>
+                        <button class="zoom-folder-item" data-view="assets">assets/</button>
+                    </div>
+                    <div style="margin-top:16px;padding:12px;background:var(--teal-pale);border-left:4px solid var(--teal);border-radius:var(--radius-sm);font-size:0.85rem;color:var(--text-secondary);">
+                        💡 <strong>提示：</strong>frontmatter 不是独立文件，而是 SKILL.md 文件开头的 YAML 部分（--- 之间的内容）
+                    </div>
+                </div>
+
+                <div id="zoom-view-detail" class="zoom-view" style="display:none;">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:18px;">Level 3 · 结构细节</div>
+                    <div id="zoom-detail-title" style="font-size:1.18rem;font-weight:700;color:var(--text-primary);margin-bottom:14px;"></div>
+                    <div id="zoom-detail-body" style="display:grid;gap:14px;"></div>
+                </div>
+            </div>
+
+            <div style="display:grid;gap:18px;">
+                <div class="card">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">当前理解重点</div>
+                    <p id="zoom-explainer" style="font-size:0.96rem;line-height:1.75;margin:0;"></p>
+                </div>
+                <div class="card">
+                    <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:12px;">操作方式</div>
+                    <div style="display:grid;gap:10px;">
+                        <button id="zoom-back-btn" class="btn" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">返回上一级</button>
+                        <button id="zoom-overview-btn" class="btn btn-primary">回到总览</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.zoom-node,.zoom-folder-item {
+    padding: 18px 20px;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--border);
+    background: var(--bg-cool);
+    color: var(--text-primary);
+    font-size: 0.95rem;
+    text-align: center;
+}
+.zoom-focus,.zoom-folder-item { background: var(--bg-white); }
+.zoom-arrow { font-size:1.35rem;color:var(--teal);font-weight:700; }
+.zoom-folder-item { cursor:pointer; }
+.zoom-folder-item.static { cursor:default; }
+</style>

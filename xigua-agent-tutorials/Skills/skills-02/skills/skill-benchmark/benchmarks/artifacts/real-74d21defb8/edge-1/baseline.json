@@ -1,0 +1,21 @@
+{
+  "output_text": "这份文档的核心内容需要您提供具体的文档内容或描述，我才能为您总结。请分享文档的关键信息或具体文本，我会帮您提炼核心要点！ 📄✨",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 3.76,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

@@ -1,0 +1,36 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">路由层</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            frontmatter 在做什么？它首先决定“能不能被找到”
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:920px;margin-bottom:24px;">
+            很多人学 Skill 时只盯着内部流程，但其实第一关是路由层。如果进不来，后面写得再好也没用。
+        </p>
+
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1120px;">
+            <div class="card">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">典型 frontmatter 元素</div>
+                <div style="display:grid;gap:12px;">
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-cool);"><strong>name</strong>：能力标识</div>
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-cool);"><strong>description</strong>：告诉 Agent 什么时候该用</div>
+                </div>
+            </div>
+            <div class="card">
+                <div style="font-size:0.88rem;color:var(--text-tertiary);margin-bottom:10px;">如果这里写差了会怎样</div>
+                <div style="display:grid;gap:12px;">
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.1);">触发不到</div>
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.1);">误触发到错误任务</div>
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:rgba(220,38,38,0.05);border:1px solid rgba(220,38,38,0.1);">Agent 无法理解能力边界</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

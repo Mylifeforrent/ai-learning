@@ -1,0 +1,74 @@
+<!-- S018 Chapter 4 Transition - Green - chapter opening -->
+<style>
+  #ch4-number {
+    font-family: var(--font-heading);
+    font-size: clamp(5rem, 12vw, 9rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0.45;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    transition: opacity 0.8s ease;
+  }
+  #ch4-title {
+    font-family: var(--font-heading);
+    font-size: clamp(2rem, 4vw, 3.2rem);
+    font-weight: 700;
+    color: var(--primary);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .ch4-module-tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.6rem;
+    margin-top: 1.5rem;
+  }
+  .ch4-tag {
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 1.2vw, 0.92rem);
+    font-weight: 600;
+    padding: 0.4rem 1rem;
+    border-radius: 2rem;
+    border: 1.5px solid var(--card-border);
+    background: var(--card-bg);
+    backdrop-filter: var(--glass-blur);
+    color: var(--card-text);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s ease, box-shadow 0.3s ease, border-color 0.3s ease;
+    cursor: default;
+  }
+  .ch4-tag.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .ch4-tag:hover {
+    border-color: var(--accent);
+    box-shadow: 0 4px 12px rgba(193,127,89,0.15);
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div style="display:flex;flex-direction:column;align-items:center;gap:0.3rem;">
+    <div id="ch4-number">04</div>
+    <div id="ch4-title">上下文工程总结</div>
+    <div class="ch4-module-tags">
+      <span class="ch4-tag" data-i="0">六模块标注</span>
+      <span class="ch4-tag" data-i="1">策略实战映射</span>
+      <span class="ch4-tag" data-i="2">决策检查清单</span>
+      <span class="ch4-tag" data-i="3">课程总结</span>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  var title = document.getElementById('ch4-title');
+  var tags = document.querySelectorAll('.ch4-tag');
+  setTimeout(function(){ title.style.opacity='1'; title.style.transform='translateY(0)'; }, 500);
+  tags.forEach(function(tag){ var i=parseInt(tag.dataset.i); setTimeout(function(){ tag.classList.add('visible'); }, 900+i*150); });
+})();
+</script>

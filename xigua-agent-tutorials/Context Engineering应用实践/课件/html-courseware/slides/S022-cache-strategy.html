@@ -1,0 +1,240 @@
+<!-- S020 Cache - Prompt Caching - request timeline + cost counter -->
+<style>
+  .req-timeline {
+    width: clamp(480px, 58vw, 720px);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .req-row {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    opacity: 0;
+    transition: opacity 0.4s ease;
+  }
+  .req-row.visible { opacity: 1; }
+  .req-num {
+    font-family: var(--font-heading);
+    font-size: clamp(0.65rem, 0.95vw, 0.78rem);
+    font-weight: 600;
+    color: var(--text-dim);
+    width: 2rem;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .req-blocks {
+    display: flex;
+    gap: 3px;
+    flex: 1;
+  }
+  .req-block {
+    height: 1.6rem;
+    border-radius: 0.3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: clamp(0.55rem, 0.8vw, 0.65rem);
+    font-family: 'Menlo','Consolas',monospace;
+    color: white;
+    font-weight: 600;
+    white-space: nowrap;
+    overflow: hidden;
+    transition: background 0.5s ease, width 0.5s ease;
+  }
+  .req-cost {
+    font-family: var(--font-heading);
+    font-size: clamp(0.7rem, 1vw, 0.82rem);
+    font-weight: 600;
+    width: 4.5rem;
+    text-align: right;
+    flex-shrink: 0;
+    transition: color 0.4s ease;
+  }
+  /* Cost comparison */
+  .cost-compare {
+    width: clamp(480px, 58vw, 720px);
+    display: flex;
+    justify-content: center;
+    gap: clamp(1.5rem, 4vw, 3rem);
+    align-items: flex-end;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  .cost-compare.visible { opacity: 1; }
+  .cost-col {
+    text-align: center;
+  }
+  .cost-bar {
+    width: clamp(80px, 12vw, 120px);
+    border-radius: 0.4rem 0.4rem 0 0;
+    margin: 0 auto;
+    transition: height 0.8s ease;
+  }
+  .cost-val {
+    font-family: var(--font-heading);
+    font-size: clamp(0.9rem, 1.5vw, 1.2rem);
+    font-weight: 700;
+    margin-top: 0.3rem;
+  }
+  .cost-label {
+    font-size: clamp(0.68rem, 1vw, 0.8rem);
+    color: var(--text-dim);
+    margin-top: 0.15rem;
+  }
+  #cache-btn {
+    font-family: var(--font-heading);
+    font-size: clamp(0.78rem, 1.1vw, 0.9rem);
+    font-weight: 600;
+    color: white;
+    background: var(--primary);
+    border: none;
+    border-radius: 2rem;
+    padding: 0.45rem 1.6rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+  }
+  #cache-btn:hover { transform: scale(1.05); box-shadow: 0 4px 16px rgba(45,90,122,0.3); }
+  #cache-btn:disabled { opacity: 0.5; cursor: default; transform: none; }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div class="slide-header" style="text-align:center;">
+    <span class="chapter-badge">第三章：五策略框架</span>
+    <h1 class="slide-title" style="font-size:clamp(1.4rem,2.6vw,2.2rem);margin-top:0.5rem;">Cache：提示缓存</h1>
+    <p class="text-dim" style="font-size:clamp(0.78rem,1.1vw,0.92rem);">系统提示每次都一样 — 让 API 记住它，下次跳过计算</p>
+  </div>
+
+  <div class="slide-content" style="display:flex;flex-direction:column;align-items:center;gap:0.8rem;">
+
+    <!-- Request timeline -->
+    <div class="req-timeline" id="req-timeline">
+      <!-- Row 1: first request -->
+      <div class="req-row" data-i="0">
+        <span class="req-num">#1</span>
+        <div class="req-blocks">
+          <div class="req-block" id="r1-sys" style="width:35%;background:rgba(231,76,60,0.7);">系统提示 3K</div>
+          <div class="req-block" id="r1-tool" style="width:25%;background:rgba(231,76,60,0.55);">工具描述 2K</div>
+          <div class="req-block" style="width:10%;background:var(--primary);opacity:0.6;">对话 500</div>
+        </div>
+        <span class="req-cost" style="color:#e74c3c;">$0.0165</span>
+      </div>
+      <!-- Row 2 -->
+      <div class="req-row" data-i="1">
+        <span class="req-num">#2</span>
+        <div class="req-blocks">
+          <div class="req-block r-cached" style="width:35%;background:rgba(231,76,60,0.7);">系统提示 3K</div>
+          <div class="req-block r-cached" style="width:25%;background:rgba(231,76,60,0.55);">工具描述 2K</div>
+          <div class="req-block" style="width:12%;background:var(--primary);opacity:0.6;">对话 800</div>
+        </div>
+        <span class="req-cost" style="color:#e74c3c;">$0.0174</span>
+      </div>
+      <!-- Row 3 -->
+      <div class="req-row" data-i="2">
+        <span class="req-num">#3</span>
+        <div class="req-blocks">
+          <div class="req-block r-cached" style="width:35%;background:rgba(231,76,60,0.7);">系统提示 3K</div>
+          <div class="req-block r-cached" style="width:25%;background:rgba(231,76,60,0.55);">工具描述 2K</div>
+          <div class="req-block" style="width:16%;background:var(--primary);opacity:0.6;">对话 1.2K</div>
+        </div>
+        <span class="req-cost" style="color:#e74c3c;">$0.0186</span>
+      </div>
+      <!-- Row 4 -->
+      <div class="req-row" data-i="3">
+        <span class="req-num">#4</span>
+        <div class="req-blocks">
+          <div class="req-block r-cached" style="width:35%;background:rgba(231,76,60,0.7);">系统提示 3K</div>
+          <div class="req-block r-cached" style="width:25%;background:rgba(231,76,60,0.55);">工具描述 2K</div>
+          <div class="req-block" style="width:9%;background:var(--primary);opacity:0.6;">对话 600</div>
+        </div>
+        <span class="req-cost" style="color:#e74c3c;">$0.0168</span>
+      </div>
+      <!-- Row 5 -->
+      <div class="req-row" data-i="4">
+        <span class="req-num">#5</span>
+        <div class="req-blocks">
+          <div class="req-block r-cached" style="width:35%;background:rgba(231,76,60,0.7);">系统提示 3K</div>
+          <div class="req-block r-cached" style="width:25%;background:rgba(231,76,60,0.55);">工具描述 2K</div>
+          <div class="req-block" style="width:13%;background:var(--primary);opacity:0.6;">对话 900</div>
+        </div>
+        <span class="req-cost" style="color:#e74c3c;">$0.0177</span>
+      </div>
+    </div>
+
+    <!-- Enable cache button -->
+    <button id="cache-btn">启用 Prompt Caching</button>
+
+    <!-- Cost comparison bars -->
+    <div class="cost-compare" id="cost-compare">
+      <div class="cost-col">
+        <div class="cost-bar" id="bar-no" style="height:0;background:rgba(231,76,60,0.6);"></div>
+        <div class="cost-val" style="color:#e74c3c;">$0.087</div>
+        <div class="cost-label">无缓存 · 5次</div>
+      </div>
+      <div class="cost-col">
+        <div class="cost-bar" id="bar-yes" style="height:0;background:rgba(39,174,96,0.6);"></div>
+        <div class="cost-val" style="color:#27ae60;">$0.033</div>
+        <div class="cost-label">有缓存 · 5次</div>
+      </div>
+      <div class="cost-col" style="align-self:center;">
+        <div id="save-line" style="opacity:0;transition:opacity 0.5s ease;">
+          <div style="font-family:var(--font-heading);font-size:clamp(1.2rem,2.5vw,1.8rem);font-weight:700;color:var(--accent);">省 62%</div>
+          <div style="font-size:clamp(0.68rem,1vw,0.8rem);color:var(--text-dim);">1000次/天 → 月省 $369</div>
+          <div style="font-size:clamp(0.62rem,0.9vw,0.72rem);color:var(--text-dim);margin-top:0.2rem;">缓存读取 = 标准价的 10%</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  var rows = document.querySelectorAll('.req-row');
+  var btn = document.getElementById('cache-btn');
+  var costCompare = document.getElementById('cost-compare');
+  var barNo = document.getElementById('bar-no');
+  var barYes = document.getElementById('bar-yes');
+  var saveLine = document.getElementById('save-line');
+
+  // Stagger entrance
+  rows.forEach(function(row, i) {
+    setTimeout(function() { row.classList.add('visible'); }, 200 + i * 150);
+  });
+
+  var cachedPrices = ['$0.0165', '$0.0039', '$0.0051', '$0.0033', '$0.0042'];
+
+  btn.addEventListener('click', function() {
+    btn.disabled = true;
+    btn.textContent = '已启用';
+    btn.style.background = '#27ae60';
+
+    // Transform cached blocks to green
+    var allCached = document.querySelectorAll('.r-cached');
+    allCached.forEach(function(block, i) {
+      setTimeout(function() {
+        block.style.background = 'rgba(39,174,96,0.6)';
+        block.textContent = block.textContent.replace(/系统提示|工具描述/, function(m) { return m + ' ✓'; });
+      }, Math.floor(i / 2) * 300);
+    });
+
+    // Update costs for rows 2-5
+    setTimeout(function() {
+      rows.forEach(function(row, i) {
+        var cost = row.querySelector('.req-cost');
+        cost.textContent = cachedPrices[i];
+        if (i > 0) cost.style.color = '#27ae60';
+      });
+    }, 1200);
+
+    // Show cost comparison
+    setTimeout(function() {
+      costCompare.classList.add('visible');
+      barNo.style.height = 'clamp(80px,12vh,120px)';
+      barYes.style.height = 'clamp(30px,4.5vh,45px)';
+    }, 1800);
+
+    setTimeout(function() { saveLine.style.opacity = '1'; }, 2400);
+  });
+})();
+</script>

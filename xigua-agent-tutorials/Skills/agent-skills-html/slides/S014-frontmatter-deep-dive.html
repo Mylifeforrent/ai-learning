@@ -1,0 +1,31 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">结构细看 1/3</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            深入看 frontmatter：它不是备注，而是路由入口
+        </h2>
+
+        <div class="animate-ready center-block" data-delay="0.2" style="display:grid;grid-template-columns:1fr 1fr;gap:22px;max-width:1120px;margin-top:20px;">
+            <div class="card" style="background:#1E293B;">
+                <div style="font-size:0.82rem;color:rgba(255,255,255,0.6);margin-bottom:12px;">极简示意</div>
+                <pre style="margin:0;font-size:0.84rem;line-height:1.75;color:#E2E8F0;font-family:'Monaco','Menlo',monospace;">---
+name: lesson-interaction-architect
+description: Design a single-lesson
+HTML interaction architecture...
+---</pre>
+            </div>
+            <div class="card">
+                <div style="display:grid;gap:12px;">
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-cool);"><strong>name</strong> 让能力可被识别和引用</div>
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-cool);"><strong>description</strong> 决定触发语义是否清晰</div>
+                    <div style="padding:14px 16px;border-radius:var(--radius-md);background:var(--bg-cool);"><strong>表达边界</strong> 决定误触发和漏触发的概率</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

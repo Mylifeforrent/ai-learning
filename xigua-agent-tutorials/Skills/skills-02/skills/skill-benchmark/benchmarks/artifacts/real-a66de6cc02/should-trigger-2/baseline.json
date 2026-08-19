@@ -1,0 +1,21 @@
+{
+  "output_text": "好的，请提供您需要压缩的长文。我会为您提取核心事实、数据和结论，并生成一份结构清晰、重点突出的执行摘要，以便您直接用于汇报。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 3.48,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

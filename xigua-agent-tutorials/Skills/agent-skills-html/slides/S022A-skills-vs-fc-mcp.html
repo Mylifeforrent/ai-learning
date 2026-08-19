@@ -1,0 +1,68 @@
+<div class="slide">
+    <div class="bg-dots"></div>
+    <div class="bg-mesh"></div>
+
+    <div class="content content-centered">
+        <div class="animate-ready" data-delay="0">
+            <span class="badge">技术对比</span>
+        </div>
+
+        <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+            Skills vs Function Calling vs MCP
+        </h2>
+
+        <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:20px;">
+            三种能力扩展方式的本质区别与选型指南
+        </p>
+
+        <!-- 维度切换按钮 -->
+        <div class="animate-ready center-block" data-delay="0.25" style="display:flex;gap:10px;justify-content:center;margin-bottom:24px;flex-wrap:wrap;">
+            <button class="tech-dim-btn btn btn-primary" data-dim="definition">核心定义</button>
+            <button class="tech-dim-btn btn" data-dim="essence" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">本质与组成</button>
+            <button class="tech-dim-btn btn" data-dim="strength" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">擅长与局限</button>
+            <button class="tech-dim-btn btn" data-dim="language" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">开发语言</button>
+            <button class="tech-dim-btn btn" data-dim="difficulty" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">实现难度</button>
+            <button class="tech-dim-btn btn" data-dim="flexibility" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">灵活性</button>
+            <button class="tech-dim-btn btn" data-dim="audience" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">适用人群</button>
+        </div>
+
+        <!-- 三列对比卡片 -->
+        <div class="animate-ready center-block" data-delay="0.3" style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;max-width:1200px;">
+            <!-- Function Calling 卡片 -->
+            <div class="card" style="background:rgba(100,116,139,0.05);border:2px solid rgba(100,116,139,0.2);position:relative;">
+                <div style="position:absolute;top:12px;right:12px;padding:4px 10px;background:rgba(100,116,139,0.15);color:rgba(100,116,139,1);border-radius:var(--radius-sm);font-size:0.75rem;font-weight:600;">代码级</div>
+                <h3 style="margin:0 0 16px 0;font-size:1.15rem;color:rgba(100,116,139,1);">Function Calling</h3>
+                <div id="fc-content" style="min-height:120px;"></div>
+            </div>
+
+            <!-- MCP 卡片 -->
+            <div class="card" style="background:rgba(59,130,246,0.05);border:2px solid rgba(59,130,246,0.2);position:relative;">
+                <div style="position:absolute;top:12px;right:12px;padding:4px 10px;background:rgba(59,130,246,0.15);color:rgba(59,130,246,1);border-radius:var(--radius-sm);font-size:0.75rem;font-weight:600;">协议级</div>
+                <h3 style="margin:0 0 16px 0;font-size:1.15rem;color:rgba(59,130,246,1);">MCP</h3>
+                <div id="mcp-content" style="min-height:120px;"></div>
+            </div>
+
+            <!-- Agent Skills 卡片（突出显示） -->
+            <div class="card" style="background:var(--teal-pale);border:3px solid var(--teal);position:relative;box-shadow:0 4px 12px rgba(20,184,166,0.15);">
+                <div style="position:absolute;top:12px;right:12px;padding:4px 10px;background:var(--teal);color:white;border-radius:var(--radius-sm);font-size:0.75rem;font-weight:600;">✨ 推荐</div>
+                <h3 style="margin:0 0 16px 0;font-size:1.15rem;color:var(--teal);">Agent Skills</h3>
+                <div id="skills-content" style="min-height:120px;"></div>
+            </div>
+        </div>
+
+        <!-- 场景推荐区 -->
+        <div class="animate-ready center-block" data-delay="0.35" style="max-width:1000px;margin-top:24px;">
+            <div style="padding:20px;background:var(--bg-white);border:1px solid var(--border);border-radius:var(--radius-md);">
+                <p style="margin:0 0 12px 0;font-size:1rem;font-weight:600;color:var(--text-primary);text-align:center;">💡 选择你的场景，看推荐方案：</p>
+                <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px;justify-content:center;">
+                    <button class="tech-scenario-btn btn" data-scenario="prototype" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">快速原型</button>
+                    <button class="tech-scenario-btn btn" data-scenario="production" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">生产系统</button>
+                    <button class="tech-scenario-btn btn" data-scenario="nonTech" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">非技术人员</button>
+                    <button class="tech-scenario-btn btn" data-scenario="complex" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">复杂工作流</button>
+                    <button class="tech-scenario-btn btn" data-scenario="precise" style="background:var(--bg-white);color:var(--text-primary);border:1px solid var(--border);">精确控制</button>
+                </div>
+                <div id="tech-recommendation-result"></div>
+            </div>
+        </div>
+    </div>
+</div>

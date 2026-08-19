@@ -1,0 +1,9 @@
+{
+  "id": "edge-2",
+  "category": "edge",
+  "text": "请概括一下这篇文章",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

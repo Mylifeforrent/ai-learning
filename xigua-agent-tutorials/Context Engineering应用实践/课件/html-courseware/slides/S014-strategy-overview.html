@@ -1,0 +1,255 @@
+<style>
+  .s014-wrap {
+    font-family: var(--font-body, 'Inter', sans-serif);
+    padding: 1.6rem 1.8rem 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+
+  .s014-header {
+    text-align: center;
+    opacity: 0;
+    animation: s014-fade-up 0.5s ease forwards;
+  }
+
+  .s014-title {
+    font-family: var(--font-heading, 'Inter', sans-serif);
+    font-size: clamp(1.3rem, 2.4vw, 1.75rem);
+    font-weight: 700;
+    color: var(--primary, #2D5A7A);
+    margin: 0 0 0.3rem;
+    letter-spacing: -0.02em;
+  }
+
+  .s014-sub {
+    font-size: clamp(0.8rem, 1.4vw, 1rem);
+    color: var(--text-dim, #6b7280);
+    margin: 0;
+  }
+
+  .s014-grid-top {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.8rem;
+  }
+
+  .s014-grid-bottom {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.8rem;
+    max-width: 680px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .strat-card {
+    background: var(--card-bg, rgba(255,255,255,0.72));
+    border: 1px solid var(--card-border, rgba(45,90,122,0.15));
+    border-radius: 14px;
+    padding: 1.1rem 1rem 1rem;
+    backdrop-filter: var(--glass-blur, blur(12px));
+    -webkit-backdrop-filter: var(--glass-blur, blur(12px));
+    border-left: 3.5px solid var(--primary, #2D5A7A);
+    display: flex;
+    flex-direction: column;
+    gap: 0.32rem;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    cursor: default;
+  }
+
+  .strat-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 28px rgba(45,90,122,0.16);
+  }
+
+  .strat-card.accent-border {
+    border-left-color: var(--accent, #c17f59);
+  }
+
+  .strat-card.secondary-border {
+    border-left-color: var(--secondary, #A6C3E1);
+  }
+
+  .strat-emoji {
+    font-size: clamp(1.4rem, 2.2vw, 1.7rem);
+    line-height: 1;
+    margin-bottom: 0.1rem;
+  }
+
+  .strat-name {
+    font-family: var(--font-heading, 'Inter', sans-serif);
+    font-size: clamp(0.9rem, 1.5vw, 1.1rem);
+    font-weight: 700;
+    color: var(--primary, #2D5A7A);
+    letter-spacing: 0.01em;
+  }
+
+  .strat-cn {
+    font-size: clamp(0.72rem, 1.1vw, 0.82rem);
+    color: var(--accent, #c17f59);
+    font-weight: 600;
+  }
+
+  .strat-desc {
+    font-size: clamp(0.72rem, 1.15vw, 0.84rem);
+    color: var(--card-text, #374151);
+    line-height: 1.5;
+    margin-top: 0.15rem;
+  }
+
+  .strat-impl {
+    font-size: clamp(0.64rem, 1vw, 0.74rem);
+    color: var(--text-dim, #6b7280);
+    margin-top: 0.2rem;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    letter-spacing: 0.01em;
+  }
+
+  .s014-conclusion {
+    text-align: center;
+    background: var(--card-bg, rgba(255,255,255,0.6));
+    border: 1px solid var(--card-border, rgba(45,90,122,0.15));
+    border-radius: 12px;
+    padding: 0.85rem 1.4rem;
+    backdrop-filter: var(--glass-blur, blur(8px));
+    -webkit-backdrop-filter: var(--glass-blur, blur(8px));
+    opacity: 0;
+    animation: s014-fade-up 0.5s ease 1.4s forwards;
+  }
+
+  .s014-conclusion-main {
+    font-size: clamp(0.82rem, 1.35vw, 0.97rem);
+    font-weight: 600;
+    color: var(--primary, #2D5A7A);
+    margin: 0 0 0.45rem;
+  }
+
+  .s014-priority {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.4rem;
+    flex-wrap: wrap;
+  }
+
+  .s014-priority-label {
+    font-size: clamp(0.62rem, 0.95vw, 0.72rem);
+    color: var(--text-dim, #6b7280);
+    margin-right: 0.2rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+  }
+
+  .s014-tag {
+    font-size: clamp(0.6rem, 0.92vw, 0.7rem);
+    padding: 0.18rem 0.55rem;
+    border-radius: 999px;
+    font-weight: 600;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  .s014-tag.t1 { background: rgba(193,127,89,0.15); color: var(--accent, #c17f59); }
+  .s014-tag.t2 { background: rgba(45,90,122,0.12); color: var(--primary, #2D5A7A); }
+  .s014-tag.t3 { background: rgba(166,195,225,0.25); color: #4a7da0; }
+  .s014-tag.t4 { background: rgba(45,90,122,0.08); color: var(--primary, #2D5A7A); }
+
+  .s014-arrow {
+    color: var(--text-dim, #9ca3af);
+    font-size: 0.65rem;
+    font-weight: 700;
+  }
+
+  @keyframes s014-fade-up {
+    from { opacity: 0; transform: translateY(14px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .strat-card.s014-visible {
+    animation: s014-fade-up 0.45s ease forwards;
+  }
+</style>
+
+<div style="width:100%;max-width:900px;">
+  <div class="s014-wrap">
+
+    <div class="s014-header">
+      <h2 class="s014-title">五策略全景总览</h2>
+      <p class="s014-sub">五把利刃，组合使用而非五选一</p>
+    </div>
+
+    <div class="s014-grid-top">
+      <div class="strat-card" data-delay="200">
+        <div class="strat-emoji">💾</div>
+        <div class="strat-name">Write</div>
+        <div class="strat-cn">写入持久化</div>
+        <div class="strat-desc">把信息存到窗口外面，跨轮次保持状态</div>
+        <div class="strat-impl">Scratchpad · mem0 · session JSON</div>
+      </div>
+
+      <div class="strat-card accent-border" data-delay="400">
+        <div class="strat-emoji">🔍</div>
+        <div class="strat-name">Select</div>
+        <div class="strat-cn">运行时检索</div>
+        <div class="strat-desc">用时按需取回，不全塞进去</div>
+        <div class="strat-impl">RAG · glob/grep · 条件注入</div>
+      </div>
+
+      <div class="strat-card secondary-border" data-delay="600">
+        <div class="strat-emoji">🗜️</div>
+        <div class="strat-name">Compress</div>
+        <div class="strat-cn">上下文压缩</div>
+        <div class="strat-desc">保留要点，丢掉冗余 token</div>
+        <div class="strat-impl">工具清除 · 观察遮蔽 · LLM摘要</div>
+      </div>
+    </div>
+
+    <div class="s014-grid-bottom">
+      <div class="strat-card accent-border" data-delay="800">
+        <div class="strat-emoji">🧱</div>
+        <div class="strat-name">Isolate</div>
+        <div class="strat-cn">上下文隔离</div>
+        <div class="strat-desc">子Agent各管各的，互不干扰</div>
+        <div class="strat-impl">子Agent架构 · 域分离 · MCP</div>
+      </div>
+
+      <div class="strat-card" data-delay="1000">
+        <div class="strat-emoji">⚡</div>
+        <div class="strat-name">Cache</div>
+        <div class="strat-cn">提示缓存</div>
+        <div class="strat-desc">重复的不重新算，API侧复用</div>
+        <div class="strat-impl">Prompt Caching · 省90%成本</div>
+      </div>
+    </div>
+
+    <div class="s014-conclusion">
+      <p class="s014-conclusion-main">Claude Code 五策略全部使用 — 不是五选一，是按优先级叠加</p>
+      <div class="s014-priority">
+        <span class="s014-priority-label">优先级</span>
+        <span class="s014-tag t1">Cache ①</span>
+        <span class="s014-arrow">→</span>
+        <span class="s014-tag t2">Compress ②-③</span>
+        <span class="s014-arrow">→</span>
+        <span class="s014-tag t3">Isolate ④</span>
+        <span class="s014-arrow">→</span>
+        <span class="s014-tag t4">Write + Select ⑤</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function () {
+  var cards = document.querySelectorAll('.strat-card[data-delay]');
+  cards.forEach(function (card) {
+    var delay = parseInt(card.getAttribute('data-delay'), 10);
+    setTimeout(function () {
+      card.classList.add('s014-visible');
+    }, delay);
+  });
+})();
+</script>

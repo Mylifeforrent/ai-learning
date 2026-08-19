@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-2",
+  "category": "should-trigger",
+  "text": "提炼这篇文章的技术要点，生成关键信息列表",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

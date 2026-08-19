@@ -1,0 +1,21 @@
+{
+  "output_text": "我主要专注于文档内容的总结和提取，而不是分析论证逻辑或提出改进建议。根据我的技能描述，我擅长：\n\n- 将长文档压缩成结构化摘要\n- 提取核心内容而不进行分析或评估\n- 生成报告就绪的摘要\n- 压缩长文为简洁概述\n\n**触发场景**：总结文档内容、提炼核心要点、生成汇报摘要、压缩长文为摘要、提取文档核心信息、生成执行摘要。\n\n**不触发**：分析文档逻辑、评估论证质量、提出改进建议、翻译文档、改写内容、全文问答、复杂决策分析、文档编辑、内容创作。\n\n如果您需要分析文档的论证逻辑并提出改进建议，这超出了我的核心能力范围。不过，我可以为您：\n\n1. **总结文档内容**：将文档压缩成结构化摘要，提取核心论点\n2. **提取关键信息**：识别文档的主要观点和论据\n\n这样您可以基于我的摘要来自己进行逻辑分析和改进建议。您希望我帮您总结文档内容吗？",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "with-skill",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 9.95,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

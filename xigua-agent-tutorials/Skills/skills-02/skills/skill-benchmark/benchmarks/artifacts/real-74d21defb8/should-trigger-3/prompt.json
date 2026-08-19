@@ -1,0 +1,9 @@
+{
+  "id": "should-trigger-3",
+  "category": "should-trigger",
+  "text": "提取这个PDF文档的核心内容，生成一个简洁的要点列表。",
+  "should_trigger": true,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

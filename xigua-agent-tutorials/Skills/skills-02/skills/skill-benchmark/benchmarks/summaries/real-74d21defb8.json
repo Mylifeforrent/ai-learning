@@ -1,0 +1,96 @@
+{
+  "run_id": "real-74d21defb8",
+  "skill_targets": [
+    "./skills/document-summarizer"
+  ],
+  "models": [
+    "deepseek-chat"
+  ],
+  "aggregate_scores": {
+    "trigger_accuracy": 1.0,
+    "routing_clarity": 1.0,
+    "output_signal_retention": 1.0,
+    "task_completion": {
+      "baseline": 0.875,
+      "with_skill": 1.0,
+      "gain": 0.125
+    },
+    "outcome_quality": 1.0
+  },
+  "final_verdict": "effective",
+  "per_run_details": [
+    {
+      "prompt_id": "should-trigger-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "should-trigger-2",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "should-trigger-3",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "should-not-trigger-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "should-not-trigger-2",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": false,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "should-not-trigger-3",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "edge-1",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    },
+    {
+      "prompt_id": "edge-2",
+      "trigger_correct": true,
+      "route_correct": true,
+      "signals": [],
+      "baseline_completed": true,
+      "withskill_completed": true,
+      "outcome_score": 1.0
+    }
+  ],
+  "timestamp": "2026-03-19T08:01:53Z"
+}

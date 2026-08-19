@@ -1,0 +1,278 @@
+<div class="slide">
+  <div class="bg-dots"></div>
+
+  <div class="content content-centered">
+    <div class="animate-ready" data-delay="0">
+      <span class="badge">完整结构</span>
+    </div>
+
+    <h2 class="animate-ready text-gradient-teal" data-delay="0.1" style="margin-top:16px;margin-bottom:14px;">
+      Agent Skills 完整目录结构
+    </h2>
+
+    <p class="animate-ready center-block" data-delay="0.2" style="max-width:900px;margin-bottom:24px;">
+      点击展开目录，探索每个文件和目录的作用。这不是抽象概念，而是真实的文件组织方式。
+    </p>
+
+    <!-- 灵活性提示框 -->
+    <div class="animate-ready center-block" data-delay="0.25" style="max-width:900px;margin-bottom:20px;">
+      <div style="background:var(--amber-pale);border-left:4px solid var(--amber);padding:16px;border-radius:var(--radius-sm);">
+        <div style="display:flex;align-items:start;gap:12px;">
+          <span style="font-size:1.3rem;">⚠️</span>
+          <div>
+            <div style="font-weight:600;margin-bottom:6px;color:var(--text-primary);">
+              重要提示：目录结构非常灵活
+            </div>
+            <ul style="margin:0;padding-left:20px;font-size:0.9rem;line-height:1.7;color:var(--text-secondary);">
+              <li><strong>SKILL.md 是唯一必需的文件</strong></li>
+              <li>其他目录都是可选的，根据Skill需要添加</li>
+              <li>不同Skill的目录结构差异很大（见下方案例）</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="skill-tree-container animate-ready center-block" data-delay="0.3"
+         style="display:grid;grid-template-columns:1.5fr 1fr;gap:20px;max-width:1200px;width:100%;">
+
+      <!-- 左侧：目录树 -->
+      <div class="card" style="padding:18px;max-height:460px;overflow-y:auto;display:flex;flex-direction:column;">
+        <!-- 案例切换按钮组 -->
+        <div style="display:flex;gap:6px;margin-bottom:12px;flex-wrap:wrap;">
+          <button class="case-btn active" onclick="switchCase('通用')" data-case="通用">
+            通用结构
+          </button>
+          <button class="case-btn" onclick="switchCase('frontend-design')" data-case="frontend-design">
+            最简案例
+          </button>
+          <button class="case-btn" onclick="switchCase('pdf')" data-case="pdf">
+            中等案例
+          </button>
+          <button class="case-btn" onclick="switchCase('skill-creator')" data-case="skill-creator">
+            完整案例
+          </button>
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+          <div style="font-size:0.82rem;color:var(--text-tertiary);">
+            目录结构（点击展开/折叠）
+          </div>
+          <div style="display:flex;gap:6px;">
+            <button class="tree-control-btn" onclick="expandAll()" title="全部展开">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </button>
+            <button class="tree-control-btn" onclick="collapseAll()" title="全部折叠">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <polyline points="18 15 12 9 6 15"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div id="tree-root" style="flex:1;overflow-y:auto;"></div>
+      </div>
+
+      <!-- 右侧：详情面板 -->
+      <div class="card" style="padding:18px;max-height:460px;display:flex;flex-direction:column;">
+        <div style="font-size:0.82rem;color:var(--text-tertiary);margin-bottom:10px;flex-shrink:0;">
+          节点详情
+        </div>
+        <div id="detail-panel" style="flex:1;overflow-y:auto;min-height:0;">
+          <div id="detail-breadcrumb"></div>
+          <div id="detail-title" style="font-size:1.15rem;font-weight:700;margin-bottom:8px;"></div>
+          <div id="detail-meta" style="display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;"></div>
+          <div id="detail-content"></div>
+          <div id="detail-quick-jump" style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<style>
+/* 树形节点样式 */
+.tree-node {
+  position: relative;
+}
+
+.tree-node-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 12px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  user-select: none;
+  font-size: 0.92rem;
+}
+
+.tree-node-label:hover {
+  background: var(--teal-pale);
+}
+
+.tree-node-label.active {
+  background: var(--teal);
+  color: var(--text-white);
+}
+
+.tree-icon {
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+
+.tree-name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.tree-expand-icon {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+
+.tree-node-label.active .tree-expand-icon {
+  color: var(--text-white);
+}
+
+.tree-children {
+  margin-left: 20px;
+  border-left: 1px solid var(--border);
+  padding-left: 12px;
+  margin-top: 4px;
+}
+
+/* 控制按钮 */
+.tree-control-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--border);
+  background: var(--bg-white);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  color: var(--text-secondary);
+}
+
+.tree-control-btn:hover {
+  background: var(--teal-pale);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+/* 详情面板样式 */
+.detail-section {
+  margin-bottom: 16px;
+}
+
+.detail-section h4 {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+}
+
+.detail-section p {
+  font-size: 0.85rem;
+  line-height: 1.6;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.detail-section pre {
+  background: var(--bg-cool);
+  padding: 10px;
+  border-radius: var(--radius-sm);
+  overflow-x: auto;
+  font-size: 0.75rem;
+  line-height: 1.5;
+  margin: 0;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.collab-item {
+  padding: 8px 10px;
+  background: var(--bg-cool);
+  border-radius: var(--radius-sm);
+  font-size: 0.82rem;
+  margin-bottom: 6px;
+  line-height: 1.5;
+}
+
+/* 面包屑 */
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 0.78rem;
+  color: var(--text-tertiary);
+  margin-bottom: 12px;
+  padding: 6px 10px;
+  background: var(--bg-cool);
+  border-radius: var(--radius-sm);
+  flex-wrap: wrap;
+}
+
+.breadcrumb-item {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+
+.breadcrumb-item:hover:not(.active) {
+  color: var(--teal);
+}
+
+.breadcrumb-item.active {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+.breadcrumb-sep {
+  color: var(--border);
+}
+
+/* 响应式 */
+@media (max-width: 900px) {
+  .skill-tree-container {
+    grid-template-columns: 1fr !important;
+  }
+
+  .card {
+    max-height: 400px !important;
+  }
+}
+
+/* 案例切换按钮样式 */
+.case-btn {
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  border: 1px solid var(--border);
+  background: var(--bg-white);
+  color: var(--text-primary);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-weight: 500;
+}
+
+.case-btn:hover {
+  background: var(--teal-pale);
+  border-color: var(--teal);
+  color: var(--teal);
+}
+
+.case-btn.active {
+  background: var(--teal);
+  color: var(--text-white);
+  border-color: var(--teal);
+}
+</style>

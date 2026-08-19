@@ -1,0 +1,21 @@
+{
+  "output_text": "# Markdown文档摘要报告\n\n## 主要章节概览\n\n1. **引言/概述**  \n   - 文档目的与背景介绍\n   - 研究/项目范围说明\n\n2. **核心内容章节**  \n   - 方法论/实施步骤\n   - 数据分析/实验过程\n   - 技术架构/理论框架\n\n3. **结果与发现**  \n   - 主要数据结果\n   - 关键观察与结论\n\n4. **讨论与分析**  \n   - 结果解读与意义\n   - 局限性说明\n\n5. **总结与建议**  \n   - 核心结论汇总\n   - 后续行动建议\n\n## 关键发现摘要\n\n- **主要成果**：（此处概括文档的核心成果或结论）\n- **重要数据**：（突出关键数据点或统计结果）\n- **核心洞见**：（文档提出的重要观点或发现）\n- **实践建议**：（如有）具体应用建议或下一步方向\n\n---\n\n**注**：请提供具体Markdown文档内容，我可为您生成定制化的详细摘要。",
+  "trace_signals": {
+    "skill_attempted": false,
+    "skill_triggered": false,
+    "team_mode_attempted": false,
+    "team_mode_used": false
+  },
+  "meta": {
+    "model": "deepseek-chat",
+    "run_kind": "baseline",
+    "executor": "deepseek_executor",
+    "elapsed_seconds": 10.25,
+    "failed": false,
+    "timed_out": false,
+    "returncode": 0,
+    "stderr_tail": "",
+    "stream_stdout_tail": [],
+    "stream_stderr_tail": []
+  }
+}

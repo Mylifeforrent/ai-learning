@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <meta http-equiv="Pragma" content="no-cache">
+  <meta http-equiv="Expires" content="0">
+  <title>Agent 上下文管理系统 -- Context Engineering 完整指南</title>
+  <link rel="stylesheet" href="css/main.css?v=20260808">
+</head>
+<body>
+
+  <!-- 进度条 -->
+  <div id="progress-bar-wrap">
+    <div id="progress-bar"></div>
+  </div>
+
+  <!-- 侧边菜单遮罩 -->
+  <div id="menu-overlay" onclick="window.__closeMenu()"></div>
+
+  <!-- 侧边菜单 -->
+  <nav id="side-menu">
+    <div class="menu-header">
+      <span class="menu-title">课程目录</span>
+      <button class="menu-close-btn" onclick="window.__closeMenu()" aria-label="关闭菜单">&times;</button>
+    </div>
+    <div id="menu-list"></div>
+  </nav>
+
+  <!-- 主内容区 -->
+  <main id="slide-viewport"></main>
+
+  <!-- 左右导航按钮 -->
+  <button id="nav-prev" onclick="window.__prevSlide()" aria-label="上一页">&#8592;</button>
+  <button id="nav-next" onclick="window.__nextSlide()" aria-label="下一页">&#8594;</button>
+
+  <!-- 左侧竖直工具栏 -->
+  <div id="side-toolbar">
+    <button id="btn-menu" onclick="window.__toggleMenu()" title="菜单 (M)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <line x1="3" y1="6" x2="21" y2="6"></line>
+        <line x1="3" y1="12" x2="21" y2="12"></line>
+        <line x1="3" y1="18" x2="21" y2="18"></line>
+      </svg>
+    </button>
+    <div class="toolbar-divider"></div>
+    <div id="page-indicator">
+      <span id="page-current">1</span>
+      <span class="page-sep">/</span>
+      <span id="page-total">24</span>
+    </div>
+    <div class="toolbar-divider"></div>
+    <button id="btn-pen" onclick="window.__togglePenTrail()" title="画笔 (T)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 19l7-7 3 3-7 7-3-3z"></path>
+        <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path>
+        <path d="M2 2l7.586 7.586"></path>
+        <circle cx="11" cy="11" r="2"></circle>
+      </svg>
+    </button>
+    <!-- 颜色选择器 -->
+    <div id="color-picker-wrap">
+      <button id="btn-color" onclick="window.__toggleColorPicker()" title="画笔颜色">
+        <span id="color-dot-indicator"></span>
+      </button>
+      <div id="color-picker-popup">
+        <button class="color-dot" data-color="#ef4444" style="background:#ef4444" onclick="window.__setDrawColor('#ef4444')" title="红色"></button>
+        <button class="color-dot" data-color="#2D5A7A" style="background:#2D5A7A" onclick="window.__setDrawColor('#2D5A7A')" title="蓝色"></button>
+        <button class="color-dot" data-color="#ffffff" style="background:#ffffff" onclick="window.__setDrawColor('#ffffff')" title="白色"></button>
+        <button class="color-dot" data-color="#2a2520" style="background:#2a2520" onclick="window.__setDrawColor('#2a2520')" title="黑色"></button>
+      </div>
+    </div>
+    <div class="toolbar-divider"></div>
+    <button id="btn-fullscreen" onclick="window.__toggleFullscreen()" title="全屏 (F)">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"></path>
+      </svg>
+    </button>
+  </div>
+
+  <!-- 画板 Canvas -->
+  <canvas id="draw-board-canvas"></canvas>
+
+  <!-- 画笔轨迹 Canvas -->
+  <canvas id="pen-trail-canvas"></canvas>
+
+  <!-- GSAP -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="js/main.js?v=20260808"></script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+{
+  "id": "should-not-trigger-3",
+  "category": "should-not-trigger",
+  "text": "请回答关于这篇文档的以下问题：作者的主要观点是什么？",
+  "should_trigger": false,
+  "expected_skill": "document-summarizer",
+  "expected_route": null,
+  "required_output_signals": []
+}

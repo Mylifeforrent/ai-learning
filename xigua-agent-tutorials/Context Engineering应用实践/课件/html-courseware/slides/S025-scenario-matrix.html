@@ -1,0 +1,357 @@
+<style>
+.s24-wrap {
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.s24-header {
+  text-align: center;
+  margin-bottom: 1.2rem;
+}
+
+.s24-badge {
+  display: inline-block;
+  background: var(--primary);
+  color: #fff;
+  font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 0.25em 0.9em;
+  border-radius: 99px;
+  margin-bottom: 0.5rem;
+}
+
+.s24-title {
+  font-family: var(--font-heading);
+  font-size: clamp(1.3rem, 2.8vw, 2rem);
+  color: var(--primary);
+  margin: 0.3rem 0 0.2rem;
+  font-weight: 700;
+}
+
+.s24-subtitle {
+  font-size: clamp(0.75rem, 1.5vw, 0.9rem);
+  color: var(--text-dim);
+  margin: 0;
+}
+
+/* Matrix wrapper */
+.s24-matrix-wrap {
+  position: relative;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 12px;
+  overflow: hidden;
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
+  margin-bottom: 0.8rem;
+}
+
+/* Legend */
+.s24-legend {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.8rem;
+  display: flex;
+  gap: 0.8rem;
+  font-size: clamp(0.6rem, 1vw, 0.72rem);
+  color: var(--text-dim);
+  background: rgba(232,229,218,0.85);
+  padding: 0.3em 0.7em;
+  border-radius: 8px;
+  border: 1px solid var(--card-border);
+  z-index: 2;
+}
+
+.s24-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25em;
+}
+
+/* Table */
+.s24-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+}
+
+.s24-table th,
+.s24-table td {
+  padding: 0.55rem 0.4rem;
+  text-align: center;
+  font-size: clamp(0.68rem, 1.2vw, 0.82rem);
+  border-bottom: 1px solid rgba(45,90,122,0.07);
+}
+
+/* First col: scenario name */
+.s24-table td:first-child,
+.s24-table th:first-child {
+  text-align: left;
+  padding-left: 1rem;
+  width: 30%;
+}
+
+/* Header row */
+.s24-thead th {
+  color: var(--primary);
+  font-weight: 700;
+  font-size: clamp(0.7rem, 1.2vw, 0.82rem);
+  background: rgba(45,90,122,0.06);
+  padding-top: 2.2rem;
+  padding-bottom: 0.6rem;
+  border-bottom: 2px solid rgba(45,90,122,0.18);
+}
+
+/* Data rows */
+.s24-row {
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.s24-row:hover,
+.s24-row.s24-active {
+  background: rgba(45,90,122,0.06);
+}
+
+.s24-row:last-child td {
+  border-bottom: none;
+}
+
+.s24-scenario-name {
+  color: var(--primary);
+  font-weight: 600;
+  font-family: var(--font-heading);
+  font-size: clamp(0.7rem, 1.2vw, 0.82rem);
+}
+
+.s24-scenario-tag {
+  display: block;
+  font-weight: 400;
+  font-family: -apple-system, sans-serif;
+  font-size: clamp(0.58rem, 0.9vw, 0.68rem);
+  color: var(--text-dim);
+  margin-top: 0.1em;
+}
+
+/* Symbols */
+.s24-must {
+  color: #27ae60;
+  font-size: 1.1em;
+  font-weight: 700;
+}
+
+.s24-rec {
+  color: #2980b9;
+  font-size: 1em;
+}
+
+.s24-no {
+  color: #e74c3c;
+  font-size: 0.95em;
+  font-weight: 600;
+}
+
+.s24-neutral {
+  color: #999;
+  font-size: 1em;
+}
+
+/* Reason panel */
+.s24-reason-panel {
+  background: rgba(45,90,122,0.05);
+  border: 1px solid rgba(45,90,122,0.12);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  font-size: clamp(0.7rem, 1.2vw, 0.82rem);
+  color: var(--card-text);
+  line-height: 1.6;
+  min-height: 3rem;
+  transition: opacity 0.2s ease;
+}
+
+.s24-reason-label {
+  font-weight: 700;
+  color: var(--primary);
+  margin-right: 0.4em;
+  font-size: clamp(0.68rem, 1.1vw, 0.78rem);
+}
+
+/* Stagger animation */
+.s24-row {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 0.3s ease, transform 0.3s ease, background 0.15s ease;
+}
+
+.s24-row.s24-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+</style>
+
+<div class="s24-wrap">
+  <!-- Header -->
+  <div class="s24-header">
+    <span class="s24-badge">&#31532;&#22235;&#31456;&#65306;&#20915;&#31574;&#20869;&#21270;</span>
+    <h1 class="s24-title">&#22580;&#26223;&#8209;&#31574;&#30053;&#21305;&#37197;&#30697;&#38453;</h1>
+    <p class="s24-subtitle">&#19968;&#34920;&#32535;&#35272;&#65306;&#21738;&#20123;&#31574;&#30053;&#36866;&#21512;&#20320;&#30340; Agent</p>
+  </div>
+
+  <!-- Matrix -->
+  <div class="s24-matrix-wrap">
+    <!-- Legend -->
+    <div class="s24-legend">
+      <span class="s24-legend-item"><span class="s24-must">&#9679;</span> &#24517;&#29992;</span>
+      <span class="s24-legend-item"><span class="s24-rec">&#9675;</span> &#25512;&#33616;</span>
+      <span class="s24-legend-item"><span class="s24-no">&#10007;</span> &#19981;&#36866;&#29992;</span>
+      <span class="s24-legend-item"><span class="s24-neutral">&#8212;</span> &#35270;&#24773;&#20917;</span>
+    </div>
+
+    <table class="s24-table">
+      <thead>
+        <tr class="s24-thead">
+          <th>&#22580;&#26223;</th>
+          <th>Write</th>
+          <th>Select</th>
+          <th>Compress</th>
+          <th>Isolate</th>
+          <th>Cache</th>
+        </tr>
+      </thead>
+      <tbody id="s24-tbody">
+        <tr class="s24-row" data-idx="0">
+          <td><span class="s24-scenario-name">SE Agent<span class="s24-scenario-tag">&#24037;&#20855;&#23494;&#38598;</span></span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="1">
+          <td><span class="s24-scenario-name">&#23458;&#26381; Agent<span class="s24-scenario-tag">&#23545;&#35441;&#23494;&#38598;</span></span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-no">&#10007;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="2">
+          <td><span class="s24-scenario-name">&#35843;&#30740; Agent<span class="s24-scenario-tag">&#30693;&#35782;&#23494;&#38598;</span></span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-no">&#10007;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="3">
+          <td><span class="s24-scenario-name">&#25945;&#23398; Agent<span class="s24-scenario-tag">&#32467;&#26500;&#21270;</span></span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-no">&#10007;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="4">
+          <td><span class="s24-scenario-name">&#22810;&#27493;&#39588;&#20219;&#21153;<span class="s24-scenario-tag">&#21487;&#24182;&#34892;</span></span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-rec">&#9675;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="5">
+          <td><span class="s24-scenario-name">&#39640;&#39057;&#22580;&#26223;<span class="s24-scenario-tag">&#25104;&#26412;&#25935;&#24863;</span></span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+        <tr class="s24-row" data-idx="6">
+          <td><span class="s24-scenario-name">&#23454;&#26102;&#22580;&#26223;<span class="s24-scenario-tag">&#24310;&#36831;&#25935;&#24863;</span></span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+          <td><span class="s24-neutral">&#8212;</span></td>
+          <td><span class="s24-must">&#9679;</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Reason panel -->
+  <div class="s24-reason-panel" id="s24-reason">
+    <span class="s24-reason-label">&#25552;&#31034;&#65306;</span>hover &#25110;&#28857;&#20987;&#20219;&#24847;&#19968;&#34892;&#65292;&#26597;&#30475;&#35813;&#22580;&#26223;&#30340;&#26680;&#24515;&#20915;&#31574;&#29702;&#30001;
+  </div>
+</div>
+
+<script>
+(function() {
+  var reasons = [
+    "&#24037;&#20855;&#35843;&#29992;&#21344; 80%+ Token&#65292;Compress &#19977;&#20214;&#22871;&#65288;&#28165;&#38500;+&#36935;&#34108;+trim&#65289;&#25928;&#26524;&#26368;&#26174;&#33879;",
+    "&#29992;&#25143;&#28040;&#24687;&#26159;&#26680;&#24515;&#19981;&#21487;&#21387;&#32553;&#65292;Write &#25345;&#20037;&#21270;&#29992;&#25143;&#30011;&#20687; + Cache &#38477;&#20302;&#37325;&#22797;&#25104;&#26412;",
+    "&#30693;&#35782;&#23436;&#25972;&#24615; &gt; &#25104;&#26412;&#20248;&#21270;&#65292;Select (RAG) &#31934;&#20934;&#26816;&#32034;&#26159;&#29983;&#21629;&#32447;",
+    "&#38656;&#35201;&#36328;&#20250;&#35805;&#36830;&#32493;&#24615;&#65292;Write &#36319;&#36394;&#23398;&#20064;&#36827;&#24230;&#65292;Isolate &#20250;&#30772;&#22351;&#25945;&#23398;&#36830;&#32493;&#24615;",
+    "&#22825;&#28982;&#36866;&#21512; Isolate &#25308;&#20998;&#23376;&#20219;&#21153;&#65292;&#21508;&#33258;&#29420;&#31435;&#31383;&#21475;&#24182;&#34892;&#22788;&#29702;",
+    "&#19975;&#27425;/&#22825;&#35843;&#29992;&#65292;Cache + Compress &#21452;&#31649;&#40786;&#19979;&#65292;&#26376;&#30465; $2,400+",
+    "&#24310;&#36831;&#39044;&#31639; &lt;2s&#65292;&#25490;&#38500; LLM &#25688;&#35201;&#65292;&#21482;&#29992;&#38646;&#24310;&#36831;&#31574;&#30053;&#65288;Cache + &#28165;&#38500; + &#36935;&#34108;&#65289;"
+  ];
+
+  var rows = document.querySelectorAll('.s24-row');
+  var reasonEl = document.getElementById('s24-reason');
+  var activeIdx = -1;
+
+  function showReason(idx) {
+    activeIdx = idx;
+    reasonEl.innerHTML = '<span class="s24-reason-label">&#20915;&#31574;&#29702;&#30001;&#65306;</span>' + reasons[idx];
+    for (var i = 0; i < rows.length; i++) {
+      if (i === idx) {
+        rows[i].classList.add('s24-active');
+      } else {
+        rows[i].classList.remove('s24-active');
+      }
+    }
+  }
+
+  function resetReason() {
+    if (activeIdx >= 0) return;
+    reasonEl.innerHTML = '<span class="s24-reason-label">&#25552;&#31034;&#65306;</span>hover &#25110;&#28857;&#20987;&#20219;&#24847;&#19968;&#34892;&#65292;&#26597;&#30475;&#35813;&#22580;&#26223;&#30340;&#26680;&#24515;&#20915;&#31574;&#29702;&#30001;';
+  }
+
+  for (var i = 0; i < rows.length; i++) {
+    (function(idx, row) {
+      row.addEventListener('mouseenter', function() {
+        showReason(idx);
+      });
+      row.addEventListener('mouseleave', function() {
+        if (activeIdx === idx) {
+          activeIdx = -1;
+          resetReason();
+        }
+      });
+      row.addEventListener('click', function() {
+        if (activeIdx === idx) {
+          activeIdx = -1;
+          row.classList.remove('s24-active');
+          resetReason();
+        } else {
+          showReason(idx);
+        }
+      });
+    })(i, rows[i]);
+  }
+
+  // Stagger entrance animation
+  var delay = 80;
+  for (var j = 0; j < rows.length; j++) {
+    (function(row, d) {
+      setTimeout(function() {
+        row.classList.add('s24-visible');
+      }, d);
+    })(rows[j], delay * (j + 1));
+  }
+})();
+</script>
