@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create a review-ready skill scaffold."""
+"""Create a review-ready skill scaffold with paradigm-specific templates."""
 
 from __future__ import annotations
 
@@ -9,10 +9,79 @@ import sys
 from pathlib import Path
 
 ALLOWED_RESOURCES = {"scripts", "references", "assets"}
+VALID_PARADIGMS = {"operator", "navigator", "architect", "partner", "orchestrator", "scout", "philosopher"}
+
+# Paradigm-specific default resources
+PARADIGM_DEFAULTS = {
+    "operator":      ["scripts", "references"],
+    "navigator":     ["references"],
+    "architect":     ["references", "assets"],
+    "partner":       ["references"],
+    "orchestrator":  ["references"],
+    "scout":         ["references"],
+    "philosopher":   ["references"],
+}
+
+# Paradigm-specific workflow hints
+PARADIGM_WORKFLOWS = {
+    "operator": """\
+1. Confirm input file/data exists and is valid.
+2. Detect the input type or format.
+3. Run the appropriate processing script.
+4. Validate the output (exit code, file existence, format).
+5. Report results and any errors.""",
+    "navigator": """\
+1. Classify the user's query or lookup request.
+2. Route to the matching reference or knowledge branch.
+3. Load only the relevant reference file.
+4. Present the answer with source attribution.
+5. If no match, suggest the closest alternatives.""",
+    "architect": """\
+1. Confirm the design scope and constraints.
+2. Choose the system structure or template.
+3. Generate the scaffold or specification.
+4. Validate the output against design gates.
+5. Report the deliverable and next steps.""",
+    "partner": """\
+1. Open with a clear collaboration protocol.
+2. Collect the user's intent and constraints.
+3. Present a draft or proposal for confirmation.
+4. Iterate based on user feedback.
+5. Finalize only after explicit user approval.""",
+    "orchestrator": """\
+1. Classify the request and select the operating mode.
+2. Route to the appropriate tool, agent, or phase.
+3. Execute with explicit handoff rules between stages.
+4. Monitor for failures and apply recovery logic.
+5. Synthesize results and report the final outcome.""",
+    "scout": """\
+1. Inspect the environment before any action (recon-first).
+2. Collect evidence: file state, system state, data shape.
+3. Analyze findings against known patterns.
+4. Decide whether to act or stop.
+5. If acting, validate the result against recon baseline.""",
+    "philosopher": """\
+1. Load the governing principles (constitutional rules).
+2. Classify the request against principle boundaries.
+3. Execute within principle constraints.
+4. Validate that the output does not violate any rule.
+5. Report compliance status and any principle tensions.""",
+}
+
+# Paradigm-specific constraint hints
+PARADIGM_CONSTRAINTS = {
+    "operator":      "- Every operation must have a success/failure check.\n- Do not proceed if input validation fails.\n- Script all repeated or fragile actions.",
+    "navigator":     "- Do not embed domain knowledge in SKILL.md; route to references/.\n- Every branch in the decision tree must point to a concrete resource.\n- Do not guess; if no match is found, say so.",
+    "architect":     "- Every phase must have a design gate (pass criteria).\n- Output must be reusable, not one-off.\n- Do not skip validation before declaring a phase complete.",
+    "partner":       "- Never assume user agreement; always confirm at checkpoints.\n- Do not proceed past a stage exit without explicit approval.\n- Keep the opening protocol consistent across sessions.",
+    "orchestrator":  "- Define explicit handoff rules between each tool/agent.\n- Provide fallback or recovery for every handoff failure.\n- Do not carry all agent details inline in SKILL.md.",
+    "scout":         "- Never act before inspecting the environment.\n- Do not guess file state, API state, or data shape.\n- Define clear stop conditions for investigation.",
+    "philosopher":   "- Separate constitutional rules from execution workflow.\n- Principles are non-negotiable; execution details are adjustable.\n- Every rule must be concrete enough to check, not just aspirational.",
+}
 
 SKILL_TEMPLATE = """---
 name: {skill_name}
-description: [State what this skill does and when to use it. Include representative request patterns and boundaries.]
+description: [State what this skill does and when to use it. Include "Use when..." and representative request patterns.]
 ---
 
 # {title}
@@ -21,22 +90,13 @@ description: [State what this skill does and when to use it. Include representat
 [State the repeated problem this skill solves and the outcome it should stabilize.]
 
 ## Workflow
-1. Confirm the input and task boundary.
-2. Classify the request into the right branch.
-3. Use scripts, references, or assets as needed.
-4. Execute the smallest viable path.
-5. Validate the result.
-6. Report outcome, risks, and next steps.
+{workflow}
 
 ## Decision Tree
-- If the request is [type A], run `scripts/...`
-- If the request is [type B], read `references/...`
-- If the request is [type C], use `assets/...`
+{decision_tree}
 
 ## Constraints
-- List non-negotiable rules.
-- List preservation requirements.
-- List actions that require user confirmation.
+{constraints}
 
 ## Validation
 - Required checks:
@@ -44,9 +104,7 @@ description: [State what this skill does and when to use it. Include representat
 - First failure checks:
 
 ## Resources
-- `scripts/...`: when to run
-- `references/...`: when to read
-- `assets/...`: when to use
+{resources}
 """
 
 OPENAI_YAML_TEMPLATE = """interface:
@@ -125,11 +183,41 @@ def write_file(path: Path, content: str, executable: bool = False) -> None:
         path.chmod(0o755)
 
 
+def build_decision_tree(paradigm: str) -> str:
+    """Generate paradigm-appropriate decision tree placeholder."""
+    hints = {
+        "operator":      '- If input is [format A], run `scripts/process_a.py`\n- If input is [format B], run `scripts/process_b.py`\n- If tool is missing, read `references/installation.md`',
+        "navigator":     '- If query matches [topic A], read `references/topic-a.md`\n- If query matches [topic B], read `references/topic-b.md`\n- If no match, suggest closest alternatives',
+        "architect":     '- If scope is [small], use `assets/template-small/`\n- If scope is [large], follow phase structure in `references/phases.md`\n- If design gate fails, iterate before proceeding',
+        "partner":       '- If user intent is unclear, ask clarifying questions\n- If user confirms draft, proceed to next stage\n- If user rejects, iterate on current stage',
+        "orchestrator":  '- If mode is [A], delegate to [tool/agent A]\n- If mode is [B], delegate to [tool/agent B]\n- If handoff fails, apply recovery from `references/recovery.md`',
+        "scout":         '- If environment is unknown, run recon commands first\n- If recon reveals [pattern A], proceed with [action A]\n- If recon reveals risk, stop and report',
+        "philosopher":   '- If request touches [principle 1], enforce rule before executing\n- If conflict between principles, escalate to user\n- If new situation, check `references/principles.md` first',
+    }
+    return hints.get(paradigm, '- If [condition A], run `scripts/...`\n- If [condition B], read `references/...`')
+
+
+def build_resources_section(resources: list[str]) -> str:
+    """Generate Resources section based on included directories."""
+    lines = []
+    if "scripts" in resources:
+        lines.append("- `scripts/...`: when to run")
+    if "references" in resources:
+        lines.append("- `references/...`: when to read")
+    if "assets" in resources:
+        lines.append("- `assets/...`: when to use")
+    return "\n".join(lines) if lines else "- (no resources yet)"
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description="Create a review-ready skill scaffold.")
-    parser.add_argument("skill_name", help="New skill name")
+    parser = argparse.ArgumentParser(
+        description="Create a review-ready skill scaffold with paradigm-specific templates.",
+        epilog="Example: %(prog)s my-tool --path ~/.claude/skills --paradigm operator",
+    )
+    parser.add_argument("skill_name", help="New skill name (will be normalized to hyphen-case)")
     parser.add_argument("--path", required=True, help="Parent directory for the new skill")
-    parser.add_argument("--resources", default="references", help="Comma-separated resource dirs to create")
+    parser.add_argument("--paradigm", default="", help=f"Primary paradigm: {', '.join(sorted(VALID_PARADIGMS))}")
+    parser.add_argument("--resources", default="", help="Override resource dirs (comma-separated). If omitted, uses paradigm defaults.")
     args = parser.parse_args()
 
     skill_name = normalize(args.skill_name)
@@ -140,11 +228,22 @@ def main() -> int:
         print("[ERROR] Skill name exceeds 64 characters.")
         return 1
 
-    try:
-        resources = parse_resources(args.resources)
-    except ValueError as exc:
-        print(f"[ERROR] {exc}")
+    paradigm = args.paradigm.lower().strip() if args.paradigm else ""
+    if paradigm and paradigm not in VALID_PARADIGMS:
+        print(f"[ERROR] Unknown paradigm '{paradigm}'. Valid: {', '.join(sorted(VALID_PARADIGMS))}")
         return 1
+
+    # Determine resources: explicit override > paradigm defaults > fallback
+    if args.resources:
+        try:
+            resources = parse_resources(args.resources)
+        except ValueError as exc:
+            print(f"[ERROR] {exc}")
+            return 1
+    elif paradigm:
+        resources = PARADIGM_DEFAULTS[paradigm]
+    else:
+        resources = ["references"]
 
     parent = Path(args.path).resolve()
     skill_dir = parent / skill_name
@@ -158,7 +257,20 @@ def main() -> int:
     display_name = title_case(skill_name)
     short_description = ensure_short_description(display_name)
 
-    write_file(skill_dir / "SKILL.md", SKILL_TEMPLATE.format(skill_name=skill_name, title=display_name))
+    # Build paradigm-aware SKILL.md
+    workflow = PARADIGM_WORKFLOWS.get(paradigm, PARADIGM_WORKFLOWS["operator"])
+    constraints = PARADIGM_CONSTRAINTS.get(paradigm, "- List non-negotiable rules.\n- List preservation requirements.")
+    decision_tree = build_decision_tree(paradigm) if paradigm else build_decision_tree("operator")
+    resources_section = build_resources_section(resources)
+
+    write_file(skill_dir / "SKILL.md", SKILL_TEMPLATE.format(
+        skill_name=skill_name,
+        title=display_name,
+        workflow=workflow,
+        decision_tree=decision_tree,
+        constraints=constraints,
+        resources=resources_section,
+    ))
     write_file(
         skill_dir / "agents" / "openai.yaml",
         OPENAI_YAML_TEMPLATE.format(
@@ -178,7 +290,9 @@ def main() -> int:
         (skill_dir / "assets").mkdir()
         write_file(skill_dir / "assets" / "template.md", ASSET_TEMPLATE)
 
-    print(f"[OK] Created {skill_dir}")
+    paradigm_label = f" (paradigm: {paradigm})" if paradigm else ""
+    print(f"[OK] Created {skill_dir}{paradigm_label}")
+    print(f"[DIRS] {', '.join(resources) if resources else 'none'}")
     print("[NEXT] Replace template wording before using the skill.")
     return 0
 

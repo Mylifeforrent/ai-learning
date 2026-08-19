@@ -6,176 +6,139 @@ description: Design, create, review, and iteratively improve high-quality AI ski
 # Skill Creator Pro
 
 ## Goal
-Design and refine production-grade skills that trigger correctly, stay lean in context, execute predictably, and improve after real usage.
+Design and refine production-grade skills that trigger correctly, stay lean in context, execute predictably, and improve after real usage. Automatically recommend the best design paradigm for each new skill.
 
 ## Operating Modes
-Use one of these paths based on the request:
-- Create: define a new skill boundary, choose resources, generate a strong starter structure, then customize it.
+- Create: recommend paradigm → define boundary → plan resources → generate structure → validate.
 - Review: inspect an existing skill for structural defects, content-quality issues, routing weaknesses, and missing validation.
 - Upgrade: review first, then apply the smallest changes that materially improve trigger quality, clarity, reuse, and verification.
 
-## Core Workflow
-1. Define the skill boundary before writing or changing files.
-2. If the request is to create a new skill but the input is incomplete, use `references/request-templates.md` to collect the missing information instead of guessing the boundary.
-3. Collect trigger examples and nearby non-trigger examples.
-3. Choose the primary paradigm before restructuring the skill.
-4. Identify reusable resources: scripts, references, and assets.
-5. Create or update the skill structure.
-6. Keep `SKILL.md` short and route-oriented.
-7. Generate or update `agents/openai.yaml` to match the skill.
-8. Validate the structure and frontmatter.
-9. Test at least one realistic usage path and iterate.
-10. Hand off to `skill-benchmark` when the user wants baseline-vs-with-skill evidence or trend validation after create or upgrade work.
+## Create Workflow (Five Phases)
+
+**Phase 0 — Paradigm Selection**
+Run `scripts/paradigm_recommender.py --description "user's description"` to get a paradigm recommendation.
+If confidence ≥ 0.7, present the recommendation and ask user to confirm.
+If confidence < 0.7, ask clarifying questions before recommending.
+Read `references/paradigms/{paradigm}.md` for the confirmed paradigm's best practices.
+
+**Phase 1 — Boundary Definition**
+Answer four questions before writing anything:
+- What repeated problem does this skill solve?
+- What user requests should trigger it?
+- What nearby requests should not trigger it?
+- What counts as success?
+
+**Phase 2 — Resource Planning**
+Based on paradigm, decide what goes into scripts/, references/, and assets/.
+Use the paradigm-specific resource heuristics from `references/paradigms/{paradigm}.md`.
+
+**Phase 3 — Generate Skill**
+Scaffold with `scripts/init_skill_pro.py <name> --path <dir> --paradigm <paradigm>`.
+Then replace all template wording with real content from Phase 1 and 2.
+
+**Phase 4 — Validate**
+Run `scripts/review_skill.py <path>`. Fix any high-severity findings.
+Test at least one realistic usage path end to end.
+
+## Review and Upgrade Workflow
+1. Run `scripts/review_skill.py <path/to/skill>`.
+2. Separate findings: hard structural failures → routing weaknesses → content issues → polish.
+3. Run `scripts/paradigm_recommender.py --skill-path <path>` to check paradigm alignment.
+4. Fix trigger and routing before expanding scope.
+5. Hand off to `skill-benchmark` when user wants effectiveness evidence.
+
+## Paradigm Quick Reference
+
+| Paradigm | Core Job | Main Risk | Key Directory | Share |
+|----------|----------|-----------|---------------|-------|
+| Operator | Execute toolchain reliably | Execution failure | scripts/ | 28% |
+| Navigator | Route to right information | Wrong guidance | references/ | 19% |
+| Architect | Produce reusable systems | Non-reusable output | assets/ | 17% |
+| Partner | Structure collaboration | Misunderstood intent | references/ | 14% |
+| Orchestrator | Coordinate multi-tool/agent | Coordination chaos | references/ | 13% |
+| Scout | Inspect before acting | Wrong assumptions | references/ | 6% |
+| Philosopher | Establish governing principles | Inconsistent behavior | references/ | 3% |
+
+## Paradigm Decision Tree
+Identify the main risk, then match:
+- Execution fails or results inconsistent → **Operator**
+- User gets wrong information → **Navigator**
+- Output is not reusable or systematic → **Architect**
+- User intent misunderstood → **Partner**
+- Multi-tool coordination breaks → **Orchestrator**
+- Acting on wrong assumptions → **Scout**
+- Behavior lacks principled consistency → **Philosopher**
+
+When unclear, ask: Does it need scripts for determinism? (Operator) Large knowledge base? (Navigator) User confirmations? (Partner) Environment recon? (Scout) Reusable templates? (Architect) Multi-agent handoff? (Orchestrator) Constitutional rules? (Philosopher)
 
 ## Boundary First
-Before creating or revising a skill, answer these questions:
+Before creating or revising a skill, answer:
 - What repeated problem does this skill solve?
 - What user requests should trigger it?
 - What nearby requests should not trigger it?
 - What counts as success for the skill user?
-
-If those answers are fuzzy, tighten the scope before writing anything.
-
-## Review First For Existing Skills
-When the request is about upgrading or improving an existing skill, review before editing.
-
-Run:
-
-```bash
-python3 /Users/mac/.claude/skills/skill-creator-pro/scripts/review_skill.py <path/to/skill>
-```
-
-Use the review output to separate:
-- hard structural failures
-- routing or trigger weaknesses
-- content-quality issues
-- low-priority polish
-
-Do not expand scope until the trigger and main workflow are coherent.
+If answers are fuzzy, use `references/templates/request-templates.md` to collect missing info.
 
 ## Design Rules
 - Prefer narrow and strong over broad and vague.
 - Choose the paradigm before choosing the structure.
-- Treat frontmatter as the Routing Layer, `SKILL.md` as the Control Layer, and `scripts/ references/ assets/` as Execution Support.
-- Use the whitepaper building blocks: Identity, Interaction, Decision, and Doctrine.
+- Frontmatter = Routing Layer. `SKILL.md` = Control Layer. `scripts/ references/ assets/` = Execution Support.
 - Keep `SKILL.md` focused on workflow, decision points, constraints, validation, and resource routing.
-- Put detailed knowledge into `references/`.
-- Put deterministic or repeated operations into `scripts/`.
-- Put templates and output materials into `assets/`.
-- Do not duplicate the same information across `SKILL.md` and `references/`.
-- Do not explain basics the model likely already knows.
+- Do not duplicate information across `SKILL.md` and `references/`.
+- Do not explain basics the model already knows.
+- Do not create empty directories.
 
 ## Trigger Quality
-Write frontmatter for routing, not for style.
-- `name` must be lowercase hyphen-case.
-- `description` must explain both capability and invocation context.
-- Include representative tasks, objects, or file types when relevant.
-- Keep trigger logic in frontmatter, not in a separate "When to use" section.
-- Prefer wording that implies the repeated workflow, not every adjacent workflow.
+- `name`: lowercase hyphen-case.
+- `description`: capability + invocation context + representative tasks/objects.
+- Include "Use when..." phrasing.
+- Keep trigger logic in frontmatter, not body.
 
 ## Recommended `SKILL.md` Shape
-Use this structure unless the skill clearly benefits from a different shape:
-
 ```md
 ---
 name: my-skill
-description: [what it does + invocation context + common trigger contexts]
+description: [capability + "Use when..." + trigger contexts]
 ---
-
 # My Skill
-
 ## Goal
-[1-2 sentence mission]
-
 ## Workflow
-1. Confirm inputs.
-2. Classify the request.
-3. Route to scripts, references, or assets.
-4. Execute the smallest viable path.
-5. Validate output.
-6. Report results and risks.
-
 ## Decision Tree
-- If A, run `scripts/a.py`
-- If B, read `references/b.md`
-- If C, use `assets/template-c/`
-
 ## Constraints
-- Non-negotiable rules
-- Preservation requirements
-- Cases that require confirmation
-
 ## Validation
-- Required checks
-- Success criteria
-- First failure checks
-
 ## Resources
-- `scripts/...`: when to run
-- `references/...`: when to read
-- `assets/...`: when to use
 ```
-
-## Resource Selection Heuristics
-Use `scripts/` when the task is repeated, fragile, or should be deterministic.
-Use `references/` when the detail is too long for `SKILL.md` or only relevant in some branches.
-Use `assets/` when files are used in outputs rather than as reading material.
-
-If a skill has no real need for one of these directories, do not create it just to look complete.
-
-## Progressive Disclosure
-Keep metadata precise and compact.
-Keep `SKILL.md` under control and easy to scan.
-Load detailed references only when needed.
-
-For skills with multiple variants, keep the selection logic in `SKILL.md` and move variant details into separate reference files.
 
 ## Validation Standard
-At minimum, validate:
 - frontmatter exists and is valid YAML
 - `name` and `description` are present and correct
-- the directory structure matches actual needs
-- `agents/openai.yaml` still reflects the skill
-- at least one realistic usage path can be followed without ambiguity
-
-Use the official validator when available:
-
-```bash
-python3 -B /Users/mac/.codex/skills/.system/skill-creator/scripts/quick_validate.py <path/to/skill>
-```
-
-## Action Paths
-- For new skills, scaffold first with:
-
-```bash
-python3 /Users/mac/.claude/skills/skill-creator-pro/scripts/init_skill_pro.py <skill-name> --path <parent-dir> --resources references
-```
-
-  Then replace all template wording before use.
-- For existing skills, run `scripts/review_skill.py` first, choose the primary paradigm, and then fix trigger quality, routing, and validation before polishing details.
-- After create or upgrade work, route effect validation to `skill-benchmark` when the user wants baseline-vs-with-skill evidence, cross-version comparison, or trend review.
+- directory structure matches paradigm needs
+- `agents/openai.yaml` reflects the skill
+- at least one realistic usage path works end to end
 
 ## Anti-Patterns
-Avoid these mistakes:
 - Writing a tutorial instead of an execution guide
 - Making the skill broad before making it strong
-- Mixing trigger rules into the body instead of frontmatter
+- Mixing trigger rules into body instead of frontmatter
 - Copying large reference content into `SKILL.md`
 - Creating empty or decorative directories
 - Declaring success without a validation path
+- Choosing wrong paradigm (e.g., treating Operator as Navigator)
 
 ## Resources
-- `scripts/review_skill.py`: review an existing skill before changing it
-- `scripts/init_skill_pro.py`: scaffold a stronger starter layout for a new skill
-- `references/skill-paradigms.md`: read first when deciding how a skill should be structured
-- `references/module-building-blocks.md`: read when choosing control-layer modules and whitepaper building blocks
-- `references/to-do-constitution.md`: read when applying the whitepaper execution rules during create or upgrade work
-- `references/not-to-do-red-lines.md`: read when checking anti-patterns and failure classes
-- `references/design-playbook.md`: read when defining boundary, scope, and build order
-- `references/checklists.md`: read before declaring a skill ready
-- `references/examples.md`: read when comparing strong and weak skill patterns
-- `references/content-review.md`: read when judging content quality and routing strength
-- `references/remediation-playbook.md`: read when mapping findings to concrete fixes
-- `references/evaluation-handoff.md`: read when create or upgrade work should hand off to `skill-benchmark` for effectiveness validation
-- `references/request-templates.md`: use when the user wants to create a new skill but the request is still missing trigger, boundary, or output details
-- `assets/skill-template/`: use when you need a review-ready starter template
+- `scripts/paradigm_recommender.py`: recommend paradigm from description or existing skill
+- `scripts/init_skill_pro.py`: scaffold skill structure with paradigm-specific templates
+- `scripts/review_skill.py`: review an existing skill for structural and content issues
+- `references/paradigms/`: seven paradigm best-practice files (operator, navigator, architect, partner, orchestrator, scout, philosopher)
+- `references/paradigms/hybrid-patterns.md`: when and how to combine paradigms
+- `references/core/design-playbook.md`: boundary, scope, and build order
+- `references/core/not-to-do-red-lines.md`: anti-patterns and failure classes
+- `references/core/examples.md`: strong and weak skill patterns
+- `references/advanced/constitution.md`: 10 constitutional rules
+- `references/advanced/content-review.md`: content quality and routing strength rubric
+- `references/advanced/remediation-playbook.md`: findings to fixes mapping
+- `references/advanced/evaluation-handoff.md`: when to hand off to skill-benchmark
+- `references/templates/request-templates.md`: collect missing info for new skills
+- `references/validation/checklists.md`: pre-release checklists
+- `references/validation/skill-review-scorecard.md`: five-dimension scoring
+- `assets/skill-templates/`: paradigm-specific SKILL.md starter templates
