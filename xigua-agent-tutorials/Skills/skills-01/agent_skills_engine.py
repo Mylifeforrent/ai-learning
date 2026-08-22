@@ -36,7 +36,7 @@ load_dotenv()
 # 2. api_key 从环境变量中读取，避免硬编码敏感信息
 # 3. 该 client 实例将在整个模块中复用，用于调用 chat.completions.create() 方法
 client = OpenAI(
-    api_key="sk-e3fb24cbbab646fa9788a85c19606667",
+    api_key=os.getenv("DEEPSEEK_API_KEY", "your-deepseek-api-key"),
     base_url="https://api.deepseek.com"
 )
 
