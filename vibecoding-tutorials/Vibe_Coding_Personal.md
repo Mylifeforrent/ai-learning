@@ -81,7 +81,7 @@
 | Stage 5 业务建模 | 0.5 天 | BR 清单 + 权限矩阵 + 量化 NFR |
 | Stage 6-7 交互与原型 | 1~2 天 | 可点击走通主流程的 Prototype |
 | Stage 8-11 工程设计 | 1~2 天 | 边界表 + ER 图 + API 清单 |
-| Stage 12-13 PRD 与高保真 | 0.5~1 天 | PRD（含可测试 AC）+ Design Tokens |
+| Stage 12-13 PRD 与高保真 | 0.5~1 天 | PRD（含可测试 AC）+ Tokens + 关键页 Figma Design 稿 |
 | Stage 14 AI 上下文 | 0.5 天 | CLAUDE.md ≤ 300 行 |
 | Stage 15-16.5 实现与评审 | 总时间的 40~50% | 代码 + 测试 + Gate 3 记录 |
 | Stage 17 联调 E2E | 0.5~1 天 | E2E 报告 + 追溯矩阵 |
@@ -204,7 +204,9 @@
 | 错误追踪 | Sentry 免费档（或先用结构化日志 + 日志告警） |
 | 可用性监控 | UptimeRobot 免费档 |
 | 部署 | 单 VPS + docker compose，或 PaaS 免费档 |
-| 原型 | Figma Make / 同类 AI 原型工具 |
+| 原型（行为验证） | **Figma Make** / 同类 AI 原型工具（Stage 7） |
+| 高保真 + Design System | **Figma Design / Figma Agent**（Stage 13，不要继续用 Make 打像素） |
+| Design → Code | **Figma MCP** + Cursor / Claude Code / Codex（Stage 16 消费 Stage 13 资产） |
 
 ## 0.7 完整流程（与企业版一致，标注时间盒）
 
@@ -275,8 +277,11 @@ ProjectName/
 │   │   └── gate2_review.md                          # Gate 2 记录
 │   ├── 08_prd/prd_document.md
 │   ├── 09_figma_highfi/
+│   │   ├── highfi_page_map.md                       # PG / Prototype / PRD AC ↔ Figma 画板
+│   │   ├── figma_highfi_design_link.md              # Figma Design 文件链接（非 Make 链接）
 │   │   ├── design_tokens.json
-│   │   └── component_spec.json
+│   │   ├── component_spec.json
+│   │   └── highfi_review.md                         # 高保真走查记录
 │   ├── 10_ai_context/ai_context_index.md            # 指向根目录 CLAUDE.md / AGENTS.md 的索引与生成说明
 │   ├── 11_test/
 │   │   ├── test_plan.md
@@ -752,6 +757,10 @@ Business Model > Interaction Design > Prototype UI 表现
 
 记录归档至 `docs/05_prototype/prototype_review.md`。**Gate 1 通过后业务与交互冻结，之后修改走附录 C。**
 
+原型链接写入 `docs/05_prototype/prototype_link.md`（Figma Make 文件 URL + 主流程入口画板）。
+
+**交给 Stage 13 的不是"把 Make 再精修一遍"。** Gate 1 冻结的是行为：信息架构、导航、页面清单（PG-xxx）、主流程、状态覆盖、权限与确认。Make 里的颜色、字体、阴影、装饰一律视为临时皮肤，高保真阶段只继承行为，不继承视觉。
+
 ---
 
 # Phase 4：Engineering Design
@@ -1079,14 +1088,21 @@ Lead 负责整合，而不是机械汇总：
 
 - 时间盒：2~4 小时
 - 个人版 PRD 可以短，但**验收标准（AC）一条都不能少**——它是 Stage 17 测试用例的来源，也是你判断"做完没有"的唯一标准
+- 本阶段与 Stage 13 可并行。PRD **不决定视觉**，但 AC / 状态 / 权限是高保真必须覆盖的清单：凡是用户能看见的成功、失败、空态、错误、无权限、确认，Stage 13 都要有对应画板，而不是只画 happy path
+- 禁止在 PRD 里新增 Gate 1 未冻结的页面或能力；发现缺口标记 [CONFLICT] / [TBD-BIZ]，走附录 C，不要让高保真"顺手补一页"
 
 ### 提示词
 
 ```text
 【角色】你是一位有 5 年经验的产品经理。
 
-【输入】全部已冻结资产（business_model / interaction_design /
-prototype_review / boundary / api_interface_spec）
+【输入】（权威优先级从高到低；单次会话 ≤ 5 份，其余路径引用）
+1. docs/03_problem_modeling/business_model.md
+2. docs/04_interaction_design/interaction_design_summary.md
+3. docs/05_prototype/prototype_review.md
+4. docs/06_architecture_design/frontend_backend_boundary_spec-v1.0.md
+5. docs/07_backend_design/api_interface_spec.md
+（核对页面编号时路径引用 docs/06_architecture_design/frontend_design_spec-v1.0.md）
 
 【产出】docs/08_prd/prd_document.md
 
@@ -1094,47 +1110,440 @@ prototype_review / boundary / api_interface_spec）
 1. 需求背景与用户目标
 2. 功能清单（关联 BR-xxx）
 3. 核心流程与关键交互
-4. 状态与异常、权限
+4. 状态与异常、权限（与 interaction_design_summary 的状态矩阵一致，页面编号对齐 PG-xxx）
 5. 数据与接口关联（API-xxx）
 6. 验收标准（AC-xxx）：每条可测试、可二元判定，
-   标注关联的 BR-xxx / API-xxx
+   标注关联的 BR-xxx / API-xxx；涉及 UI 可见结果的 AC
+   必须同时标注 PG-xxx 与状态名（Default/Empty/Error/…），
+   供 Stage 13 的 highfi_page_map.md 覆盖
 7. Out of Scope
 
 【约束】
 - 综合交付文档，不得重新定义业务
 - 上游冲突标记 [CONFLICT]，不自行裁决
 - AC 禁止"体验良好""响应迅速"式表述
+- 不得新增 Gate 1 未冻结的页面或能力
 
 【完成前自检】
 - [ ] 每条 AC 可执行 Pass/Fail 判定
 - [ ] 每条 BR 至少被一条 AC 覆盖
+- [ ] 涉及 UI 可见结果的 AC 已标注 PG-xxx 与状态，能被 Stage 13 逐条覆盖
 ```
 
 ### 质量门禁
 
 - BR → AC 覆盖率 100%
+- 每条涉及 UI 可见结果的 AC，都能指向 Interaction Design 的 PG-xxx 与状态矩阵中的某一态（供 Stage 13 覆盖）
 
 ---
 
 ## Stage 13：Figma High-Fidelity UI 设计
 
+### 定位
+
+**Stage 13 负责"已经验证过的 UX，最终长什么样"，并产出 Design System。**
+
+它不是再做一遍 Prototype，也不是 Production UI。
+
+```text
+Stage 6  Interaction Design     = 页面 / 流程 / 状态矩阵（行为规格）
+Stage 7  Figma Make Prototype   = 可点击验证"产品怎么工作"（行为保真）
+Gate 1   Prototype Review       = 行为冻结
+Stage 12 PRD                    = AC / 权限 / 异常的可测试清单（可与本阶段并行）
+Stage 13 Figma Design + Tokens  = 视觉系统 + 可交付高保真（视觉保真）
+Stage 16 Figma MCP + Cursor     = Production UI（实现保真）
+```
+
+2026 年的工具分工（用错工具是本阶段最大的浪费）：
+
+| 工具 | 本阶段角色 |
+|---|---|
+| **Figma Make** | **不要再用。** 它属于 Stage 7：prompt → functional prototype。继续在 Make 里抠 1px / 换品牌色，等于用原型工具冒充 Design System |
+| **Figma Design / Figma Agent** | **本阶段主场。** 在 Design canvas 上生成/修改设计、套用 Design System、给设计反馈 |
+| Figma Prototype | 可把高保真画板串成演示，但不替代 Tokens / 组件规格 |
+| **Figma MCP + Cursor / Codex** | **下一阶段。** 本阶段只准备可被 MCP 读取的 Design 文件 + tokens + component_spec |
+
+```text
+              AI
+               │
+        ┌──────┴──────┐
+        ↓             ↓
+   Figma Make    Figma Agent
+   (Stage 7)     (Stage 13)
+        │             │
+        ↓             ↓
+ Functional       Actual Design
+ Prototype        + Design System
+        │             │
+        └──────┬──────┘
+               ↓
+        High-Fidelity 冻结
+               ↓
+     Figma MCP → Stage 16 代码
+```
+
+**最关键的一条：不要让 AI 从 PRD 直接生成 Production UI。**  
+PRD 没有视觉系统，Make 没有 Design Tokens。跳过本阶段，前端会变成"看起来能用、但 Token/组件/状态对不齐"的一次性界面。
+
 ### 个人执行要点
 
-- 时间盒：0.5~1 天
-- 个人项目强烈建议**直接使用成熟组件库（如 shadcn/ui、Ant Design）的默认 Design Tokens 做裁剪**，不要从零设计视觉系统——你的竞争力在产品逻辑，不在像素
-- 产出底线：design_tokens.json + component_spec.json，高保真稿可只覆盖关键页面
+- 时间盒：0.5~1 天（与 Stage 12 合计；Tokens + 关键页即可，不要追求整站精修）
+- **直接裁剪成熟组件库**（shadcn/ui、Ant Design 等）的默认 Tokens，不要从零发明颜色和字号——个人项目的竞争力在产品逻辑，不在像素
+- 高保真稿可只覆盖**关键页面**（核心主流程 + 1～2 个最高频异常态）；其余页面在 `highfi_page_map.md` 里声明"复用关键页组件，不单独出稿"
+- 发现业务/流程不对：**停止画视觉**，按附录 C 回溯，禁止用新画板掩盖 Gate 1 已冻结的行为错误
 
-### 要求（与企业版一致，规模可缩）
+### 前置条件
 
-- Design Tokens：Color / Typography / Spacing / Radius
-- 组件规格：只定义实际使用的组件及其 variants/states
-- 关键页面 Desktop + Mobile 可验证
-- 视觉不重新设计业务；与 Prototype 冲突时按附录优先级裁决
+- Gate 1 = APPROVED（`docs/05_prototype/prototype_review.md`）
+- Gate 2 = APPROVED（否则页面结构 / API 边界还可能变，视觉会返工）
+- Stage 12 可并行：PRD 未完成时，先用冻结的 Interaction + Prototype 出映射和关键页；`prd_document.md` 落地后用 AC 补状态覆盖，**禁止在无 PRD 时发明新功能**
 
-### 质量门禁
+### 13.1 输入资产与权威优先级
 
-- design_tokens.json 与 component_spec.json 形成
-- 关键页面高保真稿与 Prototype 无业务行为冲突
+只使用仓库里真实存在的路径。单次会话引用 ≤ 5 份，其余用路径引用。
+
+| 优先级 | 文件 | 本阶段用来做什么 |
+|---|---|---|
+| 1 业务规则 | `docs/03_problem_modeling/business_model.md` | 禁止新增角色/规则/字段；权限差异必须看得见 |
+| 2 交互规格 | `docs/04_interaction_design/interaction_design_summary.md` | 页面清单 PG-xxx、任务流、**每页 9 类状态矩阵**、响应式 |
+| 3 行为冻结 | `docs/05_prototype/prototype_review.md` | Gate 1 结论、已确认/未决问题；未关闭的阻塞项不得开画 |
+| 4 原型实物 | `docs/05_prototype/prototype_link.md` | 继承 IA / 导航 / 区块关系 / 跳转；**不继承** Make 的配色字体阴影 |
+| 5 工程页面 | `docs/06_architecture_design/frontend_design_spec-v1.0.md` | PG 编号、结构层次、与 Prototype 对应关系；高保真画板必须能对上 PG |
+| 6 验收清单 | `docs/08_prd/prd_document.md`（可后到） | AC-xxx 中用户可见的结果，必须有对应画板或明确复用说明 |
+
+冲突裁决（与 Stage 8 一致，不要让 Figma 覆盖业务）：
+
+```text
+业务行为：  Business Model > Interaction Design > Gate 1 Prototype > PRD
+页面结构：  frontend_design_spec（PG-xxx）与 Interaction / Prototype 对齐
+视觉组件：  本阶段产出的 Tokens / component_spec / Figma Design 生效后，才覆盖 Make 的临时皮肤
+不确定：    [CONFLICT] / [TBD-UX] / [TBD-FE]，不自行裁决
+```
+
+### 13.2 继承什么、本阶段才决定什么
+
+**必须原样继承（改了就等于推翻 Gate 1）：**
+
+- 信息架构、侧栏/导航信息、页面清单与 PG 编号
+- 页面区块关系（例如 Chat 工作区 + Task Panel，谁主谁辅）
+- 主流程、跳转、危险操作确认
+- 状态矩阵里判定为适用的状态（Default / Loading / Empty / No Result / Error / No Permission / Editing / Submitting / Success-Failure）
+- PRD AC 要求用户能看见的成功 / 失败 / 空 / 错 / 无权限
+- Desktop 1440px + Mobile 375px 的核心任务不断裂
+
+**明确丢掉（Make 的皮肤，不是设计系统）：**
+
+- Prototype 的颜色、字体、阴影、圆角、装饰插画
+- 为了"尽快能点"而堆的一次性控件外观（可换成库组件，但交互语义不变）
+
+**本阶段才允许决定：**
+
+- Color / Typography / Spacing / Radius / Shadow / Icon
+- Button / Input / Card / Table / Modal / Dropdown / Sidebar / Navigation 的 variants 与 states
+- Design Tokens 与组件规格
+- 在不改变 IA 与流程的前提下，收紧排版、层级、密度
+
+### 13.3 操作步骤（先对照，再画，再导出给代码）
+
+不要一上来就打开 Figma Make 继续 prompt。按下面 6 步走，每步一个会话（或 Figma 内一次明确任务）。
+
+**Step 0 — 资产对照（Cursor / Claude，先出映射表）**
+
+把 Prototype 画板、PG-xxx、状态矩阵、PRD AC 对成一张表，再决定"哪些页必须出高保真"。产出：`docs/09_figma_highfi/highfi_page_map.md`。提示词见 **13.4 Prompt A**。
+
+**Step 1 — 裁剪 Design Tokens（不要从零发明）**
+
+选定 Stage 9 已冻结的 UI 组件方案（如 shadcn/ui），只保留本产品用到的 Color / Typography / Spacing / Radius / Shadow。产出：`docs/09_figma_highfi/design_tokens.json`。提示词见 **13.4 Prompt B**。
+
+**Step 2 — 组件规格（只定义实际会用的）**
+
+对照页面映射里出现的控件，写 variants / states。产出：`docs/09_figma_highfi/component_spec.json`。提示词见 **13.4 Prompt C**。
+
+**Step 3 — 在 Figma Design 里铺关键页（Figma Agent，不是 Make）**
+
+新建或打开 **Figma Design** 文件（不要在 Make 文件上继续迭代）。把 Tokens 与组件套到关键页；布局以 Prototype 的 IA 为骨架。提示词见 **13.4 Prompt D**。链接写入 `docs/09_figma_highfi/figma_highfi_design_link.md`。
+
+**Step 4 — 按状态矩阵 + AC 补画板**
+
+不为"看起来完整"加新页面；只补 `highfi_page_map.md` 里标记必须覆盖、但 Step 3 还没有的状态。提示词见 **13.4 Prompt E**。
+
+**Step 5 — 走查（换帽，对照 Prototype / PRD，不看感觉）**
+
+用 **13.4 Prompt F** 做独立走查，记录写入 `docs/09_figma_highfi/highfi_review.md`。阻塞项为 0 才冻结视觉资产。
+
+**Step 6 — 交给 Stage 14 / 16**
+
+冻结物只有这些（不要另造一份"设计说明小说"）：
+
+```text
+docs/09_figma_highfi/highfi_page_map.md
+docs/09_figma_highfi/figma_highfi_design_link.md   ← Design 文件，不是 Make 链接
+docs/09_figma_highfi/design_tokens.json
+docs/09_figma_highfi/component_spec.json
+docs/09_figma_highfi/highfi_review.md
+```
+
+Stage 16 用 Tokens + component_spec 约束代码；若已接入 Figma MCP，再让 Agent 读取 Design 文件核对间距与组件，而不是重新发明 UI。
+
+### 13.4 提示词
+
+#### Prompt A：资产对照 / 页面映射（Cursor）
+
+```text
+【角色】你是交互与视觉交接设计师。你不重新设计产品，只把已冻结的
+Prototype 与 PRD 翻译成高保真施工图。
+
+【输入】（权威优先级从高到低；本会话只引用这 5 份）
+1. docs/04_interaction_design/interaction_design_summary.md
+   （页面清单 PG-xxx、任务流、每页 9 类状态矩阵、响应式）
+2. docs/05_prototype/prototype_review.md（Gate 1 结论与遗留问题）
+3. docs/05_prototype/prototype_link.md（Make 链接，只作行为对照）
+4. docs/06_architecture_design/frontend_design_spec-v1.0.md（PG 与结构）
+5. docs/08_prd/prd_document.md
+   （若文件不存在或仍为草稿：不要编造 AC，在映射表用 [TBD-PRD] 标明
+    待 PRD 补齐的覆盖项，并仅根据 1–4 列出必须出稿的关键页）
+
+业务规则如需核对，路径引用 docs/03_problem_modeling/business_model.md，
+不要把全文贴进本会话。
+
+【任务】生成高保真施工映射，不要画视觉，不要写代码。
+
+【产出】docs/09_figma_highfi/highfi_page_map.md
+
+【必须包含】
+1. 权威来源与 Gate 状态（Gate 1 是否 APPROVED；PRD 是否已可引用）
+2. 对照表，每行一张逻辑页：
+
+   | PG | 页面名 | Prototype 画板/流程 | 必须覆盖的状态 |
+   | 关联 AC-xxx | 是否出高保真稿 | Desktop | Mobile | Figma 画板（先空着） | 备注 |
+
+3. "必须出高保真稿"的判定：
+   - 核心主流程上的页面 = 必须
+   - 仅状态不同的同一页 = 同一页下补状态画板，不新编 PG
+   - 非关键页 = 声明复用哪些关键页组件，本阶段不出独立精修稿
+4. 状态覆盖清单：把 interaction_design_summary 的状态矩阵中
+   判定为适用的状态，逐条标"HF 必画 / 复用 / N/A+理由"
+5. PRD AC 中用户可见结果（成功/失败/空/错/无权限/确认）的覆盖缺口
+6. 组件候选清单（只列映射表里实际出现的：Button/Input/Card/…），
+   供 Prompt B/C 使用
+7. 明确写出：从 Prototype 继承什么、将丢弃什么视觉（配色/字体/阴影）
+
+【禁止】
+- 新增 PG、新导航、新业务能力、新状态
+- 把 Figma Make 的视觉当作已确定 Design System
+- 在 PRD 与 Prototype 冲突时自行选边；标记 [CONFLICT] 并指出条款
+
+【不确定处理】
+Gate 1 有未关闭阻塞项、PRD 缺失、编号对不上：标记 [TBD-UX]/[TBD-PRD]/[CONFLICT]，
+该行不得标"可出稿"。
+
+【完成前自检】
+- [ ] 每个 PG-xxx 都能在 Interaction Design 与 frontend_design_spec 找到
+- [ ] 每个"必须出稿"的页面都能指向 Prototype 行为，而不是凭空设想
+- [ ] 适用状态无静默遗漏；N/A 有理由
+- [ ] 未把 Make 链接写成高保真 Design 链接
+```
+
+#### Prompt B：Design Tokens（Cursor）
+
+```text
+【角色】你是 Design System 工程师。你做裁剪，不发明品牌。
+
+【输入】（权威优先级从高到低）
+1. docs/09_figma_highfi/highfi_page_map.md（组件候选与关键页）
+2. docs/06_architecture_design/frontend_design_spec-v1.0.md
+3. Stage 9 已冻结的 UI 组件方案（在架构文档中；如 shadcn/ui / Ant Design）
+路径引用：docs/04_interaction_design/interaction_design_summary.md 的响应式章节。
+
+【任务】基于已选组件库的默认 Tokens 做最小裁剪，输出本项目的 Design Tokens。
+不要从零设计色板；不要为未出现的控件预留 Token。
+
+【产出】docs/09_figma_highfi/design_tokens.json
+
+【必须包含的 Token 类别】
+- Color（含 text / background / border / semantic：success / warning / danger / info）
+- Typography（family / size / weight / lineHeight）
+- Spacing
+- Radius
+- Shadow（仅关键页实际用到的层级）
+- 如组件库已有对应 CSS variable / Tailwind 名，一并写入 `source` 字段，
+  便于 Stage 16 直接映射，禁止另起一套无法实现的命名
+
+【约束】
+- Token 名稳定、可被前端直接引用，禁止"蓝色 2 号"这类口语名
+- 不把 Prototype / Make 的临时色值抄进来充当品牌色
+- 不新增 highfi_page_map 未出现的语义色（例如根本没有"会员金"）
+- 无法与组件库对齐的项标记 [TBD-FE]，禁止编造 hex
+
+【完成前自检】
+- [ ] 每个 Token 都能在选定组件库中找到来源或显式裁剪说明
+- [ ] Color / Typography / Spacing / Radius 四类齐全
+- [ ] JSON 可被程序读取，无注释掉的死 key
+```
+
+#### Prompt C：组件规格（Cursor）
+
+```text
+【角色】你是 UI 组件规格作者。只规格化会真正用到的组件。
+
+【输入】
+1. docs/09_figma_highfi/highfi_page_map.md
+2. docs/09_figma_highfi/design_tokens.json
+3. docs/06_architecture_design/frontend_design_spec-v1.0.md
+4. docs/04_interaction_design/interaction_design_summary.md
+   （仅交互规则与状态矩阵相关章节）
+5. docs/08_prd/prd_document.md（若缺失，权限/禁用态按 Interaction 状态矩阵；
+   不要发明 PRD 里没有的组件）
+
+【产出】docs/09_figma_highfi/component_spec.json
+
+【必须包含】
+只定义映射表中出现的组件。每个组件给出：
+- 用途与对应 PG
+- variants（如 Button: primary / secondary / ghost / danger）
+- states（default / hover / focus / disabled / loading / error，以实际需要为准）
+- 使用的 Token 名（禁止写死 hex / px）
+- 与 Prototype 行为的对应（点击后发生什么仍以 Interaction / Prototype 为准）
+
+至少覆盖实际出现的：Button、Input、Card，以及 Sidebar / Navigation /
+Table / Modal / Dropdown 中用到的那些。
+
+【禁止】
+- 为"组件库完整"而添加映射表不存在的组件
+- 用组件变体改变业务（例如加一个 Prototype 没有的"一键批准"）
+- 与 design_tokens.json 脱节的私有色值
+
+【完成前自检】
+- [ ] 每个组件都能在 highfi_page_map 找到出处
+- [ ] 每个关键 Input/Button 的 Error / Disabled / Loading 有定义或显式 N/A
+- [ ] variants/states 全部引用 Token 名
+```
+
+#### Prompt D：Figma Agent（贴进 Figma Design，不要贴进 Make）
+
+在 **Figma Design** 文件中使用。先把 `highfi_page_map.md` 的关键页表格、`design_tokens.json` 摘要、`component_spec.json` 中本页用到的组件贴进上下文（单次仍控制体积，一页或一个流程一次）。
+
+```text
+【角色】你是本产品的界面设计师，工作区是 Figma Design canvas。
+你不是产品经理，也不是原型工程师。
+
+【任务】把已验证的 UX 做成高保真界面，并套用给定 Design System。
+不要重新设计信息架构，不要新增页面或业务能力。
+
+【已冻结、必须遵守】
+- 页面清单、导航、区块关系、跳转：以我提供的 highfi_page_map / Prototype 为准
+- 状态：只画映射表标记为"HF 必画"的状态
+- 视觉：只使用我提供的 Design Tokens 与 component_spec 的 variants/states
+- Desktop 1440px 优先，关键页同时给 Mobile 375px
+
+【允许你做】
+- 用 Auto Layout 和组件 Variants 实现给定规格
+- 在不改变 IA 的前提下调整间距、层级、密度，使其符合 Tokens
+- 把 Make 原型里的临时控件替换为规格中的组件
+
+【禁止】
+- 不要在 Figma Make 里完成这项任务
+- 不要发明新颜色、新字号、新圆角
+- 不要增加导航项、新模块、新表单字段
+- 不要把装饰（插画/渐变/营销文案）画进企业工具主流程
+- 业务或状态不清楚时停下，标 [TBD-UX]，不要脑补
+
+【交付】
+1. 关键页 Desktop（及约定的 Mobile）画板，命名包含 PG-xxx 与状态名
+   （例：PG-002 Chat / Default，PG-002 Chat / Empty）
+2. 复用组件，不要每页复制一份改色
+3. 列出你未覆盖的映射表行，供下一步 Prompt E 补齐
+
+【完成前自检】
+- [ ] 画板能对上 PG-xxx，而不是新起了一套页面名
+- [ ] 主流程页面的 Default 态可与 Prototype 逐步对照，行为一致
+- [ ] 未见 Token 以外的色值/字号
+```
+
+完成后把 Design 文件 URL、文件名、关键 node/画板名写入：
+
+`docs/09_figma_highfi/figma_highfi_design_link.md`
+
+（必须是 Figma Design 文件，禁止把 `prototype_link.md` 里的 Make 链接复制过来充数。）
+
+#### Prompt E：状态补全（Figma Agent 或 Cursor 对照清单）
+
+```text
+【角色】你是高保真状态补全执行者。不修改已确认的 Default 主流程画板。
+
+【输入】
+1. docs/09_figma_highfi/highfi_page_map.md
+2. docs/04_interaction_design/interaction_design_summary.md（状态矩阵章节）
+3. docs/08_prd/prd_document.md（AC 中用户可见结果；缺失则跳过 AC 列，
+   只按状态矩阵补，并留 [TBD-PRD]）
+4. docs/09_figma_highfi/component_spec.json
+5. docs/09_figma_highfi/figma_highfi_design_link.md
+
+【任务】对照映射表，只补"HF 必画"但画板仍为空的状态：
+Loading / Empty / No Result / Error / No Permission / Submitting /
+Success-Failure / 危险操作确认。
+
+【禁止】创造新业务状态；不要为了对称而给 N/A 的页硬造空态。
+
+【完成前自检】
+- [ ] 映射表中每个"必画"状态都有画板名
+- [ ] 新增画板命名含 PG-xxx + 状态名
+- [ ] Default 主流程画板未被改动行为
+```
+
+#### Prompt F：高保真走查（全新会话，换帽）
+
+```text
+【角色】你是视觉与交付评审，不认识作者，只根据资产判断。
+你评审的是"高保真是否忠于已冻结 UX，以及 Design System 是否可交给代码"，
+不是"好不好看"。
+
+【输入】（不要听作者解释意图）
+1. docs/09_figma_highfi/highfi_page_map.md
+2. docs/09_figma_highfi/design_tokens.json
+3. docs/09_figma_highfi/component_spec.json
+4. docs/05_prototype/prototype_review.md
+5. docs/08_prd/prd_document.md（若无，AC 相关项标 [TBD-PRD]，不得判通过）
+路径引用：
+- docs/04_interaction_design/interaction_design_summary.md
+- docs/06_architecture_design/frontend_design_spec-v1.0.md
+- docs/09_figma_highfi/figma_highfi_design_link.md
+- docs/05_prototype/prototype_link.md
+
+【任务】按下列清单逐条给出 Pass / Fail / N/A + 证据，
+写入 docs/09_figma_highfi/highfi_review.md。
+
+【检查项】
+- [ ] 高保真文件是 Figma Design，不是把 Make 链接当作交付
+- [ ] 每个出稿 PG 能对上 frontend_design_spec 与 Prototype 行为
+- [ ] 导航 / 信息架构 / 主流程未相对 Gate 1 发生业务级改变
+- [ ] 状态矩阵中的适用状态：有画板或有 N/A 理由
+- [ ] 涉及 UI 的 AC（成功/失败/空/错/无权限/确认）有对应画板或复用说明
+- [ ] Desktop 1440 + 关键页 Mobile 375 核心任务可验证
+- [ ] design_tokens.json 与 component_spec.json 齐全且互相引用
+- [ ] 组件未超出映射表实际需求
+- [ ] 不存在用视觉"补"出来的新功能、新字段、新导航
+- [ ] Token 能映射到 Stage 9 组件库，而不是无法实现的自定义体系
+
+【输出】问题清单（阻塞 / 严重 / 建议）+ 建议动作。
+发现与 Business Model / Interaction / Prototype 的行为冲突标 [CONFLICT]，
+禁止自行改业务。禁止因为"更好看"要求推翻 Gate 1。
+```
+
+### 13.5 质量门禁
+
+- `highfi_page_map.md` 中每个必须出稿的 PG 都能追溯到 Interaction 的 PG-xxx 与 Prototype 行为
+- `figma_highfi_design_link.md` 指向 **Figma Design** 文件，且与 `prototype_link.md` 不是同一链接
+- `design_tokens.json` + `component_spec.json` 已形成，关键组件的 variants/states 引用 Token
+- 关键页面 Desktop（+ 约定 Mobile）可验证；适用状态无静默缺失
+- 与 Prototype **无业务行为冲突**；冲突项已标 [CONFLICT] 并走附录 C，而不是在 Figma 里改掉
+- `highfi_review.md` 阻塞项 = 0
+
+### 13.6 和后面阶段怎么接
+
+- **Stage 14**：把 Token 约束、禁止硬编码色值、Figma 为视觉权威写进 `CLAUDE.md` / `AGENTS.md`（路径引用 `docs/09_figma_highfi/`，不复制 JSON 全文）
+- **Stage 16**：输入必须包含 tokens + component_spec + Design 链接；已接入 Figma MCP 时读取 Design 文件，**禁止**只用 PRD 或只用 Make 截图生成 Production UI
+- 若编码时发现"设计少一个状态"：回到本阶段补画板或改 `highfi_page_map.md`，不要在代码里发明第三套 UI
 
 ---
 
@@ -1161,7 +1570,9 @@ prototype_review / boundary / api_interface_spec）
 2. 技术栈与架构边界
 3. 前后端职责、API 约束（鉴权与错误码约定）
 4. 数据层约束（含敏感数据处理红线）
-5. UI / Design Token 约束
+5. UI / Design Token 约束（路径引用 docs/09_figma_highfi/：
+   design_tokens.json、component_spec.json、figma_highfi_design_link.md、
+   highfi_page_map.md；视觉权威是 Figma Design 与 Tokens，不是 Make 原型）
 6. 测试要求、运行/构建/部署方式
 7. 禁止行为（不改冻结资产 / 不引未审计依赖 / 不提交密钥 /
    不跳过验证）
@@ -1245,22 +1656,29 @@ prototype_review / boundary / api_interface_spec）
 ```text
 【角色】你是资深前端工程师，严格按规范实现，不做产品决策。
 
-【输入】（权威优先级从高到低）
+【输入】（权威优先级从高到低；本会话引用 ≤ 5 份，其余路径引用）
 1. CLAUDE.md / AGENTS.md
-2. docs/06_architecture_design/frontend_design_spec-v1.0.md
-3. docs/06_architecture_design/frontend_backend_boundary_spec-v1.0.md
-4. docs/07_backend_design/api_interface_spec.md
-5. docs/09_figma_highfi/design_tokens.json + component_spec.json
+2. docs/06_architecture_design/frontend_design_spec-v1.0.md（本次 PG 章节）
+3. docs/07_backend_design/api_interface_spec.md（本次 API）
+4. docs/09_figma_highfi/design_tokens.json + component_spec.json
+5. docs/09_figma_highfi/highfi_page_map.md（本次 PG 行与必画状态）
+路径引用：
+- docs/06_architecture_design/frontend_backend_boundary_spec-v1.0.md
+- docs/09_figma_highfi/figma_highfi_design_link.md
+  （已接入 Figma MCP 时读取 Design 文件；禁止把
+  docs/05_prototype/prototype_link.md 的 Make 文件当视觉权威）
 
 【任务】实现前端 MVP（本次会话范围：【{页面编号}】，见 Task Brief）。
 
 【要求】
-1. 页面与 frontend_design_spec 一一对应
+1. 页面与 frontend_design_spec 一一对应，画板与 highfi_page_map 的 PG-xxx 一致
 2. 使用 design_tokens.json 的 Tokens，禁止硬编码颜色/字号/间距
 3. 使用 component_spec.json 的共享组件
 4. Loading / Empty / Error / No Permission / Submitting 状态必须实现
+   （以 highfi_page_map + 高保真画板为准，缺态回 Stage 13，不在代码里发明）
 5. 按 api_interface_spec 对接 API，区分网络/权限/业务错误
 6. 完成组件和页面级验证
+7. 视觉以 Figma Design / Tokens 为准，不以 PRD 文案或 Make 原型皮肤为准
 
 【禁止】
 - 不新增规范外的页面、功能、业务规则
@@ -1277,7 +1695,7 @@ prototype_review / boundary / api_interface_spec）
 ### 质量门禁
 
 - 核心状态完整，API 对接符合 Contract
-- 无硬编码样式字面值
+- 无硬编码样式字面值；视觉来自 Tokens / Figma Design，而非 PRD 或 Make 皮肤
 
 ---
 
@@ -1432,7 +1850,7 @@ Infrastructure。不直接修改上游业务规则，走附录 C 变更控制。
 | 5 业务建模 | 产品负责人 | 业务架构师 | BR + NFR + 权限矩阵 |
 | 6-7 交互原型 | 交互设计师 | 原型构建师 | 可走通的 Prototype |
 | 8-11 工程设计 | 架构师 | 设计起草者 | 边界表 + ER + API 清单 |
-| 12-13 PRD/视觉 | 产品经理 | 文档整理者 | PRD(AC) + Tokens |
+| 12-13 PRD/视觉 | 产品经理 / 界面设计师 | 文档整理者 + Figma Agent | PRD(AC) + Design Tokens + 关键页 Design 稿 |
 | 14 AI 上下文 | Tech Lead | 编译者 | CLAUDE.md ≤300 行 |
 | 15-16 实现 | 技术负责人 | 实现者（你评审） | 代码 + 测试 |
 | 16.5 评审 | **评审者（换帽）** | 安全评审员 | Gate 3 记录 |
@@ -1686,7 +2104,7 @@ business_model.md（权限矩阵章节）
 | 5 | 业务世界 + 量化 NFR + 狠心砍范围 | — |
 | 6-7 | 让用户（或 AI 审计）先体验产品 | **Gate 1** |
 | 8-11 | 工程四件套：边界/栈/数据/契约 | **Gate 2** |
-| 12-13 | PRD 重 AC，视觉用现成组件库 | — |
+| 12-13 | PRD 重 AC；高保真用 Figma Design + 现成组件库 Tokens，不继续打 Make | — |
 | 14 | 设计编译成 AI 上下文，≤300 行 | — |
 | 15-16 | Task Brief 驱动，一个模块一个会话 | — |
 | 16.5 | 没人看你的代码，所以三层评审 | **Gate 3** |
@@ -1710,7 +2128,7 @@ business_model.md（权限矩阵章节）
    ↓
 ★ Gate 2：AI 架构评审员复审
    ↓
-PRD（AC 不可省）+ Tokens（用现成组件库）
+PRD（AC 不可省）∥ 高保真（Figma Design + Tokens，继承 Prototype 行为、不继承 Make 皮肤）
    ↓
 CLAUDE.md（≤300 行，新会话的通行证）
    ↓
